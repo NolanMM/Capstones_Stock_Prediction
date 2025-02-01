@@ -1,0 +1,16 @@
+[
+  {
+    "name": "AAPL",
+    "priceAtClose": "145.09",
+    "afterHoursPrice": "146.25",
+    "priceToEarnings": "28.53",
+    "priceToBook": "30.12"
+  },
+  {
+    "name": "GOOGL",
+    "priceAtClose": "2745.73",
+    "afterHoursPrice": "2752.98",
+    "priceToEarnings": "32.15",
+    "priceToBook": "6.79"
+  }
+]
