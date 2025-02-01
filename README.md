@@ -49,3 +49,15 @@ This project is designed to develop a sophisticated and comprehensive applicatio
     - Bootstrap (Web interface): For designing responsive and visually appealing web interfaces.
     - Flutter: Build, test, and deploy mobile, web, desktop UI
     - RESTFULAPI: To ensure robust communication between the frontend and backend systems.
+
+---
+
+### IV. Code Quality & Analysis [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=alert_status)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=security_rating)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=bugs)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=code_smells)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=coverage)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
+[![Duplicated Lines](https://sonarcloud.io/api/project_badges/measure?project=NolanMM_Capstones_Stock_Prediction&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=NolanMM_Capstones_Stock_Prediction)
