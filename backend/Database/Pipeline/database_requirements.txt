@@ -1,0 +1,13 @@
+azure-storage-blob
+azure-identity
+prefect-docker
+python-dotenv
+matplotlib
+notebook
+yfinance
+prefect
+pyarrow
+pandas
+polars
+numpy
+scipy

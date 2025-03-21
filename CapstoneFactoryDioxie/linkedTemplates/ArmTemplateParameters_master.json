@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "CapstoneFactoryDioxie"
+		},
+		"BronzeLayer_connectionString": {
+			"value": ""
+		},
+		"Bronze_Fact_Files_Layer_accountKey": {
+			"value": ""
+		},
+		"Silver_Layer_accountKey": {
+			"value": ""
+		},
+		"writedatabasesilverlayer_password": {
+			"value": ""
+		},
+		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
+			"value": "https://capstoneprojectstorage.dfs.core.windows.net/"
+		},
+		"Silver_Layer_properties_typeProperties_url": {
+			"value": "https://capstoneprojectstorage.dfs.core.windows.net/"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_server": {
+			"value": "capstone-database-server.database.windows.net"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_database": {
+			"value": "writedatabasesilverlayer"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_userName": {
+			"value": "capstonedioxieteam"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
