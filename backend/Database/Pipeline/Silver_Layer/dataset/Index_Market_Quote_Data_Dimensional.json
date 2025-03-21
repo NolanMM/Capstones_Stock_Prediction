@@ -1,0 +1,117 @@
+{
+	"name": "Index_Market_Quote_Data_Dimensional",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Silver_Layer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Silver_Layer_Files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Historical_Index_Market_Quote_Data.csv",
+				"folderPath": "DataDimensional_tables",
+				"fileSystem": "silverlayer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "symbol",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "price",
+				"type": "String"
+			},
+			{
+				"name": "changesPercentage",
+				"type": "String"
+			},
+			{
+				"name": "change",
+				"type": "String"
+			},
+			{
+				"name": "dayLow",
+				"type": "String"
+			},
+			{
+				"name": "dayHigh",
+				"type": "String"
+			},
+			{
+				"name": "yearHigh",
+				"type": "String"
+			},
+			{
+				"name": "yearLow",
+				"type": "String"
+			},
+			{
+				"name": "marketCap",
+				"type": "String"
+			},
+			{
+				"name": "priceAvg50",
+				"type": "String"
+			},
+			{
+				"name": "priceAvg200",
+				"type": "String"
+			},
+			{
+				"name": "exchange",
+				"type": "String"
+			},
+			{
+				"name": "volume",
+				"type": "String"
+			},
+			{
+				"name": "avgVolume",
+				"type": "String"
+			},
+			{
+				"name": "open",
+				"type": "String"
+			},
+			{
+				"name": "previousClose",
+				"type": "String"
+			},
+			{
+				"name": "eps",
+				"type": "String"
+			},
+			{
+				"name": "pe",
+				"type": "String"
+			},
+			{
+				"name": "earningsAnnouncement",
+				"type": "String"
+			},
+			{
+				"name": "sharesOutstanding",
+				"type": "String"
+			},
+			{
+				"name": "timestamp",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

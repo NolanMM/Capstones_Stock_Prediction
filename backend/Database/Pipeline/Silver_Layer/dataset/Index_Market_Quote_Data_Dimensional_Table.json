@@ -1,0 +1,114 @@
+{
+	"name": "Index_Market_Quote_Data_Dimensional_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Silver_Layer_Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "price",
+				"type": "nvarchar"
+			},
+			{
+				"name": "changesPercentage",
+				"type": "nvarchar"
+			},
+			{
+				"name": "change",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dayLow",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dayHigh",
+				"type": "nvarchar"
+			},
+			{
+				"name": "yearHigh",
+				"type": "nvarchar"
+			},
+			{
+				"name": "yearLow",
+				"type": "nvarchar"
+			},
+			{
+				"name": "marketCap",
+				"type": "nvarchar"
+			},
+			{
+				"name": "priceAvg50",
+				"type": "nvarchar"
+			},
+			{
+				"name": "priceAvg200",
+				"type": "nvarchar"
+			},
+			{
+				"name": "exchange",
+				"type": "nvarchar"
+			},
+			{
+				"name": "volume",
+				"type": "nvarchar"
+			},
+			{
+				"name": "avgVolume",
+				"type": "nvarchar"
+			},
+			{
+				"name": "open",
+				"type": "nvarchar"
+			},
+			{
+				"name": "previousClose",
+				"type": "nvarchar"
+			},
+			{
+				"name": "eps",
+				"type": "nvarchar"
+			},
+			{
+				"name": "pe",
+				"type": "nvarchar"
+			},
+			{
+				"name": "earningsAnnouncement",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sharesOutstanding",
+				"type": "nvarchar"
+			},
+			{
+				"name": "timestamp",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Index_Market_Quote_Data_Dimensional_Table"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
