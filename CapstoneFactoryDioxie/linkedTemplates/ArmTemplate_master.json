@@ -1,0 +1,105 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "CapstoneFactoryDioxie"
+		},
+		"BronzeLayer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BronzeLayer'"
+		},
+		"Bronze_Fact_Files_Layer_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Bronze_Fact_Files_Layer'"
+		},
+		"Silver_Layer_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Silver_Layer'"
+		},
+		"writedatabasesilverlayer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'writedatabasesilverlayer'"
+		},
+		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://capstoneprojectstorage.dfs.core.windows.net/"
+		},
+		"Silver_Layer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://capstoneprojectstorage.dfs.core.windows.net/"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "capstone-database-server.database.windows.net"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "writedatabasesilverlayer"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "capstonedioxieteam"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "CapstoneFactoryDioxie_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"BronzeLayer_connectionString": {
+						"value": "[parameters('BronzeLayer_connectionString')]"
+					},
+					"Bronze_Fact_Files_Layer_accountKey": {
+						"value": "[parameters('Bronze_Fact_Files_Layer_accountKey')]"
+					},
+					"Silver_Layer_accountKey": {
+						"value": "[parameters('Silver_Layer_accountKey')]"
+					},
+					"writedatabasesilverlayer_password": {
+						"value": "[parameters('writedatabasesilverlayer_password')]"
+					},
+					"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
+						"value": "[parameters('Bronze_Fact_Files_Layer_properties_typeProperties_url')]"
+					},
+					"Silver_Layer_properties_typeProperties_url": {
+						"value": "[parameters('Silver_Layer_properties_typeProperties_url')]"
+					},
+					"writedatabasesilverlayer_properties_typeProperties_server": {
+						"value": "[parameters('writedatabasesilverlayer_properties_typeProperties_server')]"
+					},
+					"writedatabasesilverlayer_properties_typeProperties_database": {
+						"value": "[parameters('writedatabasesilverlayer_properties_typeProperties_database')]"
+					},
+					"writedatabasesilverlayer_properties_typeProperties_userName": {
+						"value": "[parameters('writedatabasesilverlayer_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
