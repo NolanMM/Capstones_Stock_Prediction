@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stocks',
     'rest_framework',
-    'django_cassandra_engine',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +78,7 @@ WSGI_APPLICATION = 'almanac.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sql_server.pyodbc',
+        'ENGINE': 'mssql',
         'NAME': 'writedatabasesilverlayer',
         'USER': 'capstonedioxieteam',
         'PASSWORD': 'Connhenbeo1@',
@@ -130,11 +129,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Static files (CSS, JavaScript, Images) besides the default directory 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../src/UI/web_client'),
+    os.path.join(BASE_DIR.parent, 'src', 'UI', 'web_client', 'static'),  
 ]
 
 # Default primary key field type

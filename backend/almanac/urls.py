@@ -16,10 +16,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from stocks.views import index
+from stocks import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('stocks.urls')),
-    path('', index, name='index'), # This is the default route
+    
+    path('', views.index, name='index'),
+    path('portfolio.html', views.portfolio, name='portfolio'),
+    path('account.html', views.account, name='account'),
+    path('marketprediction.html', views.marketprediction, name='marketprediction'),
+    path('register.html', views.register, name='register'),
+    
+    # Generic handler 
+    path('<str:page_name>/', views.page_handler, name='page_handler'),
+
+    # JSON 
+    path('json/chartdata.json', views.chart_data_json, name='chart_data_json'),
+    path('json/stocknames.json', views.stock_names_json, name='stock_names_json'),
+    path('json/stockdetails.json', views.stock_details_json, name='stock_details_json'),
+    path('json/newsarticles.json', views.news_articles_json, name='news_articles_json'),
 ]
