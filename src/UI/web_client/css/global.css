@@ -1,0 +1,20 @@
+body {
+/* Specify the background image */
+    background-image: url('../images/backgroundimage.jpg');
+
+    /* Make the image cover the entire background */
+    background-size: cover;
+
+    /* Center the background image */
+    background-position: center;
+
+    /* Make the background image fixed or scrollable */
+    background-attachment: fixed;
+    /* or 'scroll' */
+
+    /* Ensure the background repeats as desired */
+    background-repeat: no-repeat;
+
+    /* Optional: Add a background color as a fallback */
+    background-color: #f3f3f3;
+}
