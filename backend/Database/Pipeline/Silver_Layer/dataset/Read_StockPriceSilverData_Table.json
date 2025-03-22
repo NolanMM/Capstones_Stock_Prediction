@@ -1,12 +1,12 @@
 {
-	"name": "StockPriceSilverData_Table",
+	"name": "Read_StockPriceSilverData_Table",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "readdatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Write_Database/Silver_Layer_Tables"
+			"name": "Read_Database/Silver_Layer_Tables"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -48,6 +48,5 @@
 			"schema": "dbo",
 			"table": "StockPriceSilverData_Table"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }

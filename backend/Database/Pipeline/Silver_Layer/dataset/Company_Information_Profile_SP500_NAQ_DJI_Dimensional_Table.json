@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Silver_Layer_Tables"
+			"name": "Write_Database/Silver_Layer_Tables"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
