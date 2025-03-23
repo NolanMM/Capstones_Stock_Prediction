@@ -1,12 +1,12 @@
 {
-	"name": "Index_Market_Quote_Data_Dimensional_Table",
+	"name": "Read_Index_Market_Quote_Data_Dimensional_Table",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "readdatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Write_Database/Silver_Layer_Tables"
+			"name": "Read_Database/Silver_Layer_Tables"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -109,6 +109,5 @@
 			"schema": "dbo",
 			"table": "Index_Market_Quote_Data_Dimensional_Table"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }

@@ -17,6 +17,9 @@
 		"writedatabasesilverlayer_password": {
 			"value": ""
 		},
+		"readdatabase_password": {
+			"value": ""
+		},
 		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
 			"value": "https://capstoneprojectstorage.dfs.core.windows.net/"
 		},
@@ -30,6 +33,15 @@
 			"value": "writedatabasesilverlayer"
 		},
 		"writedatabasesilverlayer_properties_typeProperties_userName": {
+			"value": "capstonedioxieteam"
+		},
+		"readdatabase_properties_typeProperties_server": {
+			"value": "capstone-database-server.database.windows.net"
+		},
+		"readdatabase_properties_typeProperties_database": {
+			"value": "readdatabase"
+		},
+		"readdatabase_properties_typeProperties_userName": {
 			"value": "capstonedioxieteam"
 		},
 		"containerUri": {

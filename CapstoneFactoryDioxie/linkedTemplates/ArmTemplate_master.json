@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'writedatabasesilverlayer'"
 		},
+		"readdatabase_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'readdatabase'"
+		},
 		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://capstoneprojectstorage.dfs.core.windows.net/"
@@ -40,6 +44,18 @@
 			"defaultValue": "writedatabasesilverlayer"
 		},
 		"writedatabasesilverlayer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "capstonedioxieteam"
+		},
+		"readdatabase_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "capstone-database-server.database.windows.net"
+		},
+		"readdatabase_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "readdatabase"
+		},
+		"readdatabase_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "capstonedioxieteam"
 		},
@@ -82,6 +98,9 @@
 					"writedatabasesilverlayer_password": {
 						"value": "[parameters('writedatabasesilverlayer_password')]"
 					},
+					"readdatabase_password": {
+						"value": "[parameters('readdatabase_password')]"
+					},
 					"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
 						"value": "[parameters('Bronze_Fact_Files_Layer_properties_typeProperties_url')]"
 					},
@@ -96,10 +115,39 @@
 					},
 					"writedatabasesilverlayer_properties_typeProperties_userName": {
 						"value": "[parameters('writedatabasesilverlayer_properties_typeProperties_userName')]"
+					},
+					"readdatabase_properties_typeProperties_server": {
+						"value": "[parameters('readdatabase_properties_typeProperties_server')]"
+					},
+					"readdatabase_properties_typeProperties_database": {
+						"value": "[parameters('readdatabase_properties_typeProperties_database')]"
+					},
+					"readdatabase_properties_typeProperties_userName": {
+						"value": "[parameters('readdatabase_properties_typeProperties_userName')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "CapstoneFactoryDioxie_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'CapstoneFactoryDioxie_ArmTemplate_0')]"
+			]
 		}
 	]
 }

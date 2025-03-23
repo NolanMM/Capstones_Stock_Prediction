@@ -1,177 +1,173 @@
 {
-	"name": "Company_Information_Profile_SP500_NAQ_DJI_Dimensional_Files",
+	"name": "Read_Company_Information_Profile_SP500_NAQ_DJI_Dimensional_Table",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "Silver_Layer",
+			"referenceName": "readdatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Write_Database/Silver_Layer_Files"
+			"name": "Read_Database/Silver_Layer_Tables"
 		},
 		"annotations": [],
-		"type": "DelimitedText",
-		"typeProperties": {
-			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileName": "company_information_profile_SP500_NAQ_DJI_dimensional.csv",
-				"folderPath": "DataDimensional_tables",
-				"fileSystem": "silverlayer"
-			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
-		},
+		"type": "AzureSqlTable",
 		"schema": [
 			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
 				"name": "symbol",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "price",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "beta",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "volAvg",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "mktCap",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "lastDiv",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "range",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "changes",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "companyName",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "currency",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "cik",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "isin",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "cusip",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "exchange",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "exchangeShortName",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "industry",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "website",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "description",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "ceo",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "sector",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "country",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "fullTimeEmployees",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "phone",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "address",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "city",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "state",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "zip",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "dcfDiff",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "dcf",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "image",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "ipoDate",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "defaultImage",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "isEtf",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "isActivelyTrading",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "isAdr",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "isFund",
-				"type": "String"
+				"type": "nvarchar"
 			},
 			{
 				"name": "market_index",
-				"type": "String"
+				"type": "nvarchar"
 			}
-		]
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Company_Information_Profile_SP500_NAQ_DJI_Dimensional_Table"
+		}
+	}
 }

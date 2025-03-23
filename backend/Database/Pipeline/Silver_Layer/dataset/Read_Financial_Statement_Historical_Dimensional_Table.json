@@ -1,12 +1,12 @@
 {
-	"name": "Financial_Statement_Historical_Dimensional_Table",
+	"name": "Read_Financial_Statement_Historical_Dimensional_Table",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "readdatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Write_Database/Silver_Layer_Tables"
+			"name": "Read_Database/Silver_Layer_Tables"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -161,7 +161,7 @@
 				"type": "nvarchar"
 			},
 			{
-				"name": "researchAndDdevelopementToRevenue",
+				"name": "researchAndDevelopementToRevenue",
 				"type": "nvarchar"
 			},
 			{
@@ -269,6 +269,5 @@
 			"schema": "dbo",
 			"table": "Financial_Statement_Historical_Dimensional_Table"
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+	}
 }

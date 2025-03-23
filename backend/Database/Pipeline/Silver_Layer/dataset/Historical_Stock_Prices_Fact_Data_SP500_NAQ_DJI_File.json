@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Silver_Layer_Files"
+			"name": "Write_Database/Silver_Layer_Files"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
