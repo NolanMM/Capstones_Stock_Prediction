@@ -1,0 +1,277 @@
+{
+	"name": "Financial_Statement_Historical_Fact_Table_SP500_NAQ_DJI_File",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Silver_Layer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Write_Database/Silver_Layer_Files"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Financial_Statement_Historical_Fact_Table_SP500_NAQ_DJI.csv",
+				"folderPath": "DataDimensional_tables",
+				"fileSystem": "silverlayer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "symbol",
+				"type": "String"
+			},
+			{
+				"name": "date",
+				"type": "String"
+			},
+			{
+				"name": "calendarYear",
+				"type": "String"
+			},
+			{
+				"name": "period",
+				"type": "String"
+			},
+			{
+				"name": "revenuePerShare",
+				"type": "String"
+			},
+			{
+				"name": "netIncomePerShare",
+				"type": "String"
+			},
+			{
+				"name": "operatingCashFlowPerShare",
+				"type": "String"
+			},
+			{
+				"name": "freeCashFlowPerShare",
+				"type": "String"
+			},
+			{
+				"name": "cashPerShare",
+				"type": "String"
+			},
+			{
+				"name": "bookValuePerShare",
+				"type": "String"
+			},
+			{
+				"name": "tangibleBookValuePerShare",
+				"type": "String"
+			},
+			{
+				"name": "shareholdersEquityPerShare",
+				"type": "String"
+			},
+			{
+				"name": "interestDebtPerShare",
+				"type": "String"
+			},
+			{
+				"name": "marketCap",
+				"type": "String"
+			},
+			{
+				"name": "enterpriseValue",
+				"type": "String"
+			},
+			{
+				"name": "peRatio",
+				"type": "String"
+			},
+			{
+				"name": "priceToSalesRatio",
+				"type": "String"
+			},
+			{
+				"name": "pocfratio",
+				"type": "String"
+			},
+			{
+				"name": "pfcfRatio",
+				"type": "String"
+			},
+			{
+				"name": "pbRatio",
+				"type": "String"
+			},
+			{
+				"name": "ptbRatio",
+				"type": "String"
+			},
+			{
+				"name": "evToSales",
+				"type": "String"
+			},
+			{
+				"name": "enterpriseValueOverEBITDA",
+				"type": "String"
+			},
+			{
+				"name": "evToOperatingCashFlow",
+				"type": "String"
+			},
+			{
+				"name": "evToFreeCashFlow",
+				"type": "String"
+			},
+			{
+				"name": "earningsYield",
+				"type": "String"
+			},
+			{
+				"name": "freeCashFlowYield",
+				"type": "String"
+			},
+			{
+				"name": "debtToEquity",
+				"type": "String"
+			},
+			{
+				"name": "debtToAssets",
+				"type": "String"
+			},
+			{
+				"name": "netDebtToEBITDA",
+				"type": "String"
+			},
+			{
+				"name": "currentRatio",
+				"type": "String"
+			},
+			{
+				"name": "interestCoverage",
+				"type": "String"
+			},
+			{
+				"name": "incomeQuality",
+				"type": "String"
+			},
+			{
+				"name": "dividendYield",
+				"type": "String"
+			},
+			{
+				"name": "payoutRatio",
+				"type": "String"
+			},
+			{
+				"name": "salesGeneralAndAdministrativeToRevenue",
+				"type": "String"
+			},
+			{
+				"name": "researchAndDdevelopementToRevenue",
+				"type": "String"
+			},
+			{
+				"name": "intangiblesToTotalAssets",
+				"type": "String"
+			},
+			{
+				"name": "capexToOperatingCashFlow",
+				"type": "String"
+			},
+			{
+				"name": "capexToRevenue",
+				"type": "String"
+			},
+			{
+				"name": "capexToDepreciation",
+				"type": "String"
+			},
+			{
+				"name": "stockBasedCompensationToRevenue",
+				"type": "String"
+			},
+			{
+				"name": "grahamNumber",
+				"type": "String"
+			},
+			{
+				"name": "roic",
+				"type": "String"
+			},
+			{
+				"name": "returnOnTangibleAssets",
+				"type": "String"
+			},
+			{
+				"name": "grahamNetNet",
+				"type": "String"
+			},
+			{
+				"name": "workingCapital",
+				"type": "String"
+			},
+			{
+				"name": "tangibleAssetValue",
+				"type": "String"
+			},
+			{
+				"name": "netCurrentAssetValue",
+				"type": "String"
+			},
+			{
+				"name": "investedCapital",
+				"type": "String"
+			},
+			{
+				"name": "averageReceivables",
+				"type": "String"
+			},
+			{
+				"name": "averagePayables",
+				"type": "String"
+			},
+			{
+				"name": "averageInventory",
+				"type": "String"
+			},
+			{
+				"name": "daysSalesOutstanding",
+				"type": "String"
+			},
+			{
+				"name": "daysPayablesOutstanding",
+				"type": "String"
+			},
+			{
+				"name": "daysOfInventoryOnHand",
+				"type": "String"
+			},
+			{
+				"name": "receivablesTurnover",
+				"type": "String"
+			},
+			{
+				"name": "payablesTurnover",
+				"type": "String"
+			},
+			{
+				"name": "inventoryTurnover",
+				"type": "String"
+			},
+			{
+				"name": "roe",
+				"type": "String"
+			},
+			{
+				"name": "capexPerShare",
+				"type": "String"
+			},
+			{
+				"name": "market_index",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

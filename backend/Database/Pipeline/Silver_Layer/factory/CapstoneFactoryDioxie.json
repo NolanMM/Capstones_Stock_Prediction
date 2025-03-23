@@ -1,0 +1,9 @@
+{
+	"name": "CapstoneFactoryDioxie",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "082e85ae-be7f-4659-873b-359bd659bb96",
+		"tenantId": "4ddd393a-e98a-4404-841f-c4becdd925a5"
+	}
+}

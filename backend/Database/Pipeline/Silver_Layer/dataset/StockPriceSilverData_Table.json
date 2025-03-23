@@ -1,0 +1,53 @@
+{
+	"name": "StockPriceSilverData_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Write_Database/Silver_Layer_Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Close_Prices",
+				"type": "nvarchar"
+			},
+			{
+				"name": "High_Prices",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Low_Prices",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Open_Prices",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Volume",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Market_Index",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "StockPriceSilverData_Table"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

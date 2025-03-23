@@ -1,0 +1,41 @@
+{
+	"name": "Read_StockSymbolChangesSilverData_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "readdatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Read_Database/Silver_Layer_Tables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "oldSymbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "newSymbol",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "StockSymbolChangesSilverData_Table"
+		}
+	}
+}
