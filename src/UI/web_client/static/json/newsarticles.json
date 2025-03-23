@@ -1,0 +1,36 @@
+[
+    {
+        "stock": "AAPL",
+        "articles": [
+            {
+                "title": "Apple Stocks Surge Amid Earnings Report",
+                "date": "2025-01-31",
+                "description": "Apple's stock price increased significantly following a strong quarterly earnings report.",
+                "link": "#"
+            },
+            {
+                "title": "Apple Hits New All-Time High",
+                "date": "2025-01-10",
+                "description": "Apple stock reached a record high due to positive market trends and investor confidence.",
+                "link": "#"
+            }
+        ]
+    },
+    {
+        "stock": "TSLA",
+        "articles": [
+            {
+                "title": "Tesla's New EV Model Boosts Stock Prices",
+                "date": "2025-02-02",
+                "description": "Tesla shares jumped after the unveiling of a new electric vehicle model.",
+                "link": "#"
+            },
+            {
+                "title": "Elon Musk's AI Announcement Impacts Tesla Stock",
+                "date": "2025-02-05",
+                "description": "Tesla's stock saw major movement after Elon Musk teased new AI innovations.",
+                "link": "#"
+            }
+        ]
+    }
+]
