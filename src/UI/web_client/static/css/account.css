@@ -1,0 +1,40 @@
+/* Fixed size for the profile image */
+.profile-image-container {
+    position: relative;
+    width: 400px;
+    /* Set your desired width */
+    height: 400px;
+    /* Set your desired height */
+    margin: 0 auto;
+    border: 5px solid #000000;
+        /* Add a border (black color and 5px thickness) */
+}
+
+.profile-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure the image covers the space without distortion */
+}
+
+.profile-info {
+    text-align: center;
+    margin-top: 10px;
+    /* Space between the image and button */
+}
+
+.profile-info button {
+    width: 100%;
+    /* Make button fill the width of the container */
+}
+
+#toggle-password {
+    margin-left: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+#eye-icon {
+    font-size: 20px;
+}
