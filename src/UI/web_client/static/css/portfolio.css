@@ -1,0 +1,33 @@
+.div.text-center {
+    margin-top: 20px;
+    /* Add 20px margin to the top of the "Related News" section */
+}
+
+#newsContent {
+    margin-top: 20px;
+}
+
+.news-article {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.news-article h5 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.news-article p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.news-article a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.news-article a:hover {
+    text-decoration: underline;
+}
