@@ -1,0 +1,16 @@
+[
+  {
+    "name": "AAPL",
+    "pricePaid": "200",
+    "quantity": "1",
+    "purchaseDate": "2025-03-29",
+    "roi":"-0.50%"
+  },
+  {
+    "name": "GOOGL",
+    "pricePaid": "100",
+    "quantity": "1",
+    "purchaseDate": "2025-02-10",
+    "roi":"10%"
+  }
+]
