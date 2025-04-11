@@ -214,17 +214,30 @@ const colors = ['#007bff','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
 function createChart(ctx, type, data, options) {
     if (ctx) {
         const chart = new Chart(ctx, { type, data, options });
+
+        // Adjust the size of the chart placeholder after the chart has loaded
         const container = ctx.parentElement; // chart-placeholder div
-        container.classList.remove("placeholder-glow"); // remove glow
+        container.classList.remove("placeholder-glow"); // Remove the glow
+        container.style.height = '400px'; // Set the height to auto to allow resizing
         return chart;
     }
 }
 
 const commonChartOptions = {
-    scales: {
-        yAxes: [{ ticks: { beginAtZero: false } }]
-    },
-    legend: { display: false }
+    responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: {
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                },
+            },
+            plugins: {
+                
+            },
 };
 
 fetch('../json/chartdata.json')

@@ -20,6 +20,12 @@
     display: block;
 }
 
+
+.chart-placeholder {
+    position: relative;
+    height: 200px;
+}
+
 .chart-placeholder.placeholder-glow::before {
     content: "Loading Chart...";
     display: block;
@@ -36,10 +42,6 @@
     animation: placeholder-glow 1.5s ease-in-out infinite;
 }
 
-.chart-placeholder {
-    position: relative;
-    height: 200px;
-}
 
 .chart-placeholder canvas {
     position: relative;
