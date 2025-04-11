@@ -69,35 +69,40 @@
 
     <div class="container mt-4" data-aos="fade-left" id="fourthSection" hidden> <!-- This will be the Fourth section -->
         <div id="predict" class="content-section active"> <!-- Display the content depending on selected item -->
-        <div class="row mt"> <!-- Display the Details -->
+        <div class="row mt "> <!-- Display the Details -->
             <div class="col-sm-2">
-                <label for="PriceAtClose"
-                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center"
-                    id="PriceAtClose">Price at Close</label>
+                <div id="PriceAtClose"
+                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center placeholder-glow">
+                    Price at Close
+                </div>
             </div>
             <div class="col-sm-2">
-                <label for="AfterHoursPrice"
-                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center"
-                    id="AfterHoursPrice">After Hours Price</label>
+                <div id="AfterHoursPrice"
+                    class=" form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center placeholder-glow">
+                    After Hours Price
+                </div>
             </div>
             <div class="col-sm-2">
-                <label for="PriceToEarnings"
-                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center"
-                    id="PriceToEarnings">Price to Earnings</label>
+                <div id="PriceToEarnings"
+                    class=" form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center placeholder-glow">
+                    Price to Earnings
+                </div>
             </div>
             <div class="col-sm-2">
-                <label for="PriceToBook"
-                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center"
-                    id="PriceToBook">Price to Book</label>
+                <div id="PriceToBook"
+                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center placeholder-glow">
+                    Price to Book
+                </div>
             </div>
             <div class="col offset-sm-2">
                 <button type="button" class="btn portfoliobutton">Add to Portfolio</button>
             </div>
         </div>
-            <div class="row mt-3"> <!-- Display the Graphs -->
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body">
+        <div class="row mt-3"> <!-- Display the Graphs -->
+            <div class="col-md-12"> <!-- Display the Graphs -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="chart-placeholder placeholder-glow" id="lineChartContainer">
                             <canvas id="chLine" height="100"></canvas>
                         </div>
                     </div>
@@ -107,28 +112,34 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="chLine2" height="100"></canvas>
+                            <div class="chart-placeholder placeholder-glow" id="lineChart2Container">
+                                <canvas id="chLine2" height="100"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="row mt-6"> <!-- Display the Graphs -->
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="chBar" height="200"></canvas>
+                            <div class="chart-placeholder placeholder-glow" id="barChartContainer">
+                                <canvas id="chBar" height="200"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="chScatter" height="200"></canvas>
+                            <div class="chart-placeholder placeholder-glow" id="scatterChartContainer">
+                                <canvas id="chScatter" height="200"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
             <div class="row mt-6 ">
                 <div class="div text-center">

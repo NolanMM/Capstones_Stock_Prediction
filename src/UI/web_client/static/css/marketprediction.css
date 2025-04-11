@@ -20,6 +20,45 @@
     display: block;
 }
 
+.chart-placeholder.placeholder-glow::before {
+    content: "Loading Chart...";
+    display: block;
+    background-color: #e0e0e0;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    line-height: 200px;
+    color: #aaa;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: placeholder-glow 1.5s ease-in-out infinite;
+}
+
+.chart-placeholder {
+    position: relative;
+    height: 200px;
+}
+
+.chart-placeholder canvas {
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes placeholder-glow {
+    0% {
+        background-color: #e0e0e0;
+    }
+
+    50% {
+        background-color: #f0f0f0;
+    }
+
+    100% {
+        background-color: #e0e0e0;
+    }
+}
 
 .content-section.active .btn { 
     border: 2px solid black;
@@ -54,10 +93,6 @@
     background: none;
     color: black;
 
-}
-
-.mt-3{
-    padding-top: 50px;
 }
 
 .mt-6{
