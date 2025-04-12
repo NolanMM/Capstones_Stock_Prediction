@@ -249,22 +249,74 @@ def chart_data_json(request):
 def stock_details_json(request):
     try:
         with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT DISTINCT Symbol, Close_Prices, Market_Index
-                FROM StockPriceSilverData_Table
-                WHERE Symbol IN ('AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META')
-            """)
+            query = """
+                WITH LatestStock AS (
+                    SELECT
+                        Symbol,
+                        Close_Prices,
+                        Open_Prices,
+                        High_Prices,
+                        Low_Prices,
+                        ROW_NUMBER() OVER (PARTITION BY Symbol ORDER BY Date DESC) AS rn
+                    FROM StockPriceSilverData_Table
+                ),
+                LatestFS AS (
+                    SELECT
+                        Symbol,
+                        peRatio,
+                        tangibleBookValuePerShare,
+                        ROW_NUMBER() OVER (PARTITION BY Symbol ORDER BY Date DESC) AS rn
+                    FROM Financial_Statement_Historical_Dimensional_Table
+                )
+                SELECT 
+                    LS.Symbol,
+                    LS.Close_Prices,
+                    LS.Open_Prices,
+                    LS.High_Prices,
+                    LS.Low_Prices,
+                    FS.peRatio,
+                    FS.tangibleBookValuePerShare
+                FROM LatestStock LS
+                LEFT JOIN LatestFS FS ON LS.Symbol = FS.Symbol AND FS.rn = 1
+                WHERE LS.rn = 1
+            """
+            cursor.execute(query)
             stocks = []
             for row in cursor.fetchall():
+                symbol = row[0]
+                try:
+                    close_price = float(row[1])
+                except (ValueError, TypeError):
+                    close_price = 0.0
+                try:
+                    open_price = float(row[2])
+                except (ValueError, TypeError):
+                    open_price = 0.0
+                try:
+                    high_price = float(row[3])
+                except (ValueError, TypeError):
+                    high_price = 0.0
+                try:
+                    low_price = float(row[4])
+                except (ValueError, TypeError):
+                    low_price = 0.0
+                try:
+                    pe_ratio = float(row[5]) if row[5] is not None else 0.0
+                except (ValueError, TypeError):
+                    pe_ratio = 0.0
+                try:
+                    tangible_book = float(row[6]) if row[6] is not None else 0.0
+                except (ValueError, TypeError):
+                    tangible_book = 0.0
+
                 stocks.append({
-                    "name": row[0],
-                    "currentPrice": "130.12",
-                    "priceAtClose": str(row[1]),
-                    "afterHoursPrice": str(float(row[1]) * 1.001),  
-                    "priceToEarnings": "28.53",  
-                    "priceToBook": "30.12"  
+                    "name": symbol,
+                    "currentPrice": f"{close_price:.2f}",
+                    "priceAtClose": f"{close_price:.2f}",
+                    "afterHoursPrice": f"{open_price:.2f}",
+                    "priceToEarnings": f"{pe_ratio:.2f}",
+                    "priceToBook": f"{tangible_book:.2f}"
                 })
-        
         return JsonResponse(stocks, safe=False)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
