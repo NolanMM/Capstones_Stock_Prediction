@@ -1,6 +1,7 @@
 [
   {
     "name": "AAPL",
+    "currentPrice": "6.79",
     "priceAtClose": "145.09",
     "afterHoursPrice": "146.25",
     "priceToEarnings": "28.53",
@@ -8,6 +9,7 @@
   },
   {
     "name": "GOOGL",
+    "currentPrice": "6.79",
     "priceAtClose": "2745.73",
     "afterHoursPrice": "2752.98",
     "priceToEarnings": "32.15",

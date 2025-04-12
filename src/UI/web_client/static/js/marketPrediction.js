@@ -1,11 +1,10 @@
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const addToPortfolioButtons = document.querySelectorAll('.portfoliobutton');
     const portfolioLink = document.querySelector('.nav-link[href="portfolio.html"]');
     const accountLink = document.querySelector('.nav-link[href="account.html"]');
     
     // Simulated check for login status, replace with your actual check
     function isLoggedIn() {
-        // This is a placeholder. Replace it with your actual login check.
         return true; // Assuming the user is not logged in for this example
     }
 
@@ -24,7 +23,6 @@
     }
 });
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const removeStockBtn = document.getElementById("removeStock");
     const selectedStock = document.getElementById("selectedStock");
@@ -38,100 +36,98 @@ document.addEventListener("DOMContentLoaded", function () {
         selectedStock.appendChild(removeStockBtn);
         removeStockBtn.style.display = "inline-block";
         stockInput.value = "";
-         // Fetch stock data from the file and update the labels
+
+        // Fetch stock data from the file and update the labels
         fetch("../json/stockdetails.json")
             .then(response => response.json())
             .then(data => {
                 const stockData = data.find(stock => stock.name === stockName);
                 if (stockData) {
-                    document.getElementById("PriceAtClose").textContent = "Price At Close: " + stockData.priceAtClose;
-                    document.getElementById("AfterHoursPrice").textContent = "After Hour Price: " + stockData.afterHoursPrice;
-                    document.getElementById("PriceToEarnings").textContent = "Price To Earnings: " + stockData.priceToEarnings;
-                    document.getElementById("PriceToBook").textContent = "Price To Book: " + stockData.priceToBook;
+                    const setValue = (id, label, value) => {
+                        const element = document.getElementById(id);
+                        element.innerHTML = `${label}:<br>${parseFloat(value).toFixed(2)}`;
+                        element.classList.remove("placeholder-glow");
+                    };
+                    setValue("CurrentPrice", "Current Price", stockData.currentPrice);
+                    setValue("PriceAtClose", "Price at Close", stockData.priceAtClose);
+                    setValue("AfterHoursPrice", "After Hour Price", stockData.afterHoursPrice);
+                    setValue("PriceToEarnings", "Price to Earnings", stockData.priceToEarnings);
+                    setValue("PriceToBook", "Price to Book", stockData.priceToBook);
                 }
             })
-        .catch(error => {
-            console.error("Error fetching stock data:", error);
-        });
+            .catch(error => {
+                console.error("Error fetching stock data:", error);
+            });
 
-    fetchStockNews(stockName);
-    document.getElementById("fourthSection").removeAttribute("hidden");
-}
+        fetchStockNews(stockName);
+        document.getElementById("fourthSection").removeAttribute("hidden");
+    }
 
     removeStockBtn.addEventListener("click", function () {
-    
+        stockInput.value = "";
+        resetStockData();
+        resetCharts();
+    });
 
-    // Reset the input field
-    stockInput.value = "";
+    function resetCharts() {
+    const chartElements = [
+        document.getElementById("chLine"),
+        document.getElementById("chLine2"),
+        document.getElementById("chBar"),
+        document.getElementById("chScatter")
+    ];
 
-    resetStockData()
-    resetCharts();
-});
-
-function resetCharts() {
-    // Reset chart data to initial state or empty state
-    const chartElements = [document.getElementById("chLine"), document.getElementById("chLine2"), document.getElementById("chBar"), document.getElementById("chScatter")];
-    
     chartElements.forEach(chartElement => {
         if (chartElement && chartElement.chart) {
+            // Clear the dataset data
             chartElement.chart.data.datasets.forEach(dataset => {
                 dataset.data = [];
             });
+
             chartElement.chart.update();
+
+            // Add glow effect back to the container
+            const container = chartElement.parentElement;
+            if (container) {
+                container.classList.add("placeholder-glow");
+            }
         }
     });
 }
+    function resetStockData() {
+        selectedStock.textContent = "";
+        removeStockBtn.style.display = "none";
 
-function resetStockData() {
-    // Reset the selected stock display
-    selectedStock.textContent = "";
-    removeStockBtn.style.display = "none";
+        const fields = [
+            { id: "CurrentPrice", label: "Current Price: " },
+            { id: "PriceAtClose", label: "Price at Close: " },
+            { id: "AfterHoursPrice", label: "After Hours Price: " },
+            { id: "PriceToEarnings", label: "Price to Earnings: " },
+            { id: "PriceToBook", label: "Price to Book: " }
+        ];
 
-    // Reset the stock data fields
-    document.getElementById("PriceAtClose").textContent = "Price at Close";
-    document.getElementById("AfterHoursPrice").textContent = "After Hours Price";
-    document.getElementById("PriceToEarnings").textContent = "Price to Earnings";
-    document.getElementById("PriceToBook").textContent = "Price to Book";
+        fields.forEach(field => {
+            const element = document.getElementById(field.id);
+            element.innerHTML = `${field.label}<br><span class="placeholder col-4">.</span><span class="placeholder col-4">.</span><span class="placeholder col-4">.</span>`;
+            element.classList.add("placeholder-glow");
+        });
 
-    // Clear the news content
-    document.getElementById("newsContent").innerHTML = "";
-
-    // Reset the charts (if needed)
-    resetCharts();
-
-    // Optionally, hide the fourth section until new data is loaded
-    document.getElementById("fourthSection").setAttribute("hidden", true);
-}
-
-function resetCharts() {
-    // Reset chart data to initial state or empty state
-    const chartElements = [document.getElementById("chLine"), document.getElementById("chLine2"), document.getElementById("chBar"), document.getElementById("chScatter")];
-    
-    chartElements.forEach(chartElement => {
-        if (chartElement && chartElement.chart) {
-            chartElement.chart.data.datasets.forEach(dataset => {
-                dataset.data = [];
-            });
-            chartElement.chart.update();
-        }
-    });
-}
+        document.getElementById("newsContent").innerHTML = "";
+        resetCharts();
+        document.getElementById("fourthSection").setAttribute("hidden", true);
+    }
 
     stockInput.addEventListener("change", function () {
-    const inputValue = stockInput.value.trim();
-    const options = Array.from(datalist.options).map(option => option.value);
-    
-    // If the selected stock is in the options, reset and update
-    if (options.includes(inputValue)) {
-        // Reset the data before updating
-        resetStockData();
-        
-        // Update the stock data
-        updateStock(inputValue);
-    } else {
-        stockInput.value = "";
-    }
-});
+        const inputValue = stockInput.value.trim();
+        const options = Array.from(datalist.options).map(option => option.value);
+
+        if (options.includes(inputValue)) {
+            resetStockData();
+            updateStock(inputValue);
+        } else {
+            stockInput.value = "";
+        }
+    });
 });
 
 function fetchStockNews(stockName) {
@@ -140,7 +136,7 @@ function fetchStockNews(stockName) {
         .then(data => {
             const newsContent = document.getElementById("newsContent");
             const newsRecentContent = document.getElementById("newsRecentContent");
-            newsContent.innerHTML = ""; // Clear the existing news content
+            newsContent.innerHTML = "";
 
             const stockNews = data.find(stock => stock.stock === stockName);
 
@@ -151,14 +147,10 @@ function fetchStockNews(stockName) {
 
             const currentDate = new Date();
             const twoWeeksAgo = new Date();
-            twoWeeksAgo.setDate(currentDate.getDate() - 14); // Calculate the date 14 days ago
-
-            console.log('Current Date:', currentDate);
-            console.log('Two Weeks Ago:', twoWeeksAgo);
+            twoWeeksAgo.setDate(currentDate.getDate() - 14);
 
             stockNews.articles.forEach(article => {
                 const articleDate = new Date(article.date);
-                console.log('Article Date:', articleDate);
 
                 const articleElement = document.createElement("div");
                 articleElement.classList.add("news-article");
@@ -168,7 +160,6 @@ function fetchStockNews(stockName) {
                     <p>${article.description}</p>
                 `;
 
-                // Check if the article date is within the last two weeks (recent) or older (historical)
                 if (articleDate >= twoWeeksAgo) {
                     newsRecentContent.appendChild(articleElement);
                 } else {
@@ -182,17 +173,16 @@ function fetchStockNews(stockName) {
         });
 }
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const stockInput = document.getElementById("DataList");
     const datalist = document.getElementById("datalistOptions");
 
     function fetchStockList() {
-        fetch("../json/stocknames.json") // Fetch data from stocknames.json
+        fetch("../json/stocknames.json")
             .then(response => response.json())
             .then(data => {
-                datalist.innerHTML = ""; // Clear existing options
-                
+                datalist.innerHTML = "";
+
                 data.forEach(stock => {
                     const option = document.createElement("option");
                     option.value = stock.name;
@@ -202,7 +192,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("Error fetching stocks:", error));
     }
 
-    // Call fetchStockList to populate stocks dynamically
     fetchStockList();
 });
 
@@ -225,21 +214,47 @@ const colors = ['#007bff','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
 
 function createChart(ctx, type, data, options) {
     if (ctx) {
-        new Chart(ctx, { type, data, options });
+        // Add a custom title if predictions are present or not
+        const hasPredictions = data.datasets.some(ds => 
+            ds.label === "Predictions" || ds.label === "Fallback Predictions");
+        
+        // Update title to show prediction status
+        if (options.title && options.title.text === "Stock Price History") {
+            options.title.text = hasPredictions ? 
+                "Stock Price History with Predictions" : 
+                "Stock Price History (No Predictions Available)";
+        }
+        
+        const chart = new Chart(ctx, { type, data, options });
+
+        // Adjust the size of the chart placeholder after the chart has loaded
+        const container = ctx.parentElement; // chart-placeholder div
+        container.classList.remove("placeholder-glow"); // Remove the glow
+        container.style.height = '400px'; // Set the height to auto to allow resizing
+        return chart;
     }
 }
 
 const commonChartOptions = {
-    scales: {
-        yAxes: [{ ticks: { beginAtZero: false } }]
-    },
-    legend: { display: false }
+    responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: {
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                },
+            },
+            plugins: {
+                
+            },
 };
 
 fetch('../json/chartdata.json')
     .then(response => response.json())
     .then(data => {
-        // Create the first chart
         const chartData1 = {
             labels: data.chart1.labels,
             datasets: data.chart1.datasets
@@ -252,11 +267,31 @@ fetch('../json/chartdata.json')
                 text: data.chart1.title,
                 fontSize: 16,
                 fontColor: '#333'
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        // Custom tooltip to indicate predictions vs actual data
+                        title: function(context) {
+                            const datasetLabel = context[0].dataset.label || '';
+                            if (datasetLabel.includes("Predictions")) {
+                                return `Prediction for ${context[0].label}`;
+                            }
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label.includes("Predictions")) {
+                                return `Predicted: ${context.formattedValue}`;
+                            }
+                            return `${label}: ${context.formattedValue}`;
+                        }
+                    }
+                }
             }
         };
         createChart(document.getElementById("chLine"), 'line', chartData1, chartOptions1);
 
-        // Create the second chart
         const chartData2 = {
             labels: data.chart2.labels,
             datasets: data.chart2.datasets
@@ -273,7 +308,6 @@ fetch('../json/chartdata.json')
         };
         createChart(document.getElementById("chLine2"), 'line', chartData2, chartOptions2);
 
-        // Create the bar chart
         const barData = {
             labels: data.barChart.labels,
             datasets: data.barChart.datasets
@@ -290,7 +324,6 @@ fetch('../json/chartdata.json')
         };
         createChart(document.getElementById("chBar"), 'bar', barData, barOptions);
 
-        // Create the scatter chart
         const scatterData = {
             datasets: data.scatterChart.datasets
         };
