@@ -214,6 +214,17 @@ const colors = ['#007bff','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
 
 function createChart(ctx, type, data, options) {
     if (ctx) {
+        // Add a custom title if predictions are present or not
+        const hasPredictions = data.datasets.some(ds => 
+            ds.label === "Predictions" || ds.label === "Fallback Predictions");
+        
+        // Update title to show prediction status
+        if (options.title && options.title.text === "Stock Price History") {
+            options.title.text = hasPredictions ? 
+                "Stock Price History with Predictions" : 
+                "Stock Price History (No Predictions Available)";
+        }
+        
         const chart = new Chart(ctx, { type, data, options });
 
         // Adjust the size of the chart placeholder after the chart has loaded
@@ -256,6 +267,27 @@ fetch('../json/chartdata.json')
                 text: data.chart1.title,
                 fontSize: 16,
                 fontColor: '#333'
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        // Custom tooltip to indicate predictions vs actual data
+                        title: function(context) {
+                            const datasetLabel = context[0].dataset.label || '';
+                            if (datasetLabel.includes("Predictions")) {
+                                return `Prediction for ${context[0].label}`;
+                            }
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label.includes("Predictions")) {
+                                return `Predicted: ${context.formattedValue}`;
+                            }
+                            return `${label}: ${context.formattedValue}`;
+                        }
+                    }
+                }
             }
         };
         createChart(document.getElementById("chLine"), 'line', chartData1, chartOptions1);
