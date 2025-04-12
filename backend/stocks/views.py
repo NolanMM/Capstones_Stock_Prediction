@@ -171,7 +171,7 @@ def chart_data_json(request):
             cursor.execute("""
                 SELECT TOP 30 Symbol, Date, Close_Prices 
                 FROM StockPriceSilverData_Table
-                WHERE Symbol IN ('AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META')
+                WHERE Symbol IN ('AAPL')
                 ORDER BY Date DESC
             """)
             rows = cursor.fetchall()
