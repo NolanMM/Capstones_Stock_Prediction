@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         element.innerHTML = `${label}:<br>${parseFloat(value).toFixed(2)}`;
                         element.classList.remove("placeholder-glow");
                     };
-
+                    setValue("CurrentPrice", "Current Price", stockData.currentPrice);
                     setValue("PriceAtClose", "Price at Close", stockData.priceAtClose);
                     setValue("AfterHoursPrice", "After Hour Price", stockData.afterHoursPrice);
                     setValue("PriceToEarnings", "Price to Earnings", stockData.priceToEarnings);
@@ -99,6 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
         removeStockBtn.style.display = "none";
 
         const fields = [
+            { id: "CurrentPrice", label: "Current Price: " },
             { id: "PriceAtClose", label: "Price at Close: " },
             { id: "AfterHoursPrice", label: "After Hours Price: " },
             { id: "PriceToEarnings", label: "Price to Earnings: " },

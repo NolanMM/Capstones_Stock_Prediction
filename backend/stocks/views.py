@@ -258,6 +258,7 @@ def stock_details_json(request):
             for row in cursor.fetchall():
                 stocks.append({
                     "name": row[0],
+                    "currentPrice": "130.12",
                     "priceAtClose": str(row[1]),
                     "afterHoursPrice": str(float(row[1]) * 1.001),  
                     "priceToEarnings": "28.53",  

@@ -71,6 +71,12 @@
         <div id="predict" class="content-section active"> <!-- Display the content depending on selected item -->
         <div class="row mt "> <!-- Display the Details -->
             <div class="col-sm-2">
+                <div id="CurrentPrice"
+                    class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center placeholder-glow">
+                    Current Price
+                </div>
+            </div>
+            <div class="col-sm-2">
                 <div id="PriceAtClose"
                     class="form-label form-control bg-info bg-opacity-10 border border-primary rounded-end text-center placeholder-glow">
                     Price at Close
@@ -94,12 +100,9 @@
                     Price to Book
                 </div>
             </div>
-            <div class="col offset-sm-2">
-                <button type="button" class="btn portfoliobutton">Add to Portfolio</button>
-            </div>
-        </div>
+        
         <div class="row mt-3"> <!-- Display the Graphs -->
-            <div class="col-md-12"> <!-- Display the Graphs -->
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="chart-placeholder placeholder-glow" id="lineChartContainer">
