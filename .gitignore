@@ -1,2 +1,3 @@
 /venv
 /backend/Database/Pipeline/Bronze_Layer/.env
+currentModels/extract.py
