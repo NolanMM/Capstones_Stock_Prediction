@@ -109,5 +109,6 @@
 			"schema": "dbo",
 			"table": "Index_Market_Quote_Data_Dimensional_Table"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
