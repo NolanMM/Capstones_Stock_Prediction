@@ -34,7 +34,7 @@ print(f" • num_layers = {num_layers}")
 print(f" • window_size = {WINDOW_SIZE}")
 
 
-df = pd.read_csv("data/LULU_full_history.csv", parse_dates=["date"])
+df = pd.read_csv("data/LULU_full_history.csv", parse_dates=["date"]) # Load historical data
 df = (
     df.rename(columns={
         "open":"Open", "high":"High", "low":"Low",
@@ -47,16 +47,16 @@ df = (
 def compute_indicators(df):
     delta = df["Close"].diff()
     gain, loss = delta.clip(lower=0), -delta.clip(upper=0)
-    ru = gain.ewm(span=14).mean(); rd = loss.ewm(span=14).mean()
+    ru = gain.ewm(span=14).mean(); rd = loss.ewm(span=14).mean() # 14-day EMA
     rs = ru/rd
     df["RSI"] = 100 - 100/(1+rs)
 
-    ema12 = df["Close"].ewm(span=12).mean()
-    ema26 = df["Close"].ewm(span=26).mean()
+    ema12 = df["Close"].ewm(span=12).mean() # 12-day EMA
+    ema26 = df["Close"].ewm(span=26).mean() # 26-day EMA
     macd = ema12 - ema26
     df["MACD"]        = macd
     df["MACD_Signal"] = macd.ewm(span=9).mean()
-    df["MACD_Hist"]   = df["MACD"] - df["MACD_Signal"]
+    df["MACD_Hist"]   = df["MACD"] - df["MACD_Signal"] # MACD histogram
 
     sma20 = df["Close"].rolling(20).mean()
     std20 = df["Close"].rolling(20).std()
@@ -68,32 +68,32 @@ def compute_indicators(df):
 
 df = compute_indicators(df)
 
-def prepare_quarterly(df, feats, tgt, window):
+def prepare_quarterly(df, feats, tgt, window): # Scale quarterly data 
     df2 = df.copy()
-    df2["Quarter"] = df2.index.to_period("Q")
+    df2["Quarter"] = df2.index.to_period("Q") 
     scalers, chunks = {}, []
-    for q, g in df2.groupby("Quarter"):
+    for q, g in df2.groupby("Quarter"): # group by quarter
         if len(g) < window: 
             continue
         m = MinMaxScaler()
-        arr = m.fit_transform(g[feats + [tgt]].values)
-        chunks.append(pd.DataFrame(arr, index=g.index, columns=feats+[tgt]))
+        arr = m.fit_transform(g[feats + [tgt]].values) 
+        chunks.append(pd.DataFrame(arr, index=g.index, columns=feats+[tgt])) 
         scalers[str(q)] = m
-    df_s = pd.concat(chunks).sort_index().dropna()
+    df_s = pd.concat(chunks).sort_index().dropna() # concatenate all quarters
     return scalers, df_s
 
-scalers_q, df_scaled = prepare_quarterly(df, feature_cols, TARGET, WINDOW_SIZE)
+scalers_q, df_scaled = prepare_quarterly(df, feature_cols, TARGET, WINDOW_SIZE) 
 print("Available quarters (last 3):", list(scalers_q.keys())[-3:])
 
 
-def build_all_windows(df_s, feats, tgt, window):
+def build_all_windows(df_s, feats, tgt, window): # Build sliding windows
     X = []
     data = df_s[feats].values
-    for i in range(window, len(df_s)):
+    for i in range(window, len(df_s)): 
         X.append(data[i-window:i])
     return np.array(X)
 
-X_all = build_all_windows(df_scaled, feature_cols, TARGET, WINDOW_SIZE)
+X_all = build_all_windows(df_scaled, feature_cols, TARGET, WINDOW_SIZE) 
 last_window = X_all[-1]
 print("Last window shape:", last_window.shape)  # (WINDOW_SIZE, n_features)
 
@@ -111,11 +111,10 @@ class LSTMModel(nn.Module):
                          self.lstm.hidden_size, device=x.device)
         c0 = torch.zeros_like(h0)
         out, _ = self.lstm(x, (h0, c0))
-        return self.fc(out[:, -1, :]).squeeze(-1)
+        return self.fc(out[:, -1, :]).squeeze(-1) # output last time step
 
-# Instantiate & load your weights
 model = LSTMModel(
-    input_dim  = len(feature_cols),
+    input_dim  = len(feature_cols), 
     hidden_dim = hidden_dim,
     num_layers = num_layers,
     dropout    = DROPOUT
@@ -126,7 +125,7 @@ model.eval()
 print(model)
 
 
-def forecast_future_scaled(net, window_scaled, horizon):
+def forecast_future_scaled(net, window_scaled, horizon): # Forecast future returns using the trained model
     arr, preds = window_scaled.copy(), []
     for _ in range(horizon):
         inp = torch.tensor(arr).float().unsqueeze(0).to(device)
@@ -140,13 +139,13 @@ def forecast_future_scaled(net, window_scaled, horizon):
     return np.array(preds)
 
 fc_scaled = forecast_future_scaled(model, last_window, HORIZON)
-print(f"Scaled returns forecast (next {HORIZON} days):\n", np.round(fc_scaled,4))
+print(f"Scaled returns forecast (next {HORIZON} days):\n", np.round(fc_scaled,4)) 
 
 
 q_last = str(df_scaled.index[-1].to_period("Q"))
 m = scalers_q[q_last]
 
-minv, maxv = m.data_min_[-1], m.data_max_[-1]
+minv, maxv = m.data_min_[-1], m.data_max_[-1] # get min/max for the last quarter
 raw_rets = fc_scaled * (maxv - minv) + minv
 pct_rets = raw_rets * 100
 
