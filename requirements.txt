@@ -1,1 +1,16 @@
-django>=4.0
+djangorestframework
+azure-storage-blob
+azure-identity
+django==4.2.20
+prefect-docker
+python-dotenv
+mssql-django
+matplotlib
+notebook
+yfinance
+prefect
+pyarrow
+pandas
+polars
+numpy
+scipy
