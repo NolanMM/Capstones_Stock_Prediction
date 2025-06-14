@@ -1,0 +1,63 @@
+{
+	"name": "Silver_Historical_Prices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Open",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "High",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Low",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Close",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Volume",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Dividends",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Stock_Symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Stock_Splits",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Date",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Silver",
+			"table": "Historical_Prices"
+		}
+	}
+}

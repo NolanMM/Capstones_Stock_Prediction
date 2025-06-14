@@ -1,0 +1,62 @@
+{
+	"name": "Bronze_Historical_Stock_News",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/Bronze"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "category",
+				"type": "varchar"
+			},
+			{
+				"name": "datetime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "headline",
+				"type": "varchar"
+			},
+			{
+				"name": "image",
+				"type": "varchar"
+			},
+			{
+				"name": "related",
+				"type": "varchar"
+			},
+			{
+				"name": "source",
+				"type": "varchar"
+			},
+			{
+				"name": "summary",
+				"type": "varchar"
+			},
+			{
+				"name": "url",
+				"type": "varchar"
+			},
+			{
+				"name": "symbol",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Bronze",
+			"table": "Historical_Stock_News"
+		}
+	}
+}

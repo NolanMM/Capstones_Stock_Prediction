@@ -1,0 +1,129 @@
+{
+	"name": "Silver_Macro_Historical",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "date",
+				"type": "date"
+			},
+			{
+				"name": "gdp_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "real_gdp_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "ferfed_funds_effective_rate_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "labor_force_participant_rate_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "cpi_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "unemployment_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "interest_rate_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "job_openning_non_farm_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "hires_total_non_farm_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "quit_total_non_farm_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoff_discharge_non_farm_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_professional_and_business_services_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_manufacturing_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_fiance_and_insurance_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_construction_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_total_private_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_retail_trade_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_real_estate_and_rental_and_leasing_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "layoffs_and_discharges_accommodation_and_food_services_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "real_estate_loans_all_commercial_bank_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "commercial_real_estate_prices_for_US_rate_value",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "Silver",
+			"table": "Macro_Historical"
+		}
+	}
+}

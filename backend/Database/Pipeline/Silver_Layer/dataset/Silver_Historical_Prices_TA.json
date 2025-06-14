@@ -1,0 +1,593 @@
+{
+	"name": "Silver_Historical_Prices_TA",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Stock_Symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Date",
+				"type": "date"
+			},
+			{
+				"name": "Close",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_6",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_7",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_8",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_9",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_10",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_11",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_12",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_13",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_14",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_15",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_16",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_17",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_18",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_19",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_20",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_21",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_22",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_23",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_24",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_25",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_26",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_27",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_28",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RSI_29",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_6",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_7",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_8",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_9",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_10",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_11",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_12",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_13",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_14",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_15",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_16",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_17",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_18",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_19",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_20",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_21",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_22",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_23",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_24",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_25",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_26",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_27",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_28",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "gain_29",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_6",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_7",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_8",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_9",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_10",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_11",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_12",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_13",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_14",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_15",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_16",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_17",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_18",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_19",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_20",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_21",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_22",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_23",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_24",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_25",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_26",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_27",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_28",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "loss_29",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_2",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_3",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_4",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_5",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_6",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_7",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_8",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_9",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_10",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_11",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_12",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_13",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_14",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_15",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_16",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_17",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_18",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_19",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_20",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_21",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_22",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_23",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_24",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_25",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_26",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_27",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_28",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "MARD_29",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "Silver",
+			"table": "Historical_Prices_TA"
+		}
+	}
+}
