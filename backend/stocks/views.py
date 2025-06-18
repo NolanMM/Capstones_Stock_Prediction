@@ -24,7 +24,7 @@ def test_connection(request):
                              'TrustServerCertificate=no;'
                              'Connection Timeout=30;')
         cursor = conn.cursor()
-        cursor.execute('SELECT TOP 5 * FROM StockPriceSilverData_Table')
+        cursor.execute('SELECT TOP 5 * FROM [Bronze].[Historical_Prices]')
         
         columns = [column[0] for column in cursor.description]
         results = []
@@ -39,16 +39,11 @@ def test_connection(request):
 def available_stocks(request):
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT Symbol FROM StockPriceSilverData_Table")
+            cursor.execute("SELECT DISTINCT Stock_Symbol FROM [Bronze].[Historical_Prices]")
             symbols = [row[0] for row in cursor.fetchall()[:50]]  # Limit to 50
         return Response({"symbols": symbols})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
-
-@api_view(['GET'])
-def market_indices(request):
-    indices = StockPrice.objects.values_list('Market_Index', flat=True).distinct()
-    return Response({"indices": list(indices)})
 
 @api_view(['GET'])
 def stock_history(request, symbol):
@@ -62,9 +57,9 @@ def stock_history(request, symbol):
         # Fix SQL parameter syntax for SQL Server
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT TOP {} Date, Close_Prices, Open_Prices, High_Prices, Low_Prices, Volume "
-                "FROM StockPriceSilverData_Table "
-                "WHERE Symbol = '{}' "
+                "SELECT TOP {} Date, Close, Open, High, Low, Volume "
+                "FROM [Bronze].[Historical_Prices] "
+                "WHERE Stock_Symbol = '{}' "
                 "ORDER BY Date DESC".format(days, symbol)
             )
             
@@ -83,16 +78,13 @@ class StockPriceViewSet(viewsets.ViewSet):
         try:
             # Get query parameters
             symbol = request.query_params.get('symbol')
-            market = request.query_params.get('market')
             
             # Build query
-            query = "SELECT TOP 100 * FROM StockPriceSilverData_Table"
+            query = "SELECT TOP 100 * FROM [Bronze].[Historical_Prices]"
             where_clauses = []
             
             if symbol:
-                where_clauses.append(f"Symbol = '{symbol}'")
-            if market:
-                where_clauses.append(f"Market_Index = '{market}'")
+                where_clauses.append(f"Stock_Symbol = '{symbol}'")
                 
             if where_clauses:
                 query += " WHERE " + " AND ".join(where_clauses)
@@ -113,8 +105,8 @@ def chart_data(request):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT TOP 100 Symbol, Date, Close_Prices 
-                FROM StockPriceSilverData_Table
+                SELECT TOP 100 Stock_Symbol, Date, Close 
+                FROM [Bronze].[Historical_Prices]
                 ORDER BY Date DESC
             """)
             columns = [col[0] for col in cursor.description]
@@ -122,12 +114,12 @@ def chart_data(request):
             
             symbols = {}
             for row in chart_data:
-                symbol = row['Symbol']
+                symbol = row['Stok_Symbol']
                 if symbol not in symbols:
                     symbols[symbol] = []
                 symbols[symbol].append({
                     'date': row['Date'],
-                    'price': float(row['Close_Prices'])
+                    'price': float(row['Close'])
                 })
                 
         return JsonResponse(symbols)
@@ -139,9 +131,9 @@ def stock_names(request):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT DISTINCT Symbol 
-                FROM StockPriceSilverData_Table
-                ORDER BY Symbol
+                SELECT DISTINCT Stock_Symbol 
+                FROM [Bronze].[Historical_Prices]
+                ORDER BY Stock_Symbol
             """)
             stock_symbols = [row[0] for row in cursor.fetchall()]
             
@@ -155,7 +147,7 @@ def stock_names(request):
 def stock_names_json(request):
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT Symbol FROM StockPriceSilverData_Table")
+            cursor.execute("SELECT DISTINCT Stock_Symbol FROM [Bronze].[Historical_Prices]")
             symbols = [{"name": row[0]} for row in cursor.fetchall()]
         
         return JsonResponse(symbols, safe=False)
@@ -169,9 +161,9 @@ def chart_data_json(request):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT TOP 30 Symbol, Date, Close_Prices 
-                FROM StockPriceSilverData_Table
-                WHERE Symbol IN ('AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META')
+                SELECT TOP 30 Stock_Symbol, Date, Close 
+                FROM [Bronze].[Historical_Prices]
+                WHERE Stock_Symbol IN ('AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META')
                 ORDER BY Date DESC
             """)
             rows = cursor.fetchall()
@@ -250,9 +242,9 @@ def stock_details_json(request):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT DISTINCT Symbol, Close_Prices, Market_Index
-                FROM StockPriceSilverData_Table
-                WHERE Symbol IN ('AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META')
+                SELECT DISTINCT Stock_Symbol, Close
+                FROM [Bronze].[Historical_Prices]
+                WHERE Stock_Symbol IN ('AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META')
             """)
             stocks = []
             for row in cursor.fetchall():

@@ -8,16 +8,15 @@ class StockPrice(models.Model):
     Low_Prices = models.CharField(max_length=30)
     Open_Prices = models.CharField(max_length=30)
     Volume = models.CharField(max_length=30)
-    Symbol = models.CharField(max_length=10)
-    Market_Index = models.CharField(max_length=20)
-    
+    Stock_Symbol = models.CharField(max_length=10)
+
     class Meta:
         managed = False
-        db_table = 'StockPriceSilverData_Table'
-        unique_together = ('Date', 'Symbol', 'Market_Index')
-        
-    def __str__(self):
-        return f"{self.Symbol} ({self.Date})"
+        db_table = '[Bronze].[Historical_Prices]'
+        unique_together = ('Date', 'Stock_Symbol')
+
+    def str(self):
+        return f"{self.Stock_Symbol} ({self.Date})"
 
 class Article(models.Model):
     stock_name = models.CharField(max_length=10)
@@ -25,6 +24,6 @@ class Article(models.Model):
     date = models.DateField()
     description = models.TextField()
     link = models.URLField()
-    
-    def __str__(self):
+
+    def str(self):
         return self.title

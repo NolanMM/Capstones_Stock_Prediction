@@ -4,10 +4,9 @@ from .models import StockPrice, Article
 class StockPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockPrice
-        fields = ['Date', 'Close_Prices', 'High_Prices', 'Low_Prices', 
-                 'Open_Prices', 'Volume', 'Symbol', 'Market_Index']
+        fields = ['Date', 'Close', 'High', 'Low', 'Open', 'Volume', 'Stock_Symbol']
 
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = 'all'
