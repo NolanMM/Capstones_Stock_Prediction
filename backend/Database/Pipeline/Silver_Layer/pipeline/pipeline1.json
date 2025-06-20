@@ -181,7 +181,14 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Macro_Historical_Silver_Notebook"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
 			},
 			{
 				"name": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
