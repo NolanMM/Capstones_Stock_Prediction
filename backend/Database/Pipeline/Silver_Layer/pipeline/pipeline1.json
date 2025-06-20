@@ -29,7 +29,7 @@
 					{
 						"activity": "Historical_Prices_Bronze_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -76,7 +76,7 @@
 					{
 						"activity": "Company_Information_Bronze_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -123,7 +123,7 @@
 					{
 						"activity": "Historical_News_Bronze_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -150,7 +150,7 @@
 					{
 						"activity": "Historical_Prices_Silver_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -197,13 +197,13 @@
 					{
 						"activity": "Historical_Prices_TA_Silver_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					},
 					{
 						"activity": "Company_Information_Silver_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
