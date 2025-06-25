@@ -22,8 +22,8 @@ function loadPortfolioData() {
                 row.innerHTML = `
                     <td class='text-center'>${stock.name}</td>
                     <td class='text-center'>
-                        <button class='btn btn-info btn-sm' onclick='viewDetails(this)'>View Details</button>
-                        <button class='btn btn-danger btn-sm' onclick='removeStock(this)'>Remove</button>
+                        <button class='btn btn-primary-custom btn-sm' onclick='viewDetails(this)'>View Details</button>
+                        <button class='btn btn-danger-custom btn-sm ms-2' onclick='removeStock(this)'>Remove</button>
                     </td>
                 `;
                 table.appendChild(row);
@@ -40,8 +40,8 @@ function addStockToTable() {
     row.innerHTML = `
         <td class='text-center'>${name}</td>
         <td class='text-center'>
-            <button class='btn btn-info btn-sm' onclick='viewDetails(this)'>View Details</button>
-            <button class='btn btn-danger btn-sm' onclick='removeStock(this)'>Remove</button>
+            <button class='btn btn-primary-custom btn-sm' onclick='viewDetails(this)'>View Details</button>
+            <button class='btn btn-danger-custom btn-sm ms-2' onclick='removeStock(this)'>Remove</button>
         </td>
     `;
     table.appendChild(row);
@@ -52,7 +52,9 @@ function addStockToTable() {
 function removeStock(button) {
     if (confirm("Are you sure you want to remove this stock?")) {
         button.closest('tr').remove();
-        location.reload(); // Reload the page after removing the stock
+        // Instead of location.reload(), you could try to re-fetch/re-render the portfolio
+        // if you want to avoid a full page refresh. For simplicity, reload works.
+        location.reload();
     }
 }
 
@@ -66,18 +68,17 @@ function viewDetails(button) {
     table.innerHTML = '';
     table.appendChild(row); // Keep only the clicked row
 
-    
     let actionCell = row.cells[1]; // Get the action cell
     actionCell.className = 'text-center'; // Apply text-center to the cell itself
     actionCell.innerHTML = `
-        <button class='btn btn-info btn-sm' onclick='viewDetails(this)'>View Details</button>
-        <button class='btn btn-danger btn-sm' onclick='removeStock(this)'>Remove</button>
-        <button class='btn btn-secondary btn-sm ms-2' onclick='restoreTable()'>Minimize View</button>
+        <button class='btn btn-primary-custom btn-sm' onclick='viewDetails(this)'>View Details</button>
+        <button class='btn btn-danger-custom btn-sm ms-2' onclick='removeStock(this)'>Remove</button>
+        <button class='btn btn-outline-custom btn-sm ms-2' onclick='restoreTable()'>Minimize View</button>
     `;
 
     chartContainer.classList.remove('d-none'); // Show charts and news section
 
-    fetchChartData(); // Reload charts
+    fetchChartData(); // Reload charts (these are dummy, but in real app would be specific to stockName)
     fetchStockNews(stockName); // Fetch news specific to the selected stock
 }
 

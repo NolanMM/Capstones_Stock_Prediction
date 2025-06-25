@@ -1,40 +1,172 @@
-/* Fixed size for the profile image */
-.profile-image-container {
-    position: relative;
-    width: 400px;
-    /* Set your desired width */
-    height: 400px;
-    /* Set your desired height */
-    margin: 0 auto;
-    border: 5px solid #000000;
-        /* Add a border (black color and 5px thickness) */
+/* Overall Page Layout and Background */
+body {
+    font-family: 'Inter', sans-serif; /* Modern sans-serif font */
+    padding-top: 80px; /* Adjust for fixed navbar height */
 }
 
-.profile-image-container img {
+/* Main Content Container (Card-like effect) */
+.account-card {
+    background-color: #ffffff;
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); 
+    padding: 40px;
+    margin-bottom: 40px;
+}
+
+/* Page Title and Subtitle */
+.account-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.account-header h1 {
+    font-size: 2.8em; /* Larger title */
+    color: #343a40; /* Darker text for headings */
+    font-weight: 700; /* Bolder */
+    margin-bottom: 10px;
+}
+
+.account-header p {
+    font-size: 1.2em; /* Slightly larger subtitle */
+    color: #6c757d; /* Muted text for subtitle */
+}
+
+/* Profile Image Section */
+.profile-image-section {
+    display: flex;
+    flex-direction: column; /* Stack image and button vertically */
+    align-items: center; /* Center horizontally */
+    margin-bottom: 30px; /* Space below this section */
+}
+
+.profile-image-wrapper {
+    width: 220px; /* Larger, more prominent profile picture */
+    height: 220px;
+    border-radius: 50%; /* Circular profile picture */
+    overflow: hidden;
+    border: 5px solid #e9ecef; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px; 
+}
+
+.profile-image-wrapper img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    /* Ensure the image covers the space without distortion */
+    object-fit: cover; 
+    display: block; /* Remove extra space below image */
 }
 
-.profile-info {
-    text-align: center;
-    margin-top: 10px;
-    /* Space between the image and button */
+/* Info Display & Input Fields */
+.info-group {
+    margin-bottom: 30px; /* Spacing between Email and Password sections */
 }
 
-.profile-info button {
-    width: 100%;
-    /* Make button fill the width of the container */
+.info-label {
+    font-size: 1.15em; /* Slightly larger label */
+    font-weight: 600; /* Semi-bold */
+    color: #495057; 
+    margin-bottom: 10px; /* Space between label and value/input */
+    display: block; /* Ensure label is on its own line */
 }
 
-#toggle-password {
-    margin-left: 10px;
-    background: none;
-    border: none;
-    padding: 0;
+.info-display,
+.form-control { 
+    font-size: 1.1em;
+    padding: 12px 18px; 
+    border-radius: 8px; 
+    border: 1px solid #ced4da;
+    background-color: #e9ecef; 
+    color: #495057; 
+    width: 100%; /* Full width */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
-#eye-icon {
-    font-size: 20px;
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    background-color: #ffffff;
+}
+
+/* Button Styling */
+.btn {
+    padding: 12px 25px; /* Consistent padding */
+    border-radius: 8px; /* Consistent rounded corners */
+    font-size: 1em;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out; /* Smooth transitions for hover/focus */
+    min-width: 160px; 
+}
+
+.btn-primary-custom { /* Custom primary button color */
+    background-color: #007bff; 
+    border-color: #007bff;
+    color: #fff;
+}
+
+.btn-primary-custom:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.btn-outline-secondary-custom { /* Custom outline secondary for profile picture */
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    background-color: transparent;
+}
+
+.btn-outline-secondary-custom:hover {
+    background-color: #5de435;
+    color: #77f048;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(48, 241, 30, 0.2);
+}
+
+.btn-danger-custom { /* Custom danger button */
+    background-color: #dc3545; 
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger-custom:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+
+/* Specific adjustments for button group spacing */
+.button-group-actions {
+    display: flex;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    gap: 15px; /* Space between buttons */
+    margin-top: 40px; /* Space above button group */
+    justify-content: center; /* Center buttons horizontally */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .account-card {
+        padding: 25px;
+    }
+    .account-header h1 {
+        font-size: 2em;
+    }
+    .account-header p {
+        font-size: 1em;
+    }
+    .profile-image-wrapper {
+        width: 180px;
+        height: 180px;
+    }
+    .button-group-actions {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+        align-items: stretch; /* Stretch buttons to full width */
+    }
+    .btn {
+        min-width: unset; /* Remove min-width on small screens */
+        width: 100%; /* Full width for stacked buttons */
+    }
 }

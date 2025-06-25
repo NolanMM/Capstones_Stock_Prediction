@@ -20,6 +20,24 @@
     display: block;
 }
 
+body {
+    background-color: #f8f9fa;
+    font-family: 'Inter', sans-serif;
+    padding-top: 80px; 
+}
+
+.container.text-center h1 {
+    font-size: 2.8em;
+    color: #343a40;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.container.text-center p.fs-3 {
+    font-size: 1.2em !important;
+    color: #6c757d;
+}
+
 
 .content-section.active .btn { 
     border: 2px solid black;
