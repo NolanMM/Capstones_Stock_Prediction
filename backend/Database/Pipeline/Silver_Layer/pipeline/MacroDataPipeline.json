@@ -1,0 +1,48 @@
+{
+	"name": "MacroDataPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "WakeUpDatabase",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
+			},
+			{
+				"name": "Macro_Historical_Silver_Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "WakeUpDatabase",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Macro_Historical_Silver_Notebook"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
