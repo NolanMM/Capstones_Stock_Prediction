@@ -1,0 +1,3288 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "CapstoneFactoryDioxie"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Gold_Historical_Prices_Stock_with_TA_Company_Information_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock_Symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Date",
+						"type": "date"
+					},
+					{
+						"name": "Close",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Open",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "High",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Low",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dividends",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Stock_Splits",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "beta",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "volAvg",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mktCap",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "lastDiv",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "range",
+						"type": "nvarchar"
+					},
+					{
+						"name": "changes",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "companyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cik",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "isin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cusip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchange",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchangeShortName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "industry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "website",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ceo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sector",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "fullTimeEmployees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "zip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "dcfDiff",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dcf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ipoDate",
+						"type": "date"
+					},
+					{
+						"name": "defaultImage",
+						"type": "bit"
+					},
+					{
+						"name": "isEtf",
+						"type": "bit"
+					},
+					{
+						"name": "isActivelyTrading",
+						"type": "bit"
+					},
+					{
+						"name": "isAdr",
+						"type": "bit"
+					},
+					{
+						"name": "isFund",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "Gold",
+					"table": "Historical_Prices_Stock_with_TA_Company_Information"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Gold_Historical_Stock_News_Sentiment_Score')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "category",
+						"type": "nvarchar"
+					},
+					{
+						"name": "datetime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "headline",
+						"type": "nvarchar"
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "related",
+						"type": "nvarchar"
+					},
+					{
+						"name": "source",
+						"type": "nvarchar"
+					},
+					{
+						"name": "summary",
+						"type": "nvarchar"
+					},
+					{
+						"name": "url",
+						"type": "nvarchar"
+					},
+					{
+						"name": "symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "positive_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "negative_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "neutral_value",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "Gold",
+					"table": "Historical_Stock_News_Sentiment_Score"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Gold_Historical_Stock_News_Sentiment_Score_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "category",
+						"type": "nvarchar"
+					},
+					{
+						"name": "datetime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "headline",
+						"type": "nvarchar"
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "related",
+						"type": "nvarchar"
+					},
+					{
+						"name": "source",
+						"type": "nvarchar"
+					},
+					{
+						"name": "summary",
+						"type": "nvarchar"
+					},
+					{
+						"name": "url",
+						"type": "nvarchar"
+					},
+					{
+						"name": "symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "positive_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "negative_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "neutral_value",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "Gold",
+					"table": "Historical_Stock_News_Sentiment_Score"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Company_Information')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "beta",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "volAvg",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mktCap",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "lastDiv",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "range",
+						"type": "nvarchar"
+					},
+					{
+						"name": "changes",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "companyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cik",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "isin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cusip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchange",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchangeShortName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "industry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "website",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ceo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sector",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "fullTimeEmployees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "zip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "dcfDiff",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dcf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ipoDate",
+						"type": "date"
+					},
+					{
+						"name": "defaultImage",
+						"type": "bit"
+					},
+					{
+						"name": "isEtf",
+						"type": "bit"
+					},
+					{
+						"name": "isActivelyTrading",
+						"type": "bit"
+					},
+					{
+						"name": "isAdr",
+						"type": "bit"
+					},
+					{
+						"name": "isFund",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Company_Information"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Company_Information_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "beta",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "volAvg",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mktCap",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "lastDiv",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "range",
+						"type": "nvarchar"
+					},
+					{
+						"name": "changes",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "companyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cik",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "isin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cusip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchange",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchangeShortName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "industry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "website",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ceo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sector",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "fullTimeEmployees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "zip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "dcfDiff",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dcf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ipoDate",
+						"type": "date"
+					},
+					{
+						"name": "defaultImage",
+						"type": "bit"
+					},
+					{
+						"name": "isEtf",
+						"type": "bit"
+					},
+					{
+						"name": "isActivelyTrading",
+						"type": "bit"
+					},
+					{
+						"name": "isAdr",
+						"type": "bit"
+					},
+					{
+						"name": "isFund",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Company_Information"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Historical_Prices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Open",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "High",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Low",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Close",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dividends",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Stock_Symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Stock_Splits",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Date",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Historical_Prices"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Historical_Prices_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Open",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "High",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Low",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Close",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dividends",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Stock_Symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Stock_Splits",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Date",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Historical_Prices"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Historical_Stock_News')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "category",
+						"type": "varchar"
+					},
+					{
+						"name": "datetime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "headline",
+						"type": "varchar"
+					},
+					{
+						"name": "image",
+						"type": "varchar"
+					},
+					{
+						"name": "related",
+						"type": "varchar"
+					},
+					{
+						"name": "source",
+						"type": "varchar"
+					},
+					{
+						"name": "summary",
+						"type": "varchar"
+					},
+					{
+						"name": "url",
+						"type": "varchar"
+					},
+					{
+						"name": "symbol",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Historical_Stock_News"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Historical_Stock_News_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "category",
+						"type": "varchar"
+					},
+					{
+						"name": "datetime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "headline",
+						"type": "varchar"
+					},
+					{
+						"name": "image",
+						"type": "varchar"
+					},
+					{
+						"name": "related",
+						"type": "varchar"
+					},
+					{
+						"name": "source",
+						"type": "varchar"
+					},
+					{
+						"name": "summary",
+						"type": "varchar"
+					},
+					{
+						"name": "url",
+						"type": "varchar"
+					},
+					{
+						"name": "symbol",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Historical_Stock_News"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Macro_Historical')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "date",
+						"type": "date"
+					},
+					{
+						"name": "gdp_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "real_gdp_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "ferfed_funds_effective_rate_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "labor_force_participant_rate_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "cpi_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "unemployment_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "interest_rate_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "job_openning_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "hires_total_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "quit_total_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoff_discharge_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_professional_and_business_services_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_manufacturing_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_fiance_and_insurance_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_construction_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_total_private_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_retail_trade_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_real_estate_and_rental_and_leasing_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_accommodation_and_food_services_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "real_estate_loans_all_commercial_bank_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "commercial_real_estate_prices_for_US_rate_value",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Macro_Historical"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Macro_Historical_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "date",
+						"type": "date"
+					},
+					{
+						"name": "gdp_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "real_gdp_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "ferfed_funds_effective_rate_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "labor_force_participant_rate_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "cpi_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "unemployment_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "interest_rate_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "job_openning_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "hires_total_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "quit_total_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoff_discharge_non_farm_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_professional_and_business_services_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_manufacturing_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_fiance_and_insurance_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_construction_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_total_private_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_retail_trade_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_real_estate_and_rental_and_leasing_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "layoffs_and_discharges_accommodation_and_food_services_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "real_estate_loans_all_commercial_bank_value",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "commercial_real_estate_prices_for_US_rate_value",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "Silver",
+					"table": "Macro_Historical"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BronzeBackupFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DailyBackup"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Bronze_Company_Information",
+								"type": "DatasetReference"
+							},
+							"name": "BronzeCompanyInformation"
+						},
+						{
+							"dataset": {
+								"referenceName": "Bronze_Historical_Prices",
+								"type": "DatasetReference"
+							},
+							"name": "BronzeHistoricalPrices"
+						},
+						{
+							"dataset": {
+								"referenceName": "Bronze_Historical_Stock_News",
+								"type": "DatasetReference"
+							},
+							"name": "BronzeHistoricalStockNews"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Bronze_Company_Information_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "BronzeCompanyInformationBackUpSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "Bronze_Historical_Prices_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "BronzeHistoricalPricesBackUpSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "Bronze_Historical_Stock_News_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "BronzeHistoricalStockNewsBackUpSink"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          symbol as string,",
+						"          price as double,",
+						"          beta as double,",
+						"          volAvg as integer,",
+						"          mktCap as long,",
+						"          lastDiv as double,",
+						"          range as string,",
+						"          changes as double,",
+						"          companyName as string,",
+						"          currency as string,",
+						"          cik as integer,",
+						"          isin as string,",
+						"          cusip as string,",
+						"          exchange as string,",
+						"          exchangeShortName as string,",
+						"          industry as string,",
+						"          website as string,",
+						"          description as string,",
+						"          ceo as string,",
+						"          sector as string,",
+						"          country as string,",
+						"          fullTimeEmployees as integer,",
+						"          phone as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          dcfDiff as double,",
+						"          dcf as double,",
+						"          image as string,",
+						"          ipoDate as date,",
+						"          defaultImage as boolean,",
+						"          isEtf as boolean,",
+						"          isActivelyTrading as boolean,",
+						"          isAdr as boolean,",
+						"          isFund as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     batchSize: 10000,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> BronzeCompanyInformation",
+						"source(output(",
+						"          Open as double,",
+						"          High as double,",
+						"          Low as double,",
+						"          Close as double,",
+						"          Volume as integer,",
+						"          Dividends as double,",
+						"          Stock_Symbol as string,",
+						"          Stock_Splits as double,",
+						"          Date as timestamp",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> BronzeHistoricalPrices",
+						"source(output(",
+						"          id as long,",
+						"          category as string,",
+						"          datetime as timestamp,",
+						"          headline as string,",
+						"          image as string,",
+						"          related as string,",
+						"          source as string,",
+						"          summary as string,",
+						"          url as string,",
+						"          symbol as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> BronzeHistoricalStockNews",
+						"BronzeCompanyInformation sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          symbol as string,",
+						"          price as double,",
+						"          beta as double,",
+						"          volAvg as integer,",
+						"          mktCap as long,",
+						"          lastDiv as double,",
+						"          range as string,",
+						"          changes as double,",
+						"          companyName as string,",
+						"          currency as string,",
+						"          cik as integer,",
+						"          isin as string,",
+						"          cusip as string,",
+						"          exchange as string,",
+						"          exchangeShortName as string,",
+						"          industry as string,",
+						"          website as string,",
+						"          description as string,",
+						"          ceo as string,",
+						"          sector as string,",
+						"          country as string,",
+						"          fullTimeEmployees as integer,",
+						"          phone as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          dcfDiff as double,",
+						"          dcf as double,",
+						"          image as string,",
+						"          ipoDate as date,",
+						"          defaultImage as boolean,",
+						"          isEtf as boolean,",
+						"          isActivelyTrading as boolean,",
+						"          isAdr as boolean,",
+						"          isFund as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> BronzeCompanyInformationBackUpSink",
+						"BronzeHistoricalPrices sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Open as double,",
+						"          High as double,",
+						"          Low as double,",
+						"          Close as double,",
+						"          Volume as integer,",
+						"          Dividends as double,",
+						"          Stock_Symbol as string,",
+						"          Stock_Splits as double,",
+						"          Date as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> BronzeHistoricalPricesBackUpSink",
+						"BronzeHistoricalStockNews sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as long,",
+						"          category as string,",
+						"          datetime as timestamp,",
+						"          headline as string,",
+						"          image as string,",
+						"          related as string,",
+						"          source as string,",
+						"          summary as string,",
+						"          url as string,",
+						"          symbol as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> BronzeHistoricalStockNewsBackUpSink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GoldBackUpFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DailyBackup"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Gold_Historical_Prices_Stock_with_TA_Company_Information",
+								"type": "DatasetReference"
+							},
+							"name": "GoldHistoricalPricesStockwithTACompanyInformation"
+						},
+						{
+							"dataset": {
+								"referenceName": "Gold_Historical_Stock_News_Sentiment_Score",
+								"type": "DatasetReference"
+							},
+							"name": "GoldHistoricalStockNewsSentimentScore"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Gold_Historical_Prices_Stock_with_TA_Company_Information_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "GoldHistoricalPricesStockwithTACompanyInformationBackUp"
+						},
+						{
+							"dataset": {
+								"referenceName": "Gold_Historical_Stock_News_Sentiment_Score_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "GoldHistoricalStockNewsSentimentScoreBackUp"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          Stock_Symbol as string,",
+						"          Date as date,",
+						"          Close as double,",
+						"          Open as double,",
+						"          High as double,",
+						"          Low as double,",
+						"          Volume as integer,",
+						"          Dividends as double,",
+						"          Stock_Splits as double,",
+						"          RSI_2 as double,",
+						"          RSI_3 as double,",
+						"          RSI_4 as double,",
+						"          RSI_5 as double,",
+						"          RSI_6 as double,",
+						"          RSI_7 as double,",
+						"          RSI_8 as double,",
+						"          RSI_9 as double,",
+						"          RSI_10 as double,",
+						"          RSI_11 as double,",
+						"          RSI_12 as double,",
+						"          RSI_13 as double,",
+						"          RSI_14 as double,",
+						"          RSI_15 as double,",
+						"          RSI_16 as double,",
+						"          RSI_17 as double,",
+						"          RSI_18 as double,",
+						"          RSI_19 as double,",
+						"          RSI_20 as double,",
+						"          RSI_21 as double,",
+						"          RSI_22 as double,",
+						"          RSI_23 as double,",
+						"          RSI_24 as double,",
+						"          RSI_25 as double,",
+						"          RSI_26 as double,",
+						"          RSI_27 as double,",
+						"          RSI_28 as double,",
+						"          RSI_29 as double,",
+						"          gain_2 as double,",
+						"          gain_3 as double,",
+						"          gain_4 as double,",
+						"          gain_5 as double,",
+						"          gain_6 as double,",
+						"          gain_7 as double,",
+						"          gain_8 as double,",
+						"          gain_9 as double,",
+						"          gain_10 as double,",
+						"          gain_11 as double,",
+						"          gain_12 as double,",
+						"          gain_13 as double,",
+						"          gain_14 as double,",
+						"          gain_15 as double,",
+						"          gain_16 as double,",
+						"          gain_17 as double,",
+						"          gain_18 as double,",
+						"          gain_19 as double,",
+						"          gain_20 as double,",
+						"          gain_21 as double,",
+						"          gain_22 as double,",
+						"          gain_23 as double,",
+						"          gain_24 as double,",
+						"          gain_25 as double,",
+						"          gain_26 as double,",
+						"          gain_27 as double,",
+						"          gain_28 as double,",
+						"          gain_29 as double,",
+						"          loss_2 as double,",
+						"          loss_3 as double,",
+						"          loss_4 as double,",
+						"          loss_5 as double,",
+						"          loss_6 as double,",
+						"          loss_7 as double,",
+						"          loss_8 as double,",
+						"          loss_9 as double,",
+						"          loss_10 as double,",
+						"          loss_11 as double,",
+						"          loss_12 as double,",
+						"          loss_13 as double,",
+						"          loss_14 as double,",
+						"          loss_15 as double,",
+						"          loss_16 as double,",
+						"          loss_17 as double,",
+						"          loss_18 as double,",
+						"          loss_19 as double,",
+						"          loss_20 as double,",
+						"          loss_21 as double,",
+						"          loss_22 as double,",
+						"          loss_23 as double,",
+						"          loss_24 as double,",
+						"          loss_25 as double,",
+						"          loss_26 as double,",
+						"          loss_27 as double,",
+						"          loss_28 as double,",
+						"          loss_29 as double,",
+						"          MARD_2 as double,",
+						"          MARD_3 as double,",
+						"          MARD_4 as double,",
+						"          MARD_5 as double,",
+						"          MARD_6 as double,",
+						"          MARD_7 as double,",
+						"          MARD_8 as double,",
+						"          MARD_9 as double,",
+						"          MARD_10 as double,",
+						"          MARD_11 as double,",
+						"          MARD_12 as double,",
+						"          MARD_13 as double,",
+						"          MARD_14 as double,",
+						"          MARD_15 as double,",
+						"          MARD_16 as double,",
+						"          MARD_17 as double,",
+						"          MARD_18 as double,",
+						"          MARD_19 as double,",
+						"          MARD_20 as double,",
+						"          MARD_21 as double,",
+						"          MARD_22 as double,",
+						"          MARD_23 as double,",
+						"          MARD_24 as double,",
+						"          MARD_25 as double,",
+						"          MARD_26 as double,",
+						"          MARD_27 as double,",
+						"          MARD_28 as double,",
+						"          MARD_29 as double,",
+						"          price as double,",
+						"          beta as double,",
+						"          volAvg as integer,",
+						"          mktCap as long,",
+						"          lastDiv as double,",
+						"          range as string,",
+						"          changes as double,",
+						"          companyName as string,",
+						"          currency as string,",
+						"          cik as integer,",
+						"          isin as string,",
+						"          cusip as string,",
+						"          exchange as string,",
+						"          exchangeShortName as string,",
+						"          industry as string,",
+						"          website as string,",
+						"          description as string,",
+						"          ceo as string,",
+						"          sector as string,",
+						"          country as string,",
+						"          fullTimeEmployees as integer,",
+						"          phone as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          dcfDiff as double,",
+						"          dcf as double,",
+						"          image as string,",
+						"          ipoDate as date,",
+						"          defaultImage as boolean,",
+						"          isEtf as boolean,",
+						"          isActivelyTrading as boolean,",
+						"          isAdr as boolean,",
+						"          isFund as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldHistoricalPricesStockwithTACompanyInformation",
+						"source(output(",
+						"          id as integer,",
+						"          category as string,",
+						"          datetime as string,",
+						"          headline as string,",
+						"          image as string,",
+						"          related as string,",
+						"          source as string,",
+						"          summary as string,",
+						"          url as string,",
+						"          symbol as string,",
+						"          positive_value as double,",
+						"          negative_value as double,",
+						"          neutral_value as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> GoldHistoricalStockNewsSentimentScore",
+						"GoldHistoricalPricesStockwithTACompanyInformation sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Stock_Symbol as string,",
+						"          Date as date,",
+						"          Close as double,",
+						"          Open as double,",
+						"          High as double,",
+						"          Low as double,",
+						"          Volume as integer,",
+						"          Dividends as double,",
+						"          Stock_Splits as double,",
+						"          RSI_2 as double,",
+						"          RSI_3 as double,",
+						"          RSI_4 as double,",
+						"          RSI_5 as double,",
+						"          RSI_6 as double,",
+						"          RSI_7 as double,",
+						"          RSI_8 as double,",
+						"          RSI_9 as double,",
+						"          RSI_10 as double,",
+						"          RSI_11 as double,",
+						"          RSI_12 as double,",
+						"          RSI_13 as double,",
+						"          RSI_14 as double,",
+						"          RSI_15 as double,",
+						"          RSI_16 as double,",
+						"          RSI_17 as double,",
+						"          RSI_18 as double,",
+						"          RSI_19 as double,",
+						"          RSI_20 as double,",
+						"          RSI_21 as double,",
+						"          RSI_22 as double,",
+						"          RSI_23 as double,",
+						"          RSI_24 as double,",
+						"          RSI_25 as double,",
+						"          RSI_26 as double,",
+						"          RSI_27 as double,",
+						"          RSI_28 as double,",
+						"          RSI_29 as double,",
+						"          gain_2 as double,",
+						"          gain_3 as double,",
+						"          gain_4 as double,",
+						"          gain_5 as double,",
+						"          gain_6 as double,",
+						"          gain_7 as double,",
+						"          gain_8 as double,",
+						"          gain_9 as double,",
+						"          gain_10 as double,",
+						"          gain_11 as double,",
+						"          gain_12 as double,",
+						"          gain_13 as double,",
+						"          gain_14 as double,",
+						"          gain_15 as double,",
+						"          gain_16 as double,",
+						"          gain_17 as double,",
+						"          gain_18 as double,",
+						"          gain_19 as double,",
+						"          gain_20 as double,",
+						"          gain_21 as double,",
+						"          gain_22 as double,",
+						"          gain_23 as double,",
+						"          gain_24 as double,",
+						"          gain_25 as double,",
+						"          gain_26 as double,",
+						"          gain_27 as double,",
+						"          gain_28 as double,",
+						"          gain_29 as double,",
+						"          loss_2 as double,",
+						"          loss_3 as double,",
+						"          loss_4 as double,",
+						"          loss_5 as double,",
+						"          loss_6 as double,",
+						"          loss_7 as double,",
+						"          loss_8 as double,",
+						"          loss_9 as double,",
+						"          loss_10 as double,",
+						"          loss_11 as double,",
+						"          loss_12 as double,",
+						"          loss_13 as double,",
+						"          loss_14 as double,",
+						"          loss_15 as double,",
+						"          loss_16 as double,",
+						"          loss_17 as double,",
+						"          loss_18 as double,",
+						"          loss_19 as double,",
+						"          loss_20 as double,",
+						"          loss_21 as double,",
+						"          loss_22 as double,",
+						"          loss_23 as double,",
+						"          loss_24 as double,",
+						"          loss_25 as double,",
+						"          loss_26 as double,",
+						"          loss_27 as double,",
+						"          loss_28 as double,",
+						"          loss_29 as double,",
+						"          MARD_2 as double,",
+						"          MARD_3 as double,",
+						"          MARD_4 as double,",
+						"          MARD_5 as double,",
+						"          MARD_6 as double,",
+						"          MARD_7 as double,",
+						"          MARD_8 as double,",
+						"          MARD_9 as double,",
+						"          MARD_10 as double,",
+						"          MARD_11 as double,",
+						"          MARD_12 as double,",
+						"          MARD_13 as double,",
+						"          MARD_14 as double,",
+						"          MARD_15 as double,",
+						"          MARD_16 as double,",
+						"          MARD_17 as double,",
+						"          MARD_18 as double,",
+						"          MARD_19 as double,",
+						"          MARD_20 as double,",
+						"          MARD_21 as double,",
+						"          MARD_22 as double,",
+						"          MARD_23 as double,",
+						"          MARD_24 as double,",
+						"          MARD_25 as double,",
+						"          MARD_26 as double,",
+						"          MARD_27 as double,",
+						"          MARD_28 as double,",
+						"          MARD_29 as double,",
+						"          price as double,",
+						"          beta as double,",
+						"          volAvg as integer,",
+						"          mktCap as long,",
+						"          lastDiv as double,",
+						"          range as string,",
+						"          changes as double,",
+						"          companyName as string,",
+						"          currency as string,",
+						"          cik as integer,",
+						"          isin as string,",
+						"          cusip as string,",
+						"          exchange as string,",
+						"          exchangeShortName as string,",
+						"          industry as string,",
+						"          website as string,",
+						"          description as string,",
+						"          ceo as string,",
+						"          sector as string,",
+						"          country as string,",
+						"          fullTimeEmployees as integer,",
+						"          phone as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          dcfDiff as double,",
+						"          dcf as double,",
+						"          image as string,",
+						"          ipoDate as date,",
+						"          defaultImage as boolean,",
+						"          isEtf as boolean,",
+						"          isActivelyTrading as boolean,",
+						"          isAdr as boolean,",
+						"          isFund as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> GoldHistoricalPricesStockwithTACompanyInformationBackUp",
+						"GoldHistoricalStockNewsSentimentScore sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as integer,",
+						"          category as string,",
+						"          datetime as string,",
+						"          headline as string,",
+						"          image as string,",
+						"          related as string,",
+						"          source as string,",
+						"          summary as string,",
+						"          url as string,",
+						"          symbol as string,",
+						"          positive_value as double,",
+						"          negative_value as double,",
+						"          neutral_value as double",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> GoldHistoricalStockNewsSentimentScoreBackUp"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Gold_Historical_Stock_News_Sentiment_Score')]",
+				"[concat(variables('factoryId'), '/datasets/Gold_Historical_Prices_Stock_with_TA_Company_Information_BackUp')]",
+				"[concat(variables('factoryId'), '/datasets/Gold_Historical_Stock_News_Sentiment_Score_BackUp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SilverBackupFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DailyBackup"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Silver_Company_Information",
+								"type": "DatasetReference"
+							},
+							"name": "SilverCompanyInformation"
+						},
+						{
+							"dataset": {
+								"referenceName": "Silver_Historical_Prices",
+								"type": "DatasetReference"
+							},
+							"name": "SilverHistoricalPrices"
+						},
+						{
+							"dataset": {
+								"referenceName": "Silver_Historical_Stock_News",
+								"type": "DatasetReference"
+							},
+							"name": "SilverHistoricalStockNews"
+						},
+						{
+							"dataset": {
+								"referenceName": "Silver_Macro_Historical",
+								"type": "DatasetReference"
+							},
+							"name": "SilverMacroHistorical"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Silver_Company_Information_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "SilverCompanyInformationBackUp"
+						},
+						{
+							"dataset": {
+								"referenceName": "Silver_Historical_Prices_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "SilverHistoricalPricesBackUp"
+						},
+						{
+							"dataset": {
+								"referenceName": "Silver_Historical_Stock_News_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "SilverHistoricalStockNewsBackUp"
+						},
+						{
+							"dataset": {
+								"referenceName": "Silver_Macro_Historical_BackUp",
+								"type": "DatasetReference"
+							},
+							"name": "SilverMacroHistoricalBackUp"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          symbol as string,",
+						"          price as double,",
+						"          beta as double,",
+						"          volAvg as integer,",
+						"          mktCap as long,",
+						"          lastDiv as double,",
+						"          range as string,",
+						"          changes as double,",
+						"          companyName as string,",
+						"          currency as string,",
+						"          cik as integer,",
+						"          isin as string,",
+						"          cusip as string,",
+						"          exchange as string,",
+						"          exchangeShortName as string,",
+						"          industry as string,",
+						"          website as string,",
+						"          description as string,",
+						"          ceo as string,",
+						"          sector as string,",
+						"          country as string,",
+						"          fullTimeEmployees as integer,",
+						"          phone as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          dcfDiff as double,",
+						"          dcf as double,",
+						"          image as string,",
+						"          ipoDate as date,",
+						"          defaultImage as boolean,",
+						"          isEtf as boolean,",
+						"          isActivelyTrading as boolean,",
+						"          isAdr as boolean,",
+						"          isFund as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverCompanyInformation",
+						"source(output(",
+						"          Open as double,",
+						"          High as double,",
+						"          Low as double,",
+						"          Close as double,",
+						"          Volume as integer,",
+						"          Dividends as double,",
+						"          Stock_Symbol as string,",
+						"          Stock_Splits as double,",
+						"          Date as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverHistoricalPrices",
+						"source(output(",
+						"          id as long,",
+						"          category as string,",
+						"          datetime as timestamp,",
+						"          headline as string,",
+						"          image as string,",
+						"          related as string,",
+						"          source as string,",
+						"          summary as string,",
+						"          url as string,",
+						"          symbol as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverHistoricalStockNews",
+						"source(output(",
+						"          date as date,",
+						"          gdp_value as double,",
+						"          real_gdp_value as double,",
+						"          ferfed_funds_effective_rate_value as double,",
+						"          labor_force_participant_rate_value as double,",
+						"          cpi_value as double,",
+						"          unemployment_value as double,",
+						"          interest_rate_value as double,",
+						"          job_openning_non_farm_value as double,",
+						"          hires_total_non_farm_value as double,",
+						"          quit_total_non_farm_value as double,",
+						"          layoff_discharge_non_farm_value as double,",
+						"          layoffs_and_discharges_professional_and_business_services_value as double,",
+						"          layoffs_and_discharges_manufacturing_value as double,",
+						"          layoffs_and_discharges_fiance_and_insurance_value as double,",
+						"          layoffs_and_discharges_construction_value as double,",
+						"          layoffs_and_discharges_total_private_value as double,",
+						"          layoffs_and_discharges_retail_trade_value as double,",
+						"          layoffs_and_discharges_real_estate_and_rental_and_leasing_value as double,",
+						"          layoffs_and_discharges_accommodation_and_food_services_value as double,",
+						"          real_estate_loans_all_commercial_bank_value as double,",
+						"          commercial_real_estate_prices_for_US_rate_value as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SilverMacroHistorical",
+						"SilverCompanyInformation sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          symbol as string,",
+						"          price as double,",
+						"          beta as double,",
+						"          volAvg as integer,",
+						"          mktCap as long,",
+						"          lastDiv as double,",
+						"          range as string,",
+						"          changes as double,",
+						"          companyName as string,",
+						"          currency as string,",
+						"          cik as integer,",
+						"          isin as string,",
+						"          cusip as string,",
+						"          exchange as string,",
+						"          exchangeShortName as string,",
+						"          industry as string,",
+						"          website as string,",
+						"          description as string,",
+						"          ceo as string,",
+						"          sector as string,",
+						"          country as string,",
+						"          fullTimeEmployees as integer,",
+						"          phone as string,",
+						"          address as string,",
+						"          city as string,",
+						"          state as string,",
+						"          zip as string,",
+						"          dcfDiff as double,",
+						"          dcf as double,",
+						"          image as string,",
+						"          ipoDate as date,",
+						"          defaultImage as boolean,",
+						"          isEtf as boolean,",
+						"          isActivelyTrading as boolean,",
+						"          isAdr as boolean,",
+						"          isFund as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SilverCompanyInformationBackUp",
+						"SilverHistoricalPrices sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Open as double,",
+						"          High as double,",
+						"          Low as double,",
+						"          Close as double,",
+						"          Volume as integer,",
+						"          Dividends as double,",
+						"          Stock_Symbol as string,",
+						"          Stock_Splits as double,",
+						"          Date as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SilverHistoricalPricesBackUp",
+						"SilverHistoricalStockNews sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id as long,",
+						"          category as string,",
+						"          datetime as timestamp,",
+						"          headline as string,",
+						"          image as string,",
+						"          related as string,",
+						"          source as string,",
+						"          summary as string,",
+						"          url as string,",
+						"          symbol as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SilverHistoricalStockNewsBackUp",
+						"SilverMacroHistorical sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          date as date,",
+						"          gdp_value as double,",
+						"          real_gdp_value as double,",
+						"          ferfed_funds_effective_rate_value as double,",
+						"          labor_force_participant_rate_value as double,",
+						"          cpi_value as double,",
+						"          unemployment_value as double,",
+						"          interest_rate_value as double,",
+						"          job_openning_non_farm_value as double,",
+						"          hires_total_non_farm_value as double,",
+						"          quit_total_non_farm_value as double,",
+						"          layoff_discharge_non_farm_value as double,",
+						"          layoffs_and_discharges_professional_and_business_services_value as double,",
+						"          layoffs_and_discharges_manufacturing_value as double,",
+						"          layoffs_and_discharges_fiance_and_insurance_value as double,",
+						"          layoffs_and_discharges_construction_value as double,",
+						"          layoffs_and_discharges_total_private_value as double,",
+						"          layoffs_and_discharges_retail_trade_value as double,",
+						"          layoffs_and_discharges_real_estate_and_rental_and_leasing_value as double,",
+						"          layoffs_and_discharges_accommodation_and_food_services_value as double,",
+						"          real_estate_loans_all_commercial_bank_value as double,",
+						"          commercial_real_estate_prices_for_US_rate_value as double",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     batchSize: 10000,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SilverMacroHistoricalBackUp"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Silver_Company_Information')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Historical_Prices')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Historical_Stock_News')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Macro_Historical')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Company_Information_BackUp')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Historical_Prices_BackUp')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Historical_Stock_News_BackUp')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_Macro_Historical_BackUp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DailyPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Historical_Prices_Bronze_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Bronze_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_Prices_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckDatabaseAvailable",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_News_Bronze_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Bronze_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_News_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckDatabaseAvailable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckDatabaseAvailable2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Stock_with_TA_Company_Information_Gold_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_News_Gold_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckDatabaseAvailable3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Gold_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckDatabaseAvailable",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_Prices_Bronze_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckDatabaseAvailable1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_News_Bronze_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckDatabaseAvailable3",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_News_Silver_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckDatabaseAvailable2",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_Prices_Silver_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "DailyBackUpBronzeLayer",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Historical_News_Gold_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "BronzeBackupFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"BronzeCompanyInformation": {},
+									"BronzeHistoricalPrices": {},
+									"BronzeHistoricalStockNews": {},
+									"BronzeCompanyInformationBackUpSink": {},
+									"BronzeHistoricalPricesBackUpSink": {},
+									"BronzeHistoricalStockNewsBackUpSink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "DailyBackUpSilverLayer",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DailyBackUpBronzeLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SilverBackupFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SilverCompanyInformation": {},
+									"SilverHistoricalPrices": {},
+									"SilverHistoricalStockNews": {},
+									"SilverMacroHistorical": {},
+									"SilverCompanyInformationBackUp": {},
+									"SilverHistoricalPricesBackUp": {},
+									"SilverHistoricalStockNewsBackUp": {},
+									"SilverMacroHistoricalBackUp": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "DailyBackUpGoldLayer",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DailyBackUpSilverLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "GoldBackUpFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"GoldHistoricalPricesStockwithTACompanyInformation": {},
+									"GoldHistoricalStockNewsSentimentScore": {},
+									"GoldHistoricalPricesStockwithTACompanyInformationBackUp": {},
+									"GoldHistoricalStockNewsSentimentScoreBackUp": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/BronzeBackupFlow')]",
+				"[concat(variables('factoryId'), '/dataflows/SilverBackupFlow')]",
+				"[concat(variables('factoryId'), '/dataflows/GoldBackUpFlow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Daily_Trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "DailyPipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2025-03-21T06:00:00",
+						"timeZone": "Eastern Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								6
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/DailyPipeline')]"
+			]
+		}
+	]
+}

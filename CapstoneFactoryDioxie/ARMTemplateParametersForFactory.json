@@ -8,6 +8,9 @@
 		"AzureDatabricksCapstone_accessToken": {
 			"value": ""
 		},
+		"BackupDatabase_password": {
+			"value": ""
+		},
 		"BronzeLayer_connectionString": {
 			"value": ""
 		},
@@ -22,6 +25,15 @@
 		},
 		"writedatabasesilverlayer_password": {
 			"value": ""
+		},
+		"BackupDatabase_properties_typeProperties_server": {
+			"value": "capstone-database-server.database.windows.net"
+		},
+		"BackupDatabase_properties_typeProperties_database": {
+			"value": "backupdatabasecapstone"
+		},
+		"BackupDatabase_properties_typeProperties_userName": {
+			"value": "capstonedioxieteam"
 		},
 		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
 			"value": "https://capstoneprojectstorage.dfs.core.windows.net/"

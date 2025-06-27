@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksCapstone'"
 		},
+		"BackupDatabase_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BackupDatabase'"
+		},
 		"BronzeLayer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'BronzeLayer'"
@@ -30,6 +34,18 @@
 		"writedatabasesilverlayer_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'writedatabasesilverlayer'"
+		},
+		"BackupDatabase_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "capstone-database-server.database.windows.net"
+		},
+		"BackupDatabase_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "backupdatabasecapstone"
+		},
+		"BackupDatabase_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "capstonedioxieteam"
 		},
 		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
 			"type": "string",
@@ -93,6 +109,9 @@
 					"AzureDatabricksCapstone_accessToken": {
 						"value": "[parameters('AzureDatabricksCapstone_accessToken')]"
 					},
+					"BackupDatabase_password": {
+						"value": "[parameters('BackupDatabase_password')]"
+					},
 					"BronzeLayer_connectionString": {
 						"value": "[parameters('BronzeLayer_connectionString')]"
 					},
@@ -107,6 +126,15 @@
 					},
 					"writedatabasesilverlayer_password": {
 						"value": "[parameters('writedatabasesilverlayer_password')]"
+					},
+					"BackupDatabase_properties_typeProperties_server": {
+						"value": "[parameters('BackupDatabase_properties_typeProperties_server')]"
+					},
+					"BackupDatabase_properties_typeProperties_database": {
+						"value": "[parameters('BackupDatabase_properties_typeProperties_database')]"
+					},
+					"BackupDatabase_properties_typeProperties_userName": {
+						"value": "[parameters('BackupDatabase_properties_typeProperties_userName')]"
 					},
 					"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
 						"value": "[parameters('Bronze_Fact_Files_Layer_properties_typeProperties_url')]"
@@ -135,6 +163,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "CapstoneFactoryDioxie_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'CapstoneFactoryDioxie_ArmTemplate_0')]"
+			]
 		}
 	]
 }
