@@ -1,0 +1,76 @@
+{
+	"name": "Gold_Historical_Stock_News_Sentiment_Score",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "writedatabasesilverlayer",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/writedatabase/Gold"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "category",
+				"type": "nvarchar"
+			},
+			{
+				"name": "datetime",
+				"type": "nvarchar"
+			},
+			{
+				"name": "headline",
+				"type": "nvarchar"
+			},
+			{
+				"name": "image",
+				"type": "nvarchar"
+			},
+			{
+				"name": "related",
+				"type": "nvarchar"
+			},
+			{
+				"name": "source",
+				"type": "nvarchar"
+			},
+			{
+				"name": "summary",
+				"type": "nvarchar"
+			},
+			{
+				"name": "url",
+				"type": "nvarchar"
+			},
+			{
+				"name": "symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "positive_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "negative_value",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "neutral_value",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "Gold",
+			"table": "Historical_Stock_News_Sentiment_Score"
+		}
+	}
+}

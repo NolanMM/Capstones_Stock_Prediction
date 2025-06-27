@@ -1,12 +1,12 @@
 {
-	"name": "Silver_Historical_Stock_News",
+	"name": "Silver_Historical_Stock_News_BackUp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "BackupDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/writedatabase/Silver"
+			"name": "Database/BackupDatabase/Silver"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

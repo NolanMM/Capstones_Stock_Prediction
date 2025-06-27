@@ -1,12 +1,12 @@
 {
-	"name": "Silver_Historical_Prices",
+	"name": "Bronze_Historical_Prices_BackUp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "BackupDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/writedatabase/Silver"
+			"name": "Database/BackupDatabase/Bronze"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -52,11 +52,13 @@
 			},
 			{
 				"name": "Date",
-				"type": "nvarchar"
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			}
 		],
 		"typeProperties": {
-			"schema": "Silver",
+			"schema": "Bronze",
 			"table": "Historical_Prices"
 		}
 	}

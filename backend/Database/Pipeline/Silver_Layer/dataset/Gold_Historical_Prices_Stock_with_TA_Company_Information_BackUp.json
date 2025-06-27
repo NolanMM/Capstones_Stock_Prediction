@@ -1,12 +1,12 @@
 {
-	"name": "Gold_Historical_Prices_Stock_with_TA_Company_Information",
+	"name": "Gold_Historical_Prices_Stock_with_TA_Company_Information_BackUp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "BackupDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/writedatabase/Gold"
+			"name": "Database/BackupDatabase/Gold"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

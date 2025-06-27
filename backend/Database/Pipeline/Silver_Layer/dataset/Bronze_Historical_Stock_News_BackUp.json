@@ -1,12 +1,12 @@
 {
-	"name": "Silver_Historical_Stock_News",
+	"name": "Bronze_Historical_Stock_News_BackUp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "BackupDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/writedatabase/Silver"
+			"name": "Database/BackupDatabase/Bronze"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -22,9 +22,8 @@
 			},
 			{
 				"name": "datetime",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
+				"type": "datetime2",
+				"scale": 7
 			},
 			{
 				"name": "headline",
@@ -56,7 +55,7 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "Silver",
+			"schema": "Bronze",
 			"table": "Historical_Stock_News"
 		}
 	}

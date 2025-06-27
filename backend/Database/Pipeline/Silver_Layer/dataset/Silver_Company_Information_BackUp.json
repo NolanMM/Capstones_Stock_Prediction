@@ -1,12 +1,12 @@
 {
-	"name": "Bronze_Company_Information",
+	"name": "Silver_Company_Information_BackUp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "BackupDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/writedatabase/Bronze"
+			"name": "Database/BackupDatabase/Silver"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -167,7 +167,7 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "Bronze",
+			"schema": "Silver",
 			"table": "Company_Information"
 		}
 	}
