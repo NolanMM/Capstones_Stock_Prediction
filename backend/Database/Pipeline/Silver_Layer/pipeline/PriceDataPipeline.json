@@ -69,7 +69,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricksCapstone",
@@ -96,7 +97,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricksCapstone",
@@ -121,7 +123,14 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
 			},
 			{
 				"name": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
