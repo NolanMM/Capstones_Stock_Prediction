@@ -1,5 +1,5 @@
 {
-	"name": "MacroDataPipeline",
+	"name": "QuarterlyPipeline",
 	"properties": {
 		"activities": [
 			{
@@ -50,9 +50,6 @@
 				}
 			}
 		],
-		"folder": {
-			"name": "Pipeline"
-		},
 		"annotations": []
 	}
 }

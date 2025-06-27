@@ -1,5 +1,5 @@
 {
-	"name": "CompanyInformationPipeline",
+	"name": "MonthlyPipeline",
 	"properties": {
 		"activities": [
 			{
@@ -104,9 +104,6 @@
 				}
 			}
 		],
-		"folder": {
-			"name": "Pipeline"
-		},
 		"annotations": []
 	}
 }
