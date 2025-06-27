@@ -125,7 +125,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricksCapstone",
@@ -153,6 +154,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Stock_with_TA_Company_Information_Gold_Notebook"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
