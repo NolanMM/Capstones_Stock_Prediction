@@ -2,11 +2,11 @@ import time
 
 minutes = 5
 
-jdbc_url = "jdbc:sqlserver://capstone-database-server.database.windows.net:1433;database=writedatabasesilverlayer"
+jdbc_url = dbutils.secrets.get(scope="Capstone", key="DatabasejdbcUrl")#DatabasejdbcUrl
 connection_properties = {
-    "user": "capstonedioxieteam",
-    "password": "Connhenbeo1@",
-    "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    "user": dbutils.secrets.get(scope="Capstone", key="DatabaseUsername"),
+    "password": dbutils.secrets.get(scope="Capstone", key="DatabasePassword"),
+    "driver": dbutils.secrets.get(scope="Capstone", key="DatabaseDriver")
 }
 
 success = False
