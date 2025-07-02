@@ -511,13 +511,7 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Historical_News_Gold_Notebook",
+								"activity": "WakeUpBackUpDatabase",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -558,7 +552,7 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "DailyBackUpBronzeLayer",
+								"activity": "CheckBackUpDatabaseAvailable",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -601,7 +595,7 @@
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "DailyBackUpSilverLayer",
+								"activity": "CheckBackUpDatabaseAvailable1",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -633,6 +627,96 @@
 								"computeType": "General"
 							},
 							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "CheckBackUpDatabaseAvailable",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "DailyBackUpBronzeLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/BackupDatabaseHelper/BackdupDatabaseAvailability.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckBackUpDatabaseAvailable1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "DailyBackUpSilverLayer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/BackupDatabaseHelper/BackdupDatabaseAvailability.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "WakeUpBackUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_News_Gold_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/BackupDatabaseHelper/BackdupDatabaseAvailability.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
 						}
 					}
 				],
