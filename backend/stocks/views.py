@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 from django.db import connection
+import pandas as pd
 from rest_framework.response import Response
 from .models import StockPrice
 from rest_framework import viewsets
 import pyodbc
+from datetime import datetime, timedelta
+from . import ml_handler
 
 # Endpoints are not ready yet. 
 # I shall refactor the code during sprint 2. 
@@ -40,7 +43,7 @@ def available_stocks(request):
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT DISTINCT Stock_Symbol FROM [Bronze].[Historical_Prices]")
-            symbols = [row[0] for row in cursor.fetchall()[:50]]  # Limit to 50
+            symbols = [row[0] for row in cursor.fetchall()]  # Limit to 50
         return Response({"symbols": symbols})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
@@ -57,10 +60,10 @@ def stock_history(request, symbol):
         # Fix SQL parameter syntax for SQL Server
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT TOP {} Date, Close, Open, High, Low, Volume "
+                "SELECT TOP {} [Date], [Close], [Open], [High], [Low], [Volume] "
                 "FROM [Bronze].[Historical_Prices] "
                 "WHERE Stock_Symbol = '{}' "
-                "ORDER BY Date DESC".format(days, symbol)
+                "ORDER BY [Date] DESC".format(days, symbol)
             )
             
             columns = [col[0] for col in cursor.description]
@@ -72,6 +75,95 @@ def stock_history(request, symbol):
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+def predict_stock(request):
+    """
+    Endpoint to predict future stock prices for a given symbol.
+    
+    Parameters:
+    - symbol: The stock symbol to predict (e.g., AAPL, MSFT)
+    - days: Number of days to predict (default 7)
+    
+    Returns:
+    - Prediction data including forecasted price and returns
+    """
+    try:
+        import traceback  # For detailed error reporting
+        
+        # Get query parameters
+        symbol = request.query_params.get('symbol', 'AAPL')
+        horizon = request.query_params.get('days', 7)
+        
+        print(f"Attempting to predict {symbol} for {horizon} days")
+        
+        try:
+            horizon = int(horizon)
+            if horizon <= 0 or horizon > 30:
+                horizon = 7  # Default to 7 days if invalid
+        except ValueError:
+            horizon = 7
+            
+        with connection.cursor() as cursor:
+            try:
+                query = f"""
+                    SELECT [Date], [Open], [High], [Low], [Close], [Volume]
+                    FROM [Bronze].[Historical_Prices]
+                    WHERE [Stock_Symbol] = '{symbol}'
+                    ORDER BY [Date] DESC
+                """
+                cursor.execute(query)
+            except Exception as e:
+                print(f"Error executing query: {str(e)}")
+                raise            
+            columns = [column[0] for column in cursor.description]
+            results = []
+            for row in cursor.fetchall():
+                results.append(dict(zip(columns, row)))
+        
+        if not results:
+            return Response({"error": f"No data found for symbol: {symbol}"}, status=404)
+        
+        # Convert to DataFrame for processing
+        df = pd.DataFrame(results)
+        
+        # Convert string columns to proper types
+        numeric_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
+        for col in numeric_cols:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col])
+            else:
+                print(f"Warning: Column {col} not found in DataFrame")
+        
+        # Sort by date in ascending order (oldest to newest)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df = df.sort_values('Date')
+
+        print(f"DataFrame shape after processing: {df.shape}")
+        
+        # Call prediction function
+        try:
+            prediction_result = ml_handler.predict_stock_returns(df, horizon)
+            
+            if "error" in prediction_result:
+                print(f"Error from ml_handler: {prediction_result['error']}")
+                return Response({"error": prediction_result["error"]}, status=500)
+            
+            # Add symbol to response
+            prediction_result["symbol"] = symbol
+            
+            return Response(prediction_result)
+        except Exception as e:
+            stack_trace = traceback.format_exc()
+            print(f"Error in ml_handler: {e}")
+            print(f"Stack trace: {stack_trace}")
+            return Response({"error": str(e), "stack_trace": stack_trace}, status=500)
+    
+    except Exception as e:
+        stack_trace = traceback.format_exc()
+        print(f"Error in predict_stock: {e}")
+        print(f"Stack trace: {stack_trace}")
+        return Response({"error": str(e), "stack_trace": stack_trace}, status=500)
 
 class StockPriceViewSet(viewsets.ViewSet):
     def list(self, request):

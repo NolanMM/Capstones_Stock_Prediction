@@ -9,5 +9,6 @@ urlpatterns = [
     path('test-connection/', views.test_connection, name='test_connection'),
     path('available-stocks/', views.available_stocks, name='available_stocks'),
     path('stock-history/<str:symbol>/', views.stock_history, name='stock_history'),
+    path('predict-stock/', views.predict_stock, name='predict-stock'),
     path('', include(router.urls)),
 ]

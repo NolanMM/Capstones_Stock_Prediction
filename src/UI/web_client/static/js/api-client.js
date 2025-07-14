@@ -66,16 +66,28 @@ class AlmanacAPI {
             console.error(`Error fetching ${symbol} details:`, error);
             return { results: [] };
         }
-    }
-
-    async getStockPredictions(symbol) {
+    }    
+    
+    async getStockPredictions(symbol, days = 7) {
         try {
-            const response = await fetch(`${this.baseUrl}/stock-predictions/${symbol}/`);
-            if (!response.ok) throw new Error(`Failed to fetch predictions for ${symbol}`);
-            return await response.json();
+            console.log(`Fetching predictions for ${symbol} with horizon ${days} days`);
+            const response = await fetch(`${this.baseUrl}/predict-stock/?symbol=${symbol}&days=${days}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                console.error(`Server error: ${data.error || 'Unknown error'}`);
+                return { 
+                    symbol, 
+                    error: data.error || 'Failed to fetch predictions',
+                    details: data.details || 'No additional details available'
+                };
+            }
+            
+            console.log(`Successfully retrieved predictions for ${symbol}`);
+            return data;
         } catch (error) {
             console.error(`Error fetching ${symbol} predictions:`, error);
-            return { symbol, predictions: [] };
+            return { symbol, error: error.message };
         }
     }
 }
