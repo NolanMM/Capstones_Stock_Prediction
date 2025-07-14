@@ -1,11 +1,18 @@
 {
-	"name": "pipeline1",
+	"name": "PriceDataPipeline",
 	"properties": {
 		"activities": [
 			{
 				"name": "Historical_Prices_Bronze_Notebook",
 				"type": "DatabricksNotebook",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "WakeUpDatabase",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -27,9 +34,9 @@
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
-						"activity": "Historical_Prices_Bronze_Notebook",
+						"activity": "CheckingDatabaseAvailable",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -50,8 +57,8 @@
 				}
 			},
 			{
-				"name": "Company_Information_Bronze_Notebook",
-				"type": "DatabricksNotebook",
+				"name": "WakeUpDatabase",
+				"type": "DatabricksSparkPython",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -62,7 +69,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Bronze_Notebook"
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricksCapstone",
@@ -70,13 +78,13 @@
 				}
 			},
 			{
-				"name": "Company_Information_Silver_Notebook",
-				"type": "DatabricksNotebook",
+				"name": "CheckingDatabaseAvailable",
+				"type": "DatabricksSparkPython",
 				"dependsOn": [
 					{
-						"activity": "Company_Information_Bronze_Notebook",
+						"activity": "Historical_Prices_Bronze_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -89,7 +97,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Silver_Notebook"
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricksCapstone",
@@ -97,60 +106,13 @@
 				}
 			},
 			{
-				"name": "Historical_News_Bronze_Notebook",
-				"type": "DatabricksNotebook",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Bronze_Notebook"
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricksCapstone",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Historical_News_Silver_Notebook",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Historical_News_Bronze_Notebook",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Silver_Notebook"
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDatabricksCapstone",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
-				"name": "Historical_Prices_TA_Silver_Notebook",
-				"type": "DatabricksNotebook",
+				"name": "CheckingDatabaseAvailable1",
+				"type": "DatabricksSparkPython",
 				"dependsOn": [
 					{
 						"activity": "Historical_Prices_Silver_Notebook",
 						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -163,40 +125,22 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_TA_Silver_Notebook"
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+					"parameters": []
 				},
 				"linkedServiceName": {
 					"referenceName": "AzureDatabricksCapstone",
 					"type": "LinkedServiceReference"
 				}
-			},
-			{
-				"name": "Macro_Historical_Silver_Notebook",
-				"type": "DatabricksNotebook",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": []
 			},
 			{
 				"name": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
-						"activity": "Historical_Prices_TA_Silver_Notebook",
+						"activity": "CheckingDatabaseAvailable1",
 						"dependencyConditions": [
-							"Completed"
-						]
-					},
-					{
-						"activity": "Company_Information_Silver_Notebook",
-						"dependencyConditions": [
-							"Completed"
+							"Succeeded"
 						]
 					}
 				],
@@ -217,6 +161,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "Pipeline"
+		},
 		"annotations": []
 	}
 }

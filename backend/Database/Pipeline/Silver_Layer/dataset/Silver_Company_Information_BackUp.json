@@ -1,0 +1,174 @@
+{
+	"name": "Silver_Company_Information_BackUp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BackupDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/BackupDatabase/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "price",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "beta",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "volAvg",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "mktCap",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "lastDiv",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "range",
+				"type": "nvarchar"
+			},
+			{
+				"name": "changes",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "companyName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "cik",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "isin",
+				"type": "nvarchar"
+			},
+			{
+				"name": "cusip",
+				"type": "nvarchar"
+			},
+			{
+				"name": "exchange",
+				"type": "nvarchar"
+			},
+			{
+				"name": "exchangeShortName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "industry",
+				"type": "nvarchar"
+			},
+			{
+				"name": "website",
+				"type": "nvarchar"
+			},
+			{
+				"name": "description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ceo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sector",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "fullTimeEmployees",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "phone",
+				"type": "nvarchar"
+			},
+			{
+				"name": "address",
+				"type": "nvarchar"
+			},
+			{
+				"name": "city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "zip",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dcfDiff",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "dcf",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "image",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ipoDate",
+				"type": "date"
+			},
+			{
+				"name": "defaultImage",
+				"type": "bit"
+			},
+			{
+				"name": "isEtf",
+				"type": "bit"
+			},
+			{
+				"name": "isActivelyTrading",
+				"type": "bit"
+			},
+			{
+				"name": "isAdr",
+				"type": "bit"
+			},
+			{
+				"name": "isFund",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "Silver",
+			"table": "Company_Information"
+		}
+	}
+}

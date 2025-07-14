@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/Silver"
+			"name": "Database/writedatabase/Silver"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

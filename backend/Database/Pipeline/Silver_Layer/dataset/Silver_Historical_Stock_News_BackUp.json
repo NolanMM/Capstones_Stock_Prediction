@@ -1,0 +1,63 @@
+{
+	"name": "Silver_Historical_Stock_News_BackUp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BackupDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/BackupDatabase/Silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "category",
+				"type": "varchar"
+			},
+			{
+				"name": "datetime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "headline",
+				"type": "varchar"
+			},
+			{
+				"name": "image",
+				"type": "varchar"
+			},
+			{
+				"name": "related",
+				"type": "varchar"
+			},
+			{
+				"name": "source",
+				"type": "varchar"
+			},
+			{
+				"name": "summary",
+				"type": "varchar"
+			},
+			{
+				"name": "url",
+				"type": "varchar"
+			},
+			{
+				"name": "symbol",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "Silver",
+			"table": "Historical_Stock_News"
+		}
+	}
+}

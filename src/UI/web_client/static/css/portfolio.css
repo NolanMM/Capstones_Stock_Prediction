@@ -1,33 +1,212 @@
-.div.text-center {
-    margin-top: 20px;
-    /* Add 20px margin to the top of the "Related News" section */
+/* Overall Page Layout and Background */
+body {
+    font-family: 'Inter', sans-serif; /* Modern sans-serif font */
+    padding-top: 80px; /* Adjust for fixed navbar height */
 }
 
-#newsContent {
-    margin-top: 20px;
+/* Page Header */
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
+.page-header h1 {
+    font-size: 2.8em; /* Larger title */
+    color: #343a40; /* Darker text for headings */
+    font-weight: 700; /* Bolder */
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 1.2em; 
+    color: #6c757d; 
+}
+
+/* Card Styling  */
+.portfolio-card {
+    background-color: #ffffff;
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); 
+    padding: 40px;
+    margin-bottom: 40px; /* Space between cards */
+}
+
+/* Input Field Styling  */
+.form-control {
+    font-size: 1.1em;
+    padding: 12px 18px; 
+    border-radius: 8px; 
+    border: 1px solid #ced4da;
+    background-color: #ffffff; 
+    color: #495057; 
+    width: 100%; /* Full width */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); 
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+
+/* Button Styling  */
+.btn {
+    padding: 12px 25px; /* Consistent padding */
+    border-radius: 8px; /* Consistent rounded corners */
+    font-size: 1em;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out; /* Smooth transitions for hover/focus */
+    min-width: 160px; 
+}
+
+/* Primary buttons (Add Stock, View Details) */
+.btn-primary-custom {
+    background-color: #007bff; 
+    border-color: #007bff;
+    color: #fff;
+}
+
+.btn-primary-custom:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+/* Outline Secondary buttons (Minimize View) */
+.btn-outline-custom {
+    border: 1px solid #6c757d; 
+    color: #6c757d; 
+    background-color: transparent; /* Transparent background */
+}
+
+.btn-outline-custom:hover {
+    background-color: #6c757d; 
+    color: #fff; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+}
+
+/* Danger button (Remove) */
+.btn-danger-custom {
+    background-color: #dc3545; 
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger-custom:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+/* Table Specific Styling */
+.table {
+    border-collapse: separate; /* Allows border-radius on cells */
+    border-spacing: 0;
+    border-radius: 8px; /* Rounded corners for the entire table */
+    overflow: hidden; /* Ensures content respects border-radius */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+}
+
+.table thead th {
+    background-color: #f2f4f6; 
+    color: #343a40; 
+    font-weight: 600; 
+    padding: 15px; /* More padding */
+    border-bottom: 2px solid #e9ecef; /* Separator for header */
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #fefefe; 
+}
+
+.table tbody td {
+    padding: 15px; /* Consistent padding for cells */
+    vertical-align: middle; /* Center content vertically */
+    border-top: 1px solid #e9ecef; 
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fdfdfd; 
+}
+
+/* Adjust button sizes within the table for compactness */
+.table .btn {
+    padding: 8px 15px; /* Smaller padding for table buttons */
+    font-size: 0.9em; /* Smaller font size */
+    min-width: unset; /* Remove min-width to allow them to shrink */
+}
+
+
+/* News Section Styling */
 .news-article {
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
+    border-bottom: 1px solid #e9ecef; 
+    padding: 15px 0; /* More vertical padding */
     margin-bottom: 15px;
 }
 
+.news-article:last-child {
+    border-bottom: none; /* No border for the last article */
+}
+
 .news-article h5 {
-    font-size: 1.2rem;
-    margin-bottom: 5px;
+    font-size: 1.25rem; 
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.news-article h5 a {
+    color: #007bff; 
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.news-article h5 a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.news-article h6 {
+    font-size: 0.9em;
+    color: #6c757d; 
+    margin-bottom: 10px;
 }
 
 .news-article p {
     font-size: 1rem;
-    color: #555;
+    color: #495057;
+    line-height: 1.6; 
 }
 
-.news-article a {
-    text-decoration: none;
-    color: #007bff;
+/* Chart Card Styling */
+#chartContainer .card {
+    border-radius: 12px; /* Consistent rounded corners */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    border: none; /* Remove default Bootstrap card border */
 }
 
-.news-article a:hover {
-    text-decoration: underline;
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .portfolio-card {
+        padding: 25px;
+    }
+    .page-header h1 {
+        font-size: 2em;
+    }
+    .page-header p {
+        font-size: 1em;
+    }
+    .btn {
+        min-width: unset; /* Remove min-width on small screens */
+        width: 100%; /* Full width for stacked buttons */
+    }
+    .table-responsive { /* Make table responsive on small screens */
+        overflow-x: auto;
+    }
 }

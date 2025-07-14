@@ -1,0 +1,109 @@
+{
+	"name": "MonthlyPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Company_Information_Bronze_Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "WakeUpDatabase",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Bronze_Notebook"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Company_Information_Silver_Notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Checking_Database_Available",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Silver_Notebook"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "WakeUpDatabase",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Checking_Database_Available",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Company_Information_Bronze_Notebook",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksCapstone",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

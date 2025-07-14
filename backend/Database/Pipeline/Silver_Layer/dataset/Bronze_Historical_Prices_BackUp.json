@@ -1,0 +1,65 @@
+{
+	"name": "Bronze_Historical_Prices_BackUp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BackupDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Database/BackupDatabase/Bronze"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Open",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "High",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Low",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Close",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Volume",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Dividends",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Stock_Symbol",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Stock_Splits",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "Bronze",
+			"table": "Historical_Prices"
+		}
+	}
+}

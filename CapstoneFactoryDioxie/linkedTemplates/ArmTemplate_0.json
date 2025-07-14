@@ -1,0 +1,2360 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "CapstoneFactoryDioxie"
+		},
+		"AzureDatabricksCapstone_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksCapstone'"
+		},
+		"BackupDatabase_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BackupDatabase'"
+		},
+		"BronzeLayer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'BronzeLayer'"
+		},
+		"Bronze_Fact_Files_Layer_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Bronze_Fact_Files_Layer'"
+		},
+		"Silver_Layer_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Silver_Layer'"
+		},
+		"readdatabase_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'readdatabase'"
+		},
+		"writedatabasesilverlayer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'writedatabasesilverlayer'"
+		},
+		"BackupDatabase_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "capstone-database-server.database.windows.net"
+		},
+		"BackupDatabase_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "backupdatabasecapstone"
+		},
+		"BackupDatabase_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "capstonedioxieteam"
+		},
+		"Bronze_Fact_Files_Layer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://capstoneprojectstorage.dfs.core.windows.net/"
+		},
+		"Silver_Layer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://capstoneprojectstorage.dfs.core.windows.net/"
+		},
+		"readdatabase_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "capstone-database-server.database.windows.net"
+		},
+		"readdatabase_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "readdatabase"
+		},
+		"readdatabase_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "capstonedioxieteam"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "capstone-database-server.database.windows.net"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "writedatabasesilverlayer"
+		},
+		"writedatabasesilverlayer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "capstonedioxieteam"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricksCapstone')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-666602478830773.13.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricksCapstone_accessToken')]"
+					},
+					"newClusterNodeType": "Standard_DS3_v2",
+					"newClusterNumOfWorker": "2",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "15.4.x-scala2.12",
+					"clusterOption": "Fixed",
+					"newClusterInitScripts": []
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BackupDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('BackupDatabase_properties_typeProperties_server')]",
+					"database": "[parameters('BackupDatabase_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('BackupDatabase_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('BackupDatabase_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BronzeLayer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('BronzeLayer_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Fact_Files_Layer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('Bronze_Fact_Files_Layer_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('Bronze_Fact_Files_Layer_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_Layer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('Silver_Layer_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('Silver_Layer_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/readdatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('readdatabase_properties_typeProperties_server')]",
+					"database": "[parameters('readdatabase_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('readdatabase_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('readdatabase_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/writedatabasesilverlayer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('writedatabasesilverlayer_properties_typeProperties_server')]",
+					"database": "[parameters('writedatabasesilverlayer_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('writedatabasesilverlayer_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('writedatabasesilverlayer_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CompanyInformationPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Company_Information_Bronze_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Bronze_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Company_Information_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Checking_Database_Available",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Checking_Database_Available",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Company_Information_Bronze_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipeline"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksCapstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MacroDataPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Macro_Historical_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Macro_Historical_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipeline"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksCapstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MonthlyPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Company_Information_Bronze_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Bronze_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Company_Information_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Checking_Database_Available",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Company_Information_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Checking_Database_Available",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Company_Information_Bronze_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksCapstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NewsPipelines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_News_Bronze_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Bronze_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_News_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckDatabaseAvailable",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_News_Gold_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckDatabaseAvailable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_News_Gold_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckDatabaseAvailable",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_News_Bronze_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckDatabaseAvailable1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_News_Silver_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipeline"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksCapstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PriceDataPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Historical_Prices_Bronze_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Bronze_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_Prices_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckingDatabaseAvailable",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckingDatabaseAvailable",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_Prices_Bronze_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CheckingDatabaseAvailable1",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [
+							{
+								"activity": "Historical_Prices_Silver_Notebook",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Historical_Prices_Stock_with_TA_Com_Infor_Gold",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "CheckingDatabaseAvailable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Historical_Prices_Stock_with_TA_Company_Information_Gold_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Pipeline"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksCapstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/QuarterlyPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WakeUpDatabase",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "/Workspace/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Turn_On_Database.py",
+							"parameters": []
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Macro_Historical_Silver_Notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "WakeUpDatabase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/lnguyen3388@conestogac.on.ca/Capstones_Stock_Prediction/backend/Database/Databricks/Macro_Historical_Silver_Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksCapstone",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksCapstone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Company_Information')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "beta",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "volAvg",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mktCap",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "lastDiv",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "range",
+						"type": "nvarchar"
+					},
+					{
+						"name": "changes",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "companyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cik",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "isin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cusip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchange",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchangeShortName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "industry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "website",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ceo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sector",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "fullTimeEmployees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "zip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "dcfDiff",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dcf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ipoDate",
+						"type": "date"
+					},
+					{
+						"name": "defaultImage",
+						"type": "bit"
+					},
+					{
+						"name": "isEtf",
+						"type": "bit"
+					},
+					{
+						"name": "isActivelyTrading",
+						"type": "bit"
+					},
+					{
+						"name": "isAdr",
+						"type": "bit"
+					},
+					{
+						"name": "isFund",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "Bronze",
+					"table": "Company_Information"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/writedatabasesilverlayer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Company_Information_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "beta",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "volAvg",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mktCap",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "lastDiv",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "range",
+						"type": "nvarchar"
+					},
+					{
+						"name": "changes",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "companyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cik",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "isin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cusip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchange",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchangeShortName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "industry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "website",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ceo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sector",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "fullTimeEmployees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "zip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "dcfDiff",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dcf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ipoDate",
+						"type": "date"
+					},
+					{
+						"name": "defaultImage",
+						"type": "bit"
+					},
+					{
+						"name": "isEtf",
+						"type": "bit"
+					},
+					{
+						"name": "isActivelyTrading",
+						"type": "bit"
+					},
+					{
+						"name": "isAdr",
+						"type": "bit"
+					},
+					{
+						"name": "isFund",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "Bronze",
+					"table": "Company_Information"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BackupDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Historical_Prices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Open",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "High",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Low",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Close",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dividends",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Stock_Symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Stock_Splits",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "Bronze",
+					"table": "Historical_Prices"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/writedatabasesilverlayer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Historical_Prices_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Open",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "High",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Low",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Close",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dividends",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Stock_Symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Stock_Splits",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "Bronze",
+					"table": "Historical_Prices"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BackupDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Historical_Stock_News')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "category",
+						"type": "varchar"
+					},
+					{
+						"name": "datetime",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "headline",
+						"type": "varchar"
+					},
+					{
+						"name": "image",
+						"type": "varchar"
+					},
+					{
+						"name": "related",
+						"type": "varchar"
+					},
+					{
+						"name": "source",
+						"type": "varchar"
+					},
+					{
+						"name": "summary",
+						"type": "varchar"
+					},
+					{
+						"name": "url",
+						"type": "varchar"
+					},
+					{
+						"name": "symbol",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Bronze",
+					"table": "Historical_Stock_News"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/writedatabasesilverlayer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Bronze_Historical_Stock_News_BackUp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BackupDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/BackupDatabase/Bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "category",
+						"type": "varchar"
+					},
+					{
+						"name": "datetime",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "headline",
+						"type": "varchar"
+					},
+					{
+						"name": "image",
+						"type": "varchar"
+					},
+					{
+						"name": "related",
+						"type": "varchar"
+					},
+					{
+						"name": "source",
+						"type": "varchar"
+					},
+					{
+						"name": "summary",
+						"type": "varchar"
+					},
+					{
+						"name": "url",
+						"type": "varchar"
+					},
+					{
+						"name": "symbol",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "Bronze",
+					"table": "Historical_Stock_News"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BackupDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Gold_Historical_Prices_Stock_with_TA_Company_Information')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "writedatabasesilverlayer",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database/writedatabase/Gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Stock_Symbol",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Date",
+						"type": "date"
+					},
+					{
+						"name": "Close",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Open",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "High",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Low",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Volume",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Dividends",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Stock_Splits",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RSI_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "gain_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "loss_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_2",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_3",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_4",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_5",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_6",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_7",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_8",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_9",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_10",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_11",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_12",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_13",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_14",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_15",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_16",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_17",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_18",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_19",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_20",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_21",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_22",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_23",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_24",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_25",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_26",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_27",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_28",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "MARD_29",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "price",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "beta",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "volAvg",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mktCap",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "lastDiv",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "range",
+						"type": "nvarchar"
+					},
+					{
+						"name": "changes",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "companyName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "currency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cik",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "isin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "cusip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchange",
+						"type": "nvarchar"
+					},
+					{
+						"name": "exchangeShortName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "industry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "website",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ceo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sector",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "fullTimeEmployees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "zip",
+						"type": "nvarchar"
+					},
+					{
+						"name": "dcfDiff",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "dcf",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "image",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ipoDate",
+						"type": "date"
+					},
+					{
+						"name": "defaultImage",
+						"type": "bit"
+					},
+					{
+						"name": "isEtf",
+						"type": "bit"
+					},
+					{
+						"name": "isActivelyTrading",
+						"type": "bit"
+					},
+					{
+						"name": "isAdr",
+						"type": "bit"
+					},
+					{
+						"name": "isFund",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "Gold",
+					"table": "Historical_Prices_Stock_with_TA_Company_Information"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/writedatabasesilverlayer')]"
+			]
+		}
+	]
+}

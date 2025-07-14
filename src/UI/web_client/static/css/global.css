@@ -1,3 +1,6 @@
+/* Import fonts and global resets if not already in global.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 body {
 /* Specify the background image */
     background-image: url('../images/backgroundimage.jpg');

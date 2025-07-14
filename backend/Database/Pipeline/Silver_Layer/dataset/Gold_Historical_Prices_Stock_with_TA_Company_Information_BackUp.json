@@ -1,12 +1,12 @@
 {
-	"name": "Silver_Historical_Prices_TA",
+	"name": "Gold_Historical_Prices_Stock_with_TA_Company_Information_BackUp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "writedatabasesilverlayer",
+			"referenceName": "BackupDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Database/Silver"
+			"name": "Database/BackupDatabase/Gold"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
@@ -21,6 +21,36 @@
 			},
 			{
 				"name": "Close",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Open",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "High",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Low",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Volume",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Dividends",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Stock_Splits",
 				"type": "float",
 				"precision": 15
 			},
@@ -583,11 +613,161 @@
 				"name": "MARD_29",
 				"type": "float",
 				"precision": 15
+			},
+			{
+				"name": "price",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "beta",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "volAvg",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "mktCap",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "lastDiv",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "range",
+				"type": "nvarchar"
+			},
+			{
+				"name": "changes",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "companyName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "currency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "cik",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "isin",
+				"type": "nvarchar"
+			},
+			{
+				"name": "cusip",
+				"type": "nvarchar"
+			},
+			{
+				"name": "exchange",
+				"type": "nvarchar"
+			},
+			{
+				"name": "exchangeShortName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "industry",
+				"type": "nvarchar"
+			},
+			{
+				"name": "website",
+				"type": "nvarchar"
+			},
+			{
+				"name": "description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ceo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sector",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "fullTimeEmployees",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "phone",
+				"type": "nvarchar"
+			},
+			{
+				"name": "address",
+				"type": "nvarchar"
+			},
+			{
+				"name": "city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "zip",
+				"type": "nvarchar"
+			},
+			{
+				"name": "dcfDiff",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "dcf",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "image",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ipoDate",
+				"type": "date"
+			},
+			{
+				"name": "defaultImage",
+				"type": "bit"
+			},
+			{
+				"name": "isEtf",
+				"type": "bit"
+			},
+			{
+				"name": "isActivelyTrading",
+				"type": "bit"
+			},
+			{
+				"name": "isAdr",
+				"type": "bit"
+			},
+			{
+				"name": "isFund",
+				"type": "bit"
 			}
 		],
 		"typeProperties": {
-			"schema": "Silver",
-			"table": "Historical_Prices_TA"
+			"schema": "Gold",
+			"table": "Historical_Prices_Stock_with_TA_Company_Information"
 		}
 	}
 }
