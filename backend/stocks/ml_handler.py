@@ -182,6 +182,81 @@ def prepare_quarterly(df, feats, tgt, window):
     return scalers, df_s
 
 
+def prepare_with_robust_scaling(df, feats, tgt, window, reference_symbol='AAPL'):
+    """Scale data using robust scaling that handles out-of-range values better"""
+    # Ensure index is DatetimeIndex
+    if not isinstance(df.index, pd.DatetimeIndex):
+        date_col = 'date' if 'date' in df.columns else 'Date' if 'Date' in df.columns else None
+        if date_col:
+            df[date_col] = pd.to_datetime(df[date_col])
+            df = df.set_index(date_col)
+        else:
+            raise ValueError("DataFrame index is not DatetimeIndex and no 'date' or 'Date' column found.")
+
+    if df.empty:
+        raise ValueError("DataFrame is empty, cannot scale data")
+    
+    # Ensure all required columns exist
+    all_cols = feats + [tgt]
+    missing_cols = [col for col in all_cols if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing columns: {missing_cols}")
+    
+    # For better cross-stock generalization, use a more robust scaling approach
+    # that focuses on the relative patterns rather than absolute values
+    
+    # Scale price-based features (Open, High, Low, Close) relative to recent Close
+    # Scale volume relative to recent volume average
+    # Keep technical indicators and returns as-is with their own scaling
+    
+    df_scaled = df.copy()
+    
+    # Get recent close price for normalization
+    recent_close = df['Close'].iloc[-20:].mean()  # Use 20-day average
+    recent_volume = df['Volume'].iloc[-20:].mean()  # Use 20-day average volume
+    
+    # Create normalized features
+    for col in ['Open', 'High', 'Low', 'Close']:
+        if col in df_scaled.columns:
+            # Normalize to recent close (this makes it relative)
+            df_scaled[col] = df_scaled[col] / recent_close
+    
+    # Normalize volume to recent volume
+    if 'Volume' in df_scaled.columns:
+        df_scaled['Volume'] = df_scaled['Volume'] / recent_volume
+    
+    # For technical indicators and returns, use standard MinMaxScaler on full data
+    # These should be more consistent across stocks
+    technical_features = ['RSI', 'MACD', 'MACD_Signal', 'MACD_Hist', 'BB_Mid', 'BB_Upper', 'BB_Lower']
+    return_features = ['lag1_ret', 'Return_3D', 'Return_1D', 'Volatility_3D']
+    
+    m = MinMaxScaler()
+    
+    # Scale technical indicators
+    tech_cols = [col for col in technical_features if col in df_scaled.columns]
+    if tech_cols:
+        df_scaled[tech_cols] = m.fit_transform(df_scaled[tech_cols])
+    
+    # Scale return features separately (they have different ranges)
+    return_cols = [col for col in return_features if col in df_scaled.columns]
+    if return_cols:
+        m_returns = MinMaxScaler()
+        df_scaled[return_cols] = m_returns.fit_transform(df_scaled[return_cols])
+    
+    # Now apply final scaling to normalized price and volume features
+    price_vol_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
+    price_vol_cols = [col for col in price_vol_cols if col in df_scaled.columns]
+    if price_vol_cols:
+        m_prices = MinMaxScaler()
+        df_scaled[price_vol_cols] = m_prices.fit_transform(df_scaled[price_vol_cols])
+    
+    # Create a dummy scaler for consistency with the interface
+    dummy_scaler = MinMaxScaler()
+    dummy_scaler.fit(df[feats + [tgt]].fillna(0))
+    
+    return {"robust": dummy_scaler}, df_scaled
+
+
 def build_last_window(df_scaled, feats, window):
     """Build the latest window for prediction"""
     data = df_scaled[feats].values
@@ -260,11 +335,11 @@ def predict_stock_returns(stock_data, horizon=7):
         # Use the exact feature order from the model
         available_features = feature_cols
         
-        # Prepare data by quarters for scaling
-        scalers_q, df_scaled = prepare_quarterly(df, available_features, "Return_1D", window_size)
+        # Use robust scaling for better cross-stock generalization
+        scalers_q, df_scaled = prepare_with_robust_scaling(df, available_features, "Return_1D", window_size)
         
         if not scalers_q:
-            return {"error": "Could not create quarterly scalers. Insufficient data."}
+            return {"error": "Could not create robust scalers. Insufficient data."}
         
         # Get last window for prediction
         last_window = build_last_window(df_scaled, available_features, window_size)
