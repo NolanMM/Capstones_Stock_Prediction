@@ -1,20 +1,24 @@
 from django.shortcuts import render, redirect
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from django.db import connection
 import pandas as pd
 from rest_framework.response import Response
-from .models import StockPrice
+from .models import StockPrice, PortfolioItem
 from rest_framework import viewsets
 import pyodbc
 from datetime import datetime, timedelta
 from . import ml_handler
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .serializers import UserSerializer, PortfolioItemSerializer
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
+import json
 
-# Endpoints are not ready yet. 
-# I shall refactor the code during sprint 2. 
-# These endpoints contain a lot of shitty testing code. 
-
-# Create your views here.
+# Legacy database connection test - TODO: Refactor in sprint 2
 def test_connection(request):
     try:
         # Connect directly using pyodbc 
@@ -50,23 +54,43 @@ def available_stocks(request):
 
 @api_view(['GET'])
 def stock_history(request, symbol):
-    days = request.GET.get('days', 30)
+    days_str = request.GET.get('days', '30')
     try:
-        days = int(days)
+        days = int(days_str)
     except ValueError:
         days = 30
         
     try:
-        # Fix SQL parameter syntax for SQL Server
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT TOP {} [Date], [Close], [Open], [High], [Low], [Volume] "
-                "FROM [Bronze].[Historical_Prices] "
-                "WHERE Stock_Symbol = '{}' "
-                "ORDER BY [Date] DESC".format(days, symbol)
-            )
+            # This query now groups by Date to remove duplicates and correctly filters by a date range.
+            # It aggregates the values for each day to ensure a single, smooth data point.
             
-            columns = [col[0] for col in cursor.description]
+            base_query = """
+                SELECT
+                    [Date],
+                    Stock_Symbol,
+                    AVG(CAST([Open] AS float)) as [Open],
+                    AVG(CAST([High] AS float)) as [High],
+                    AVG(CAST([Low] AS float)) as [Low],
+                    AVG(CAST([Close] AS float)) as [Close],
+                    SUM(CAST([Volume] AS bigint)) as [Volume]
+                FROM 
+                    [Bronze].[Historical_Prices]
+                WHERE 
+                    Stock_Symbol = %s
+            """
+            
+            params = [symbol]
+            
+            if days <= 30000: # A large number to signify "All time" is not used
+                base_query += " AND [Date] >= DATEADD(day, -%s, GETDATE())"
+                params.append(days)
+
+            query = base_query + " GROUP BY [Date], Stock_Symbol ORDER BY [Date] ASC"
+            
+            cursor.execute(query, params)
+            
+            columns = [column[0] for column in cursor.description]
             history = [dict(zip(columns, row)) for row in cursor.fetchall()]
         
         return Response({
@@ -233,8 +257,7 @@ def stock_names(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# stock names in the format according to marketPrediction.js
+# Get stock symbols in format for marketPrediction.js
 @api_view(['GET'])
 def stock_names_json(request):
     try:
@@ -246,8 +269,7 @@ def stock_names_json(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# chart data in the format according to marketPrediction.js
+# Get chart data in format for marketPrediction.js
 @api_view(['GET'])
 def chart_data_json(request):
     try:
@@ -327,8 +349,7 @@ def chart_data_json(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# stock details in the format according to marketPrediction.js
+# Get stock details in format for marketPrediction.js
 @api_view(['GET'])
 def stock_details_json(request):
     try:
@@ -352,8 +373,7 @@ def stock_details_json(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# news articles in the format according to marketPrediction.js
+# Get news articles in format for marketPrediction.js
 @api_view(['GET'])
 def news_articles_json(request):
     data = [
@@ -388,11 +408,112 @@ def news_articles_json(request):
     ]
     return JsonResponse(data, safe=False)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class AccountDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def put(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request):
+        request.user.delete()
+        return Response(status=204)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PortfolioListCreate(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        items = PortfolioItem.objects.filter(user=request.user)
+        serializer = PortfolioItemSerializer(items, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PortfolioItemSerializer(data=request.data)
+        if serializer.is_valid():
+            # Check if the item already exists
+            if PortfolioItem.objects.filter(user=request.user, stock_symbol=serializer.validated_data['stock_symbol']).exists():
+                return Response({'error': 'This stock is already in your portfolio.'}, status=400)
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PortfolioDestroy(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, stock_symbol):
+        try:
+            item = PortfolioItem.objects.get(user=request.user, stock_symbol=stock_symbol)
+            item.delete()
+            return Response(status=204)
+        except PortfolioItem.DoesNotExist:
+            return Response({'error': 'Stock not found in portfolio.'}, status=404)
+
 def account(request):
     return render(request, 'account.html')
 
 def index(request):
     return render(request, 'index.html')
+
+@csrf_exempt
+@api_view(['POST'])
+def custom_login(request):
+    """Custom login endpoint that uses Django sessions instead of tokens"""
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        
+        # Try to authenticate with username first, then email
+        user = None
+        if username:
+            user = authenticate(request, username=username, password=password)
+        
+        if not user and email:
+            # Try to find user by email and authenticate with their username
+            try:
+                user_obj = User.objects.get(email=email)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
+        
+        if user is not None:
+            login(request, user)
+            return JsonResponse({
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                }
+            })
+        else:
+            return JsonResponse({'error': 'Invalid credentials'}, status=400)
+            
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def custom_logout(request):
+    """Custom logout endpoint"""
+    try:
+        logout(request)
+        return JsonResponse({'message': 'Logged out successfully'})
+    except Exception as e:
+        return JsonResponse({'message': 'Logged out'})  # Always return success for logout
 
 def marketprediction(request):
     return render(request, 'marketprediction.html')

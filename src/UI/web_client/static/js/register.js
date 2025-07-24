@@ -32,8 +32,8 @@ loginForm.addEventListener("submit", async (e) => {
     const password = loginForm.querySelector("input[placeholder='Password']").value;
 
     try {
-        // Send login credentials to backend
-        const response = await fetch("/api/token/login/", {
+        // Send login credentials to backend using our custom session-based login
+        const response = await fetch("/api/login/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -42,13 +42,13 @@ loginForm.addEventListener("submit", async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            // Login successful: store auth token and redirect to homepage
+            // Login successful: use auth manager to store user info
             alert("Login successful!");
-            localStorage.setItem("authToken", data.auth_token);
+            authManager.setUserInfo(data.user);
             window.location.href = "/";  // Redirect to index/home page
         } else {
             // Login failed: show error message from backend
-            alert("Login failed: " + (data.non_field_errors || "Unknown error"));
+            alert("Login failed: " + (data.error || "Unknown error"));
         }
     } catch (err) {
         alert("Error during login: " + err.message);
@@ -61,8 +61,18 @@ signupForm.addEventListener("submit", async (e) => {
 
     // Extract user input from signup form
     const email = signupForm.querySelector("input[placeholder='Email Address']").value;
+    const username = signupForm.querySelector("input[placeholder='Username']").value;
     const password = signupForm.querySelector("input[placeholder='Password']").value;
     const re_password = signupForm.querySelector("input[placeholder='Confirm password']").value;
+
+    // Debug: Log the values to console
+    console.log("Signup data:", { username, email, password, re_password });
+    
+    // Check if any required fields are empty
+    if (!username || !email || !password || !re_password) {
+        alert("All fields are required.");
+        return;
+    }
 
     // Check if passwords match
     if (password !== re_password) {
@@ -75,7 +85,7 @@ signupForm.addEventListener("submit", async (e) => {
         const response = await fetch("/api/users/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, re_password })
+            body: JSON.stringify({ username, email, password, re_password })
         });
 
         const data = await response.json();

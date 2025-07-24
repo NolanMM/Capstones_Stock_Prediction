@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stocks',
     'rest_framework',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,23 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'stocks.authentication.CsrfExemptSessionAuthentication',
+    ),
+}
+
+DJOSER = {
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user_create': 'stocks.serializers.UserCreateSerializer',
+        'user': 'stocks.serializers.UserSerializer',
+        'current_user': 'stocks.serializers.UserSerializer',
+    }
+}
+
+# Add authentication backends to support email login
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+]

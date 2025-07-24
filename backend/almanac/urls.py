@@ -21,6 +21,8 @@ from stocks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('stocks.urls')),
+    path('api/', include('djoser.urls')),
+    path('api/', include('djoser.urls.authtoken')),
     
     path('', views.index, name='index'),
     path('portfolio.html', views.portfolio, name='portfolio'),

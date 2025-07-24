@@ -14,3 +14,5 @@ pandas
 polars
 numpy
 scipy
+djoser
+pycryptodome

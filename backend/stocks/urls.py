@@ -10,5 +10,10 @@ urlpatterns = [
     path('available-stocks/', views.available_stocks, name='available_stocks'),
     path('stock-history/<str:symbol>/', views.stock_history, name='stock_history'),
     path('predict-stock/', views.predict_stock, name='predict-stock'),
+    path('account/', views.AccountDetail.as_view(), name='account-detail'),
+    path('portfolio/', views.PortfolioListCreate.as_view(), name='portfolio-list-create'),
+    path('portfolio/<str:stock_symbol>/', views.PortfolioDestroy.as_view(), name='portfolio-destroy'),
+    path('login/', views.custom_login, name='custom-login'),
+    path('logout/', views.custom_logout, name='custom-logout'),
     path('', include(router.urls)),
 ]

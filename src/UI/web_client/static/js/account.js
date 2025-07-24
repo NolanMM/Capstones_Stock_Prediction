@@ -1,20 +1,15 @@
 // Enable/disable mock mode for testing without backend
-const debugMode = true;
+const debugMode = false;
 
-
-// Get auth token from local storage
-const token = localStorage.getItem("authToken");
-
-// Redirect to login if token is missing
-if (!token && !debugMode) {
-    alert("Please log in to access your account.");
-    window.location.href = "/register.html";
+// Use the auth manager to check authentication
+if (!authManager.requireAuth()) {
+    // requireAuth will handle the redirect if not logged in
+    throw new Error('Authentication required');
 }
 
-// Setup request headers with token for authentication
+// Setup request headers for session-based authentication (no token needed)
 const headers = {
-    "Content-Type": "application/json",
-    "Authorization": `Token ${token}`
+    "Content-Type": "application/json"
 };
 
 if (debugMode) {
@@ -30,9 +25,10 @@ if (debugMode) {
     document.getElementById('profile-image').src = mockData.profilePicture;
 } else {
     // Fetch real account data from Django API
-    fetch('/api/account/', { // Update end point to match your API
+    fetch('/api/account/', { // Correct endpoint
             method: "GET",
-            headers
+            headers,
+            credentials: 'include' // Include session cookies
         })
         .then(response => {
             if (!response.ok) throw new Error("Unauthorized");
@@ -42,7 +38,11 @@ if (debugMode) {
             // Populate account UI with fetched data
             document.getElementById('email-display').textContent = data.email;
             document.getElementById('password-display').textContent = '********'; // Masked password
-            document.getElementById('profile-image').src = data.profilePicture;
+            if (data.profile && data.profile.profile_picture_url) {
+                document.getElementById('profile-image').src = data.profile.profile_picture_url;
+            } else {
+                document.getElementById('profile-image').src = './static/images/profile-picture-placeholder.jpg';
+            }
         })
         .catch(error => {
             console.error('Error fetching account data:', error);
@@ -73,9 +73,10 @@ function confirmEmail() {
         return;
     }
 
-    fetch('/api/account/', { // Update end point to match your API
+    fetch('/api/account/', { // Correct endpoint
             method: "PUT",
             headers,
+            credentials: 'include',
             body: JSON.stringify({
                 email: newEmail
             })
@@ -125,9 +126,10 @@ function confirmPassword() {
         return;
     }
 
-    fetch('/api/account/', { // Update end point to match your API
+    fetch('/api/account/', { // Correct endpoint
             method: "PUT",
             headers,
+            credentials: 'include',
             body: JSON.stringify({
                 password: newPassword
             })
@@ -177,11 +179,14 @@ function changeImageUrl() {
         return;
     }
 
-    fetch('/api/account/', { // Update end point to match your API
+    fetch('/api/account/', { // Correct endpoint
             method: "PUT",
             headers,
+            credentials: 'include',
             body: JSON.stringify({
-                profilePicture: imageUrl
+                profile: {
+                    profile_picture_url: imageUrl
+                }
             })
         })
         .then(res => {
@@ -210,10 +215,9 @@ function cancelChange() {
 
 // === Auth Actions ===
 
-// Logout: remove auth token and redirect to login
+// Logout: use auth manager to properly clear session
 document.getElementById("button-log-out").onclick = () => {
-    localStorage.removeItem("authToken");
-    window.location.href = "/register.html";
+    authManager.logout();
 };
 
 // Delete Account: confirm and send delete request
@@ -228,9 +232,10 @@ document.getElementById("button-delete-account").onclick = () => {
         return;
     }
 
-    fetch('/api/account/', { // Update end point to match your API
+    fetch('/api/account/', { // Correct endpoint
             method: "DELETE",
-            headers
+            headers,
+            credentials: 'include'
         })
         .then(response => {
             if (response.ok) {
