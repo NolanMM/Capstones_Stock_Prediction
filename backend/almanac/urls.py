@@ -29,6 +29,8 @@ urlpatterns = [
     path('account.html', views.account, name='account'),
     path('marketprediction.html', views.marketprediction, name='marketprediction'),
     path('register.html', views.register, name='register'),
+    path('verify-email-page/', views.verify_email_page, name='verify-email-page'),
+
     
     # Generic handler 
     path('<str:page_name>/', views.page_handler, name='page_handler'),

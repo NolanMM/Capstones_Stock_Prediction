@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+# Load environment variables from .env file
+load_dotenv("./.env", override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -147,9 +151,13 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
+    'USER_ID_FIELD': 'username',
+    'LOGIN_FIELD': 'email',
+    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'verify-email/?uid={uid}&token={token}',
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SERIALIZERS': {
-        'user_create': 'stocks.serializers.UserCreateSerializer',
+        'user_create': 'stocks.serializers.CustomUserCreateSerializer',
         'user': 'stocks.serializers.UserSerializer',
         'current_user': 'stocks.serializers.UserSerializer',
     }
@@ -159,3 +167,10 @@ DJOSER = {
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Default backend
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('SENDER_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD')

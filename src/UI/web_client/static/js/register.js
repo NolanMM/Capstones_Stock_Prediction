@@ -67,7 +67,6 @@ signupForm.addEventListener("submit", async (e) => {
     const re_password = signupForm.querySelector("input[placeholder='Confirm password']").value;
     const username = email.split('@')[0];
 
-    // Debug: Log the values to console
     console.log("Signup data:", { first_name, last_name, email, password, re_password });
 
     // Check if any required fields are empty
@@ -76,15 +75,13 @@ signupForm.addEventListener("submit", async (e) => {
         return;
     }
 
-    // Check if passwords match
     if (password !== re_password) {
         alert("Passwords do not match.");
         return;
     }
 
     try {
-        // Send signup data to backend
-        const response = await fetch("/api/users/", {
+        const response = await fetch("/api/register/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, first_name, last_name, password, re_password })
@@ -93,14 +90,18 @@ signupForm.addEventListener("submit", async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            alert("Signup successful! Please login.");
-            document.querySelector("label.login").click();
+            alert("Registration successful! Please check your email for a verification code.");
+            window.location.href = `/verify-email-page/?email=${encodeURIComponent(email)}`;
         } else {
-            // Handle cases where the username already exist
             let errorMessage = "Signup failed: ";
             if (data.username) {
-                errorMessage += "This username (" + username + ") is already taken. Please try a different email.";
-            } else {
+                errorMessage += "This username (email) is already taken.";
+            } else if (data.email) {
+                errorMessage += "This email is already registered.";
+            } else if (data.re_password) {
+                errorMessage += "Password confirmation failed: " + data.re_password[0];
+            }
+             else {
                 errorMessage += JSON.stringify(data);
             }
             alert(errorMessage);

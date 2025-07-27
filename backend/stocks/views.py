@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import JsonResponse
 from django.db import connection
 import pandas as pd
 from rest_framework.response import Response
+from django.core.cache import cache
+from .services import email_services
 from .models import StockPrice, PortfolioItem
 from rest_framework import viewsets , status
 import pyodbc
@@ -11,9 +13,10 @@ from datetime import datetime, timedelta
 from . import ml_handler
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import UserSerializer, PortfolioItemSerializer
+from .serializers import CustomUserCreateSerializer, UserSerializer, PortfolioItemSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
+from .authentication import CsrfExemptSessionAuthentication
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 import json
@@ -532,20 +535,74 @@ def page_handler(request, page_name):
         print(f"Error loading {page_name}.html: {str(e)}")
         return redirect('index')
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def create_user(request):
     """
     Creates a new user account.
+    Upon successful creation, the user is marked as inactive and a verification
+    email with an OTP is sent.
     """
-    serializer = UserSerializer(data=request.data)
+    serializer = CustomUserCreateSerializer(data=request.data)
     if serializer.is_valid():
-        
+        # The serializer's create method now handles setting is_active=False
         user = serializer.save()
+        
+        # Generate and cache OTP
+        otp = email_services.generate_random_key()
+        # 1-hour expiry for OTP
+        cache.set(f"otp_{user.email}", otp, timeout=3600)  
 
-        return Response({
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name
-        }, status=status.HTTP_201_CREATED)
+        # Send verification email
+        email_sent = email_services.send_verification_email(request, user, otp)
 
+        if email_sent:
+            return Response(
+                {"detail": "User created successfully. Please check your email to verify your account."},
+                status=status.HTTP_201_CREATED
+            )
+        else:
+            user.delete()
+            return Response(
+                {"error": "Failed to send verification email. Please try registering again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def verify_email(request):
+    """
+    Verifies the user's email with the provided OTP.
+    """
+    email = request.data.get('email')
+    otp_provided = request.data.get('otp')
+
+    if not email or not otp_provided:
+        return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    stored_otp = cache.get(f"otp_{email}")
+
+    if not stored_otp:
+        return Response({'error': 'OTP has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if stored_otp == otp_provided:
+        try:
+            user = User.objects.get(email=email)
+            if user.is_active:
+                return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
+            
+            user.is_active = True
+            user.save()
+            cache.delete(f"otp_{email}") # OTP has been used, so delete it
+            return Response({'message': 'Email verified successfully! You can now log in.'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def verify_email_page(request):
+    return render(request, 'verifyemail.html')

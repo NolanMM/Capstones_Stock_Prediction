@@ -3,6 +3,11 @@ from .models import StockPrice, Article, Profile, PortfolioItem
 from django.contrib.auth.models import User
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 
+class CustomUserCreateSerializer(BaseUserCreateSerializer):
+    class Meta(BaseUserCreateSerializer.Meta):
+        model = User
+        fields = ('id', 'username', 'email', 'password', 're_password', 'first_name', 'last_name')
+
 class StockPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockPrice
@@ -26,17 +31,18 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile', 'password']
         extra_kwargs = {
-            # Ensure password is not sent back in responses
             'password': {'write_only': True}
         }
     
     def create(self, validated_data):
+        is_active = validated_data.pop('is_active', False)
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
-            password=validated_data['password']
+            password=validated_data['password'],
+            is_active=is_active
         )
         return user
 
@@ -60,11 +66,27 @@ class UserSerializer(serializers.ModelSerializer):
             profile.save()
 
         return instance
+    
 
-class UserCreateSerializer(BaseUserCreateSerializer):
+class CustomUserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         model = User
-        fields = ('id', 'username', 'email', 'password', 're_password')
+        fields = ('id', 'username', 'email', 'password', 'first_name', 'last_name')
+
+    def create(self, validated_data):
+        """
+        Overrides the default behavior to ensure the user is created as inactive,
+        pending email verification.
+        """
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            password=validated_data['password'],
+            is_active=False
+        )
+        return user
 
 class PortfolioItemSerializer(serializers.ModelSerializer):
     class Meta:

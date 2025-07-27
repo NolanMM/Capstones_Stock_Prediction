@@ -15,6 +15,8 @@ urlpatterns = [
     path('portfolio/<str:stock_symbol>/', views.PortfolioDestroy.as_view(), name='portfolio-destroy'),
     path('login/', views.custom_login, name='custom-login'),
     path('logout/', views.custom_logout, name='custom-logout'),
-    path('api/users/', views.create_user, name='create_user'),
+    path('register/', views.create_user, name='create_user'),
+    path('verify-email/', views.verify_email, name='verify-email'),
+    path('verify-email-page/', views.verify_email_page, name='verify-email-page'),
     path('', include(router.urls)),
 ]
