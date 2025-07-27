@@ -86,7 +86,7 @@ DATABASES = {
         'HOST': 'capstone-database-server.database.windows.net',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
+            'driver': 'ODBC Driver 18 for SQL Server',
             'encrypt': True,
             'trust_server_certificate': False,
             'connection_timeout': 30,

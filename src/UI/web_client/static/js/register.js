@@ -60,17 +60,19 @@ signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();  
 
     // Extract user input from signup form
+    const first_name = signupForm.querySelector("input[placeholder='First Name']").value;
+    const last_name = signupForm.querySelector("input[placeholder='Last Name']").value;
     const email = signupForm.querySelector("input[placeholder='Email Address']").value;
-    const username = signupForm.querySelector("input[placeholder='Username']").value;
     const password = signupForm.querySelector("input[placeholder='Password']").value;
     const re_password = signupForm.querySelector("input[placeholder='Confirm password']").value;
+    const username = email.split('@')[0];
 
     // Debug: Log the values to console
-    console.log("Signup data:", { username, email, password, re_password });
-    
+    console.log("Signup data:", { first_name, last_name, email, password, re_password });
+
     // Check if any required fields are empty
-    if (!username || !email || !password || !re_password) {
-        alert("All fields are required.");
+    if (!username || !email || !password || !re_password || !first_name || !last_name) {
+        alert("All fields are required. Email must contain '@' and password must be at least 8 characters long.");
         return;
     }
 
@@ -85,18 +87,23 @@ signupForm.addEventListener("submit", async (e) => {
         const response = await fetch("/api/users/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, email, password, re_password })
+            body: JSON.stringify({ username, email, first_name, last_name, password, re_password })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            // Signup successful: inform user and switch to login form
             alert("Signup successful! Please login.");
-            document.querySelector("label.login").click(); // Auto-switch to login tab
+            document.querySelector("label.login").click();
         } else {
-            // Signup failed: display backend errors
-            alert("Signup failed: " + JSON.stringify(data));
+            // Handle cases where the username already exist
+            let errorMessage = "Signup failed: ";
+            if (data.username) {
+                errorMessage += "This username (" + username + ") is already taken. Please try a different email.";
+            } else {
+                errorMessage += JSON.stringify(data);
+            }
+            alert(errorMessage);
         }
     } catch (err) {
         alert("Error during signup: " + err.message);

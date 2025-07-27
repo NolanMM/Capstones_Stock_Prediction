@@ -5,7 +5,7 @@ from django.db import connection
 import pandas as pd
 from rest_framework.response import Response
 from .models import StockPrice, PortfolioItem
-from rest_framework import viewsets
+from rest_framework import viewsets , status
 import pyodbc
 from datetime import datetime, timedelta
 from . import ml_handler
@@ -531,3 +531,21 @@ def page_handler(request, page_name):
     except Exception as e:
         print(f"Error loading {page_name}.html: {str(e)}")
         return redirect('index')
+
+def create_user(request):
+    """
+    Creates a new user account.
+    """
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        
+        user = serializer.save()
+
+        return Response({
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name
+        }, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
