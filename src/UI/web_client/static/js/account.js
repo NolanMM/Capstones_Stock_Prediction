@@ -38,6 +38,9 @@ if (debugMode) {
             // Populate account UI with fetched data
             document.getElementById('email-display').textContent = data.email;
             document.getElementById('password-display').textContent = '********'; // Masked password
+            console.log('Fetched account data:', data);
+            const fullName = `${data.first_name || ''} ${data.last_name || ''}`.trim();
+            document.getElementById('full-name-display').textContent = fullName || 'No name provided';
             if (data.profile && data.profile.profile_picture_url) {
                 document.getElementById('profile-image').src = data.profile.profile_picture_url;
             } else {
