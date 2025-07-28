@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import StockPrice, Article, Profile, PortfolioItem
+from .models import ContactMessages, StockPrice, Article, Profile, PortfolioItem
 from django.contrib.auth.models import User
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 
@@ -111,3 +111,21 @@ class HistoricalStockNewsSerializer(serializers.Serializer):
     positive_value = serializers.FloatField(required=False, allow_null=True)
     negative_value = serializers.FloatField(required=False, allow_null=True)
     neutral_value = serializers.FloatField(required=False, allow_null=True)
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for handling contact form submissions.
+    """
+    class Meta:
+        model = ContactMessages
+        fields = ['id', 'user_name', 'user_email', 'phone_number', 'email_subject', 'message_text', 'submission_date']
+        read_only_fields = ('id', 'submission_date')
+
+    def create(self, validated_data):
+        """
+        Create and return a new `ContactMessages` instance, given the validated data.
+        """
+        # The line below unpacks the dictionary of validated data
+        # and passes it as keyword arguments to the create method.
+        # For example: ContactMessages.objects.create(user_name='John Doe', message_text='Hello...')
+        return ContactMessages.objects.create(**validated_data)

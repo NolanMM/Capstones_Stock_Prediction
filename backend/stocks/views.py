@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from . import ml_handler
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import CustomUserCreateSerializer, HistoricalStockNewsSerializer, UserSerializer, PortfolioItemSerializer
+from .serializers import ContactMessageSerializer, CustomUserCreateSerializer, HistoricalStockNewsSerializer, UserSerializer, PortfolioItemSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from .authentication import CsrfExemptSessionAuthentication
@@ -482,6 +482,19 @@ def news_articles_json(request):
         }
     ]
     return JsonResponse(data, safe=False)
+
+@api_view(['POST'])
+@permission_classes([AllowAny]) # Allow anyone to use this endpoint
+def contact_submit(request):
+    """
+    Handles the submission of the contact form.
+    """
+    serializer = ContactMessageSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Your message has been received successfully!"}, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AccountDetail(APIView):

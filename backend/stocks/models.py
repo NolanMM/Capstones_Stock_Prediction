@@ -56,3 +56,14 @@ class PortfolioItem(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.stock_symbol}'
+    
+class ContactMessages(models.Model):
+    user_name = models.CharField(max_length=255)
+    user_email = models.EmailField(max_length=255, null=True, blank=True)
+    phone_number = models.CharField(max_length=50, null=True, blank=True)
+    email_subject = models.CharField(max_length=255, null=True, blank=True)
+    message_text = models.TextField()
+    submission_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.user_name}"
