@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import JsonResponse
@@ -110,7 +111,7 @@ def predict_stock(request):
     
     Parameters:
     - symbol: The stock symbol to predict (e.g., AAPL, MSFT)
-    - days: Number of days to predict (default 7)
+    - days: Number of days to predict (default 5)
     
     Returns:
     - Prediction data including forecasted price and returns
@@ -120,57 +121,60 @@ def predict_stock(request):
         
         # Get query parameters
         symbol = request.query_params.get('symbol', 'AAPL')
-        horizon = request.query_params.get('days', 7)
-        
+        horizon = request.query_params.get('days', 5)
+
         print(f"Attempting to predict {symbol} for {horizon} days")
         
         try:
             horizon = int(horizon)
             if horizon <= 0 or horizon > 30:
-                horizon = 7  # Default to 7 days if invalid
+                horizon = 5  # Default to 5 days if invalid
         except ValueError:
-            horizon = 7
-            
-        with connection.cursor() as cursor:
-            try:
-                query = f"""
-                    SELECT [Date], [Open], [High], [Low], [Close], [Volume]
-                    FROM [Bronze].[Historical_Prices]
-                    WHERE [Stock_Symbol] = '{symbol}'
-                    ORDER BY [Date] DESC
-                """
-                cursor.execute(query)
-            except Exception as e:
-                print(f"Error executing query: {str(e)}")
-                raise            
-            columns = [column[0] for column in cursor.description]
-            results = []
-            for row in cursor.fetchall():
-                results.append(dict(zip(columns, row)))
-        
-        if not results:
-            return Response({"error": f"No data found for symbol: {symbol}"}, status=404)
-        
-        # Convert to DataFrame for processing
-        df = pd.DataFrame(results)
-        
-        # Convert string columns to proper types
-        numeric_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
-        for col in numeric_cols:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col])
-            else:
-                print(f"Warning: Column {col} not found in DataFrame")
-        
-        # Sort by date in ascending order (oldest to newest)
-        df['Date'] = pd.to_datetime(df['Date'])
-        df = df.sort_values('Date')
+            horizon = 5
 
-        print(f"DataFrame shape after processing: {df.shape}")
+        # with connection.cursor() as cursor:
+        #     try:
+        #         query = f"""
+        #             SELECT [Date], [Open], [High], [Low], [Close], [Volume]
+        #             FROM [Bronze].[Historical_Prices]
+        #             WHERE [Stock_Symbol] = '{symbol}'
+        #             ORDER BY [Date] DESC
+        #         """
+        #         cursor.execute(query)
+        #     except Exception as e:
+        #         print(f"Error executing query: {str(e)}")
+        #         raise            
+        #     columns = [column[0] for column in cursor.description]
+        #     results = []
+        #     for row in cursor.fetchall():
+        #         results.append(dict(zip(columns, row)))
+        
+        # if not results:
+        #     return Response({"error": f"No data found for symbol: {symbol}"}, status=404)
+        
+        # # Convert to DataFrame for processing
+        # df = pd.DataFrame(results)
+        
+        # # Convert string columns to proper types
+        # numeric_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
+        # for col in numeric_cols:
+        #     if col in df.columns:
+        #         df[col] = pd.to_numeric(df[col])
+        #     else:
+        #         print(f"Warning: Column {col} not found in DataFrame")
+        
+        # # Sort by date in ascending order (oldest to newest)
+        # df['Date'] = pd.to_datetime(df['Date'])
+        # df = df.sort_values('Date')
+
+        # print(f"DataFrame shape after processing: {df.shape}")
         
         # Call prediction function
         try:
-            prediction_result = ml_handler.predict_stock_returns(df, horizon)
+            FMP_API_KEY = os.getenv('FMP_API_KEY', None)
+            if not FMP_API_KEY:
+                raise ValueError("FMP_API_KEY environment variable is not set.")
+            prediction_result = ml_handler.predict_stock_returns(symbol, FMP_API_KEY)
             
             if "error" in prediction_result:
                 print(f"Error from ml_handler: {prediction_result['error']}")
