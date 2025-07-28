@@ -18,5 +18,6 @@ urlpatterns = [
     path('register/', views.create_user, name='create_user'),
     path('verify-email/', views.verify_email, name='verify-email'),
     path('verify-email-page/', views.verify_email_page, name='verify-email-page'),
+    path('stock-news/<str:symbol>/', views.stock_news, name='stock_news'),
     path('', include(router.urls)),
 ]

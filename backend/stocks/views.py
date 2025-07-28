@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from . import ml_handler
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import CustomUserCreateSerializer, UserSerializer, PortfolioItemSerializer
+from .serializers import CustomUserCreateSerializer, HistoricalStockNewsSerializer, UserSerializer, PortfolioItemSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from .authentication import CsrfExemptSessionAuthentication
@@ -195,6 +195,74 @@ def predict_stock(request):
         print(f"Error in predict_stock: {e}")
         print(f"Stack trace: {stack_trace}")
         return Response({"error": str(e), "stack_trace": stack_trace}, status=500)
+
+@api_view(['GET'])
+def news_articles_json(request):
+    data = [
+        {
+            "stock": "AAPL",
+            "articles": [
+                {
+                    "title": "Apple Stocks Surge Amid Earnings Report",
+                    "date": "2025-03-15",
+                    "description": "Apple's stock price increased significantly following a strong quarterly earnings report.",
+                    "link": "#"
+                },
+                {
+                    "title": "New iPhone Launch Expected to Boost Apple Stock",
+                    "date": "2025-03-10",
+                    "description": "Analysts predict the upcoming iPhone launch will drive Apple's stock price higher.",
+                    "link": "#"
+                }
+            ]
+        },
+        {
+            "stock": "MSFT",
+            "articles": [
+                {
+                    "title": "Microsoft Expands Cloud Services",
+                    "date": "2025-03-18",
+                    "description": "Microsoft announced expansion of their Azure cloud services platform.",
+                    "link": "#"
+                }
+            ]
+        }
+    ]
+    return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+def stock_news(request, symbol):
+    """
+    Retrieves the latest 10 news articles for a given stock symbol from the Gold layer.
+    """
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT TOP (10)
+                    [id], [category], [datetime], [headline], [image], [related],
+                    [source], [summary], [url], [symbol], [positive_value],
+                    [negative_value], [neutral_value]
+                FROM
+                    [Gold].[Historical_Stock_News_Sentiment_Score]
+                WHERE
+                    symbol = %s
+                ORDER BY
+                    [datetime] DESC
+            """
+            cursor.execute(query, [symbol])
+
+            # Create a list of dictionaries from the query result
+            columns = [column[0] for column in cursor.description]
+            news_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+            # Serialize the data to ensure consistent output and validation
+            serializer = HistoricalStockNewsSerializer(data=news_data, many=True)
+            serializer.is_valid(raise_exception=True)
+            print(f"Serialized news data {len(serializer.data)} articles for symbol: {symbol}")
+            return Response(serializer.data)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class StockPriceViewSet(viewsets.ViewSet):
     def list(self, request):

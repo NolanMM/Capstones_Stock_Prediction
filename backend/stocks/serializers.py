@@ -92,3 +92,22 @@ class PortfolioItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioItem
         fields = ['id', 'stock_symbol']
+
+class HistoricalStockNewsSerializer(serializers.Serializer):
+    """
+    Serializer for the Historical_Stock_News_Sentiment_Score table.
+    This acts as a Data Transfer Object (DTO) for the news data.
+    """
+    id = serializers.IntegerField(read_only=True)
+    category = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    datetime = serializers.CharField()
+    headline = serializers.CharField()
+    image = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    related = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    source = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    summary = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    url = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    symbol = serializers.CharField()
+    positive_value = serializers.FloatField(required=False, allow_null=True)
+    negative_value = serializers.FloatField(required=False, allow_null=True)
+    neutral_value = serializers.FloatField(required=False, allow_null=True)

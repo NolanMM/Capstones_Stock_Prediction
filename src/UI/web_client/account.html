@@ -57,6 +57,18 @@
 
                 <div class="col-lg-7 col-md-6 d-flex flex-column">
                     <div class="info-group">
+                        <label for="full-name-display" class="info-label">Full Name:</label>
+                        <div id="full-name-display" class="info-display">John Doe</div>
+                        <div id="full-name-input-container" class="mt-2 d-none">
+                            <input type="text" id="full-name-input" class="form-control mb-2" placeholder="Enter new full name">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary-custom" id="button-confirm-full-name" onclick="confirmFullName()">Confirm</button>
+                                <button class="btn btn-danger-custom" id="button-cancel-full-name" onclick="cancelFullName()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-group">
                         <label for="email-display" class="info-label">Email:</label>
                         <div id="email-display" class="info-display">user@example.com</div>
                         <div id="email-input-container" class="mt-2 d-none">

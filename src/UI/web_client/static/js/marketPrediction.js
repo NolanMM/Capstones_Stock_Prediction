@@ -53,9 +53,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 changeDateRange(days);
             });
         });
+
+        // Add tab navigation logic
+        document.querySelectorAll('.btn-group[role="group"] .btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                if (!targetId) return;
+
+                // Update button active states
+                document.querySelectorAll('.btn-group[role="group"] .btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update content section visibility
+                document.querySelectorAll('.content-section').forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            });
+        });
     }
 
-    function updateStock(stockName) {
+    async function updateStock(stockName) {
         currentSymbol = stockName;
         const selectedStockElement = document.getElementById("selectedStock");
         const removeStockBtn = document.getElementById("removeStock");
@@ -81,10 +103,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Fetch and display data
         fetchStockDetails(stockName);
-        initializeAllCharts(stockName);
-        fetchStockNews(stockName);
+        try {
+            await initializeAllCharts(stockName);
+            fetchStockNews(stockName);
+        } catch (error) {
+            console.error("Error during sequential data fetch:", error);
+        }
 
         document.getElementById("fourthSection").removeAttribute("hidden");
     }
@@ -368,42 +393,65 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function fetchStockNews(stockName) {
-        fetch("./static/json/newsarticles.json")
-            .then(response => response.json())
-            .then(data => {
+        almanacAPI.getStockNews(stockName)
+            .then(articles => {
                 const newsContent = document.getElementById("newsContent");
                 const newsRecentContent = document.getElementById("newsRecentContent");
-                newsContent.innerHTML = "";
-                newsRecentContent.innerHTML = "";
+                
+                newsContent.innerHTML = ""; 
+                newsRecentContent.innerHTML = ""; 
 
-                const stockNews = data.find(stock => stock.stock === stockName);
-                if (!stockNews) {
-                    newsContent.innerHTML = "<p>No news available for this stock.</p>";
+                if (!articles || articles.length === 0) {
+                    const noNewsMessage = "<p>No news available for this stock.</p>";
+                    newsContent.innerHTML = noNewsMessage;
+                    newsRecentContent.innerHTML = noNewsMessage;
                     return;
                 }
 
-                const twoWeeksAgo = new Date();
-                twoWeeksAgo.setDate(new Date().getDate() - 14);
+                // Create a temporary array to hold all article elements
+                const articleElements = []; 
 
-                stockNews.articles.forEach(article => {
-                    const articleDate = new Date(article.date);
+                articles.forEach(article => {
+                    const articleDate = new Date(article.datetime);
                     const articleElement = document.createElement("div");
-                    articleElement.classList.add("news-article", "mb-3");
-                    articleElement.innerHTML = `
-                        <h5><a href="${article.link}" target="_blank">${article.title}</a></h5>
-                        <h6>${article.date}</h6>
-                        <p>${article.description}</p>
-                    `;
-                    if (articleDate >= twoWeeksAgo) {
-                        newsRecentContent.appendChild(articleElement);
-                    } else {
-                        newsContent.appendChild(articleElement);
+                    articleElement.classList.add("card", "mb-3");
+                    articleElement.style.height = '180px';
+
+                    if (article.image) {
+                        articleElement.innerHTML = `
+                            <div class="row g-0 h-100">
+                                <div class="col-md-3 h-100">
+                                    <img src="${article.image}" class="img-fluid rounded-start" alt="News Image" style="height: 100%; width: 100%; object-fit: cover;">
+                                </div>
+                                <div class="col-md-9 d-flex flex-column h-100">
+                                    <div class="card-body" style="overflow-y: auto;">
+                                        <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
+                                        <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
+                                        <p class="card-text">${article.summary || 'No summary available.'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else { 
+                        articleElement.style.display = 'flex';
+                        articleElement.innerHTML = `
+                            <div class="card-body" style="overflow-y: auto; width: 100%;">
+                                <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
+                                <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
+                                <p class="card-text">${article.summary || 'No summary available.'}</p>
+                            </div>
+                        `;
                     }
+                    articleElements.push(articleElement);
                 });
+
+                articleElements.forEach(el => newsContent.appendChild(el));
+                articleElements.slice(0, 5).forEach(el => newsRecentContent.appendChild(el.cloneNode(true)));
             })
             .catch(error => {
                 console.error("Error fetching stock news:", error);
                 document.getElementById("newsContent").innerHTML = "<p>Error loading news.</p>";
+                document.getElementById("newsRecentContent").innerHTML = "<p>Error loading news.</p>";
             });
     }
 });

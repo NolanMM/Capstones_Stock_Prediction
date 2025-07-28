@@ -96,6 +96,22 @@ class AlmanacAPI {
             return { symbol, error: error.message };
         }
     }
+
+    async getStockNews(symbol) {
+        try {
+            console.log(`API: Fetching news for ${symbol}`);
+            const response = await fetch(`${this.baseUrl}/stock-news/${symbol}/`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch news for ${symbol}`);
+            }
+            const data = await response.json();
+            console.log(`API: Successfully fetched news for ${symbol}:`, data);
+            return data;
+        } catch (error) {
+            console.error(`API: Error fetching ${symbol} news:`, error);
+            return []; // Return an empty array on error to prevent breaking the calling function.
+        }
+    }
 }
 
 // Create a global instance
