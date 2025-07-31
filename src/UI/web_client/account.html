@@ -35,19 +35,24 @@
         </div>
     </nav>
 
-    <main class="container py-5"> <section class="account-header" data-aos="fade-up"> <h1>Account</h1>
+    <main class="container py-5">
+        <section class="account-header" data-aos="fade-up">
+            <h1>Account</h1>
             <p>View and update your information</p>
         </section>
 
         <section class="account-card" data-aos="fade-left">
-            <div class="row justify-content-center align-items-center"> <div class="col-lg-5 col-md-6 profile-image-section">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-lg-5 col-md-6 profile-image-section">
                     <div class="profile-image-wrapper">
                         <img id="profile-image" src="./static/images/profile-picture-placeholder.jpg" alt="Account Image">
                     </div>
                     <button class="btn btn-outline-secondary-custom" type="button" id="button-change-profile-picture"
                         onclick="changeProfilePicture()">Change Profile Picture</button>
-                    <div id="url-input-container" class="mt-3 d-none w-100"> <input type="text" id="image-url-input" class="form-control mb-2" placeholder="Enter new image URL">
-                        <div class="d-flex justify-content-center gap-2"> <button class="btn btn-primary-custom" id="button-confirm-url"
+                    <div id="url-input-container" class="mt-3 d-none w-100">
+                        <input type="text" id="image-url-input" class="form-control mb-2" placeholder="Enter new image URL">
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-primary-custom" id="button-confirm-url"
                                 onclick="changeImageUrl()">Confirm</button>
                             <button class="btn btn-danger-custom" id="button-cancel-url"
                                 onclick="cancelChange()">Cancel</button>
@@ -58,12 +63,21 @@
                 <div class="col-lg-7 col-md-6 d-flex flex-column">
                     <div class="info-group">
                         <label for="full-name-display" class="info-label">Full Name:</label>
-                        <div id="full-name-display" class="info-display">John Doe</div>
-                        <div id="full-name-input-container" class="mt-2 d-none">
-                            <input type="text" id="full-name-input" class="form-control mb-2" placeholder="Enter new full name">
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary-custom" id="button-confirm-full-name" onclick="confirmFullName()">Confirm</button>
-                                <button class="btn btn-danger-custom" id="button-cancel-full-name" onclick="cancelFullName()">Cancel</button>
+                        <div id="full-name-display" class="info-display">Loading...</div>
+                        <div id="name-input-container" class="mt-2 d-none">
+                            <div class="row g-2 mb-2">
+                                <div class="col">
+                                    <label for="first-name-input" class="form-label visually-hidden">First Name</label>
+                                    <input type="text" id="first-name-input" class="form-control" placeholder="First Name">
+                                </div>
+                                <div class="col">
+                                    <label for="last-name-input" class="form-label visually-hidden">Last Name</label>
+                                    <input type="text" id="last-name-input" class="form-control" placeholder="Last Name">
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2" >
+                                <button class="btn btn-primary-custom" onclick="confirmName()">Confirm</button>
+                                <button class="btn btn-danger-custom" onclick="cancelName()">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -95,14 +109,13 @@
                     </div>
 
                     <div class="button-group-actions">
-                        <button class="btn btn-primary-custom" type="button" id="button-edit-names"
-                            onclick="editNames()">Modify Names</button>
+                        <button class="btn btn-primary-custom" type="button" id="button-edit-name"
+                            onclick="editName()">Modify Name</button>
                         <button class="btn btn-primary-custom" type="button" id="button-edit-email"
                             onclick="editEmail()">Change Email</button>
                         <button class="btn btn-primary-custom" type="button" id="button-edit-password"
                             onclick="editPassword()">Change Password</button>
                         <button class="btn btn-danger-custom" type="button" id="button-log-out">Log Out</button>
-                        <!-- <button class="btn btn-danger-custom" type="button" id="button-delete-account">Delete Account</button> -->
                     </div>
                 </div>
             </div>
@@ -119,7 +132,7 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
     <script>
-        AOS.init(); // Initialize AOS
+        AOS.init();
     </script>
 </body>
 

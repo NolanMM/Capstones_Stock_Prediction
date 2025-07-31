@@ -125,7 +125,4 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         """
         Create and return a new `ContactMessages` instance, given the validated data.
         """
-        # The line below unpacks the dictionary of validated data
-        # and passes it as keyword arguments to the create method.
-        # For example: ContactMessages.objects.create(user_name='John Doe', message_text='Hello...')
         return ContactMessages.objects.create(**validated_data)

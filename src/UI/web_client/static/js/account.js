@@ -1,6 +1,9 @@
 // Enable/disable mock mode for testing without backend
 const debugMode = false;
-
+let currentUserFirstLast = {
+    firstName: '',
+    lastName: ''
+};
 // Use the auth manager to check authentication
 if (!authManager.requireAuth()) {
     // requireAuth will handle the redirect if not logged in
@@ -23,6 +26,10 @@ if (debugMode) {
     document.getElementById('email-display').textContent = mockData.email;
     document.getElementById('password-display').textContent = '********';
     document.getElementById('profile-image').src = mockData.profilePicture;
+    const fullName = `${mockData.first_name} ${mockData.last_name}`.trim();
+    document.getElementById('full-name-display').textContent = fullName;
+    currentUser.firstName = mockData.first_name;
+    currentUser.lastName = mockData.last_name;
 } else {
     // Fetch real account data from Django API
     fetch('/api/account/', { // Correct endpoint
@@ -35,6 +42,8 @@ if (debugMode) {
             return response.json();
         })
         .then(data => {
+            currentUserFirstLast.firstName = data.first_name || '';
+            currentUserFirstLast.lastName = data.last_name || '';
             // Populate account UI with fetched data
             document.getElementById('email-display').textContent = data.email;
             document.getElementById('password-display').textContent = '********'; // Masked password
@@ -52,6 +61,86 @@ if (debugMode) {
             alert("You must be logged in to access your account.");
             window.location.href = "/register.html";
         });
+}
+
+// === First Name and Last Name Handling ===
+function editName() {
+    // Hide the name display and the "Modify Name" button
+    document.getElementById('full-name-display').classList.add('d-none');
+    document.getElementById('button-edit-name').classList.add('d-none');
+
+    // Show the container with the input fields
+    document.getElementById('name-input-container').classList.remove('d-none');
+
+    // Populate the input fields with the user's current names
+    document.getElementById('first-name-input').value = currentUserFirstLast.firstName || '';
+    document.getElementById('last-name-input').value = currentUserFirstLast.lastName || '';
+}
+
+function confirmName() {
+    const newFirstName = document.getElementById('first-name-input').value.trim();
+    const newLastName = document.getElementById('last-name-input').value.trim();
+    // Validate that at least one name is present
+    if (!newFirstName && !newLastName) {
+        alert("First and last name cannot both be empty.");
+        return;
+    }
+    // Validate name length
+    if (newFirstName.length > 50 || newLastName.length > 50) {
+        alert("First and last names must be 50 characters or less.");
+        return;
+    }
+
+    // Build the request body with only the fields that have changed
+    const body_data = {};
+    if (newFirstName !== currentUserFirstLast.firstName) {
+        body_data.first_name = newFirstName;
+    }
+    if (newLastName !== currentUserFirstLast.lastName) {
+        body_data.last_name = newLastName;
+    }
+
+    // If no data has changed, simply exit edit mode
+    if (Object.keys(body_data).length === 0) {
+        cancelName();
+        return;
+    }
+
+    fetch('/api/account/', {
+            method: "PUT",
+            headers,
+            credentials: 'include',
+            body: JSON.stringify(body_data)
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.json().then(err => {
+                    throw new Error(err.detail || 'A server error occurred.');
+                });
+            }
+            return res.json();
+        })
+        .then(data => {
+            currentUserFirstLast.firstName = data.first_name || '';
+            currentUserFirstLast.lastName = data.last_name || '';
+
+            // Update the UI to show the new full name
+            const fullName = `${currentUserFirstLast.firstName} ${currentUserFirstLast.lastName}`.trim();
+            document.getElementById('full-name-display').textContent = fullName || 'No name provided';
+
+            alert("Name updated successfully!");
+            cancelName();
+        })
+        .catch(err => {
+            console.error('Error updating name:', err);
+            alert(`Failed to update name: ${err.message}`);
+        });
+}
+
+function cancelName() {
+    document.getElementById('name-input-container').classList.add('d-none');
+    document.getElementById('full-name-display').classList.remove('d-none');
+    document.getElementById('button-edit-name').classList.remove('d-none');
 }
 
 // === Email Handling ===
