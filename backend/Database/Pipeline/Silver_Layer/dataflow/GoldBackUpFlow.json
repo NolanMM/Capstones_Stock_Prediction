@@ -385,6 +385,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     batchSize: 10000,",
 				"     skipDuplicateMapInputs: true,",
