@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ContactMessages, StockPrice, Article, Profile, PortfolioItem
+from .models import ContactMessages, StockPrice, Article, Profile, PortfolioItem, StockPriceSilver
 from django.contrib.auth.models import User
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 
@@ -126,3 +126,21 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         Create and return a new `ContactMessages` instance, given the validated data.
         """
         return ContactMessages.objects.create(**validated_data)
+
+class StockPriceSilverSerializer(serializers.ModelSerializer):
+    open = serializers.FloatField(source='Open')
+    high = serializers.FloatField(source='High')
+    low = serializers.FloatField(source='Low')
+    close = serializers.FloatField(source='Close')
+    volume = serializers.IntegerField(source='Volume')
+    dividends = serializers.FloatField(source='Dividends')
+    date = serializers.CharField(source='Date')
+    stock_Symbol = serializers.CharField(source='Stock_Symbol')
+    stock_Splits = serializers.FloatField(source='Stock_Splits')
+
+    class Meta:
+        model = StockPriceSilver
+        fields = [
+            'open', 'high', 'low', 'close', 'volume', 'dividends', 
+            'date', 'stock_Symbol', 'stock_Splits'
+        ]

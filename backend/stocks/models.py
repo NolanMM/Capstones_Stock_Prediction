@@ -20,6 +20,24 @@ class StockPrice(models.Model):
 
     def str(self):
         return f"{self.Stock_Symbol} ({self.Date})"
+    
+class StockPriceSilver(models.Model):
+    Open = models.FloatField()
+    High = models.FloatField()
+    Low = models.FloatField()
+    Close = models.FloatField()
+    Volume = models.IntegerField()
+    Dividends = models.FloatField()
+    Stock_Symbol = models.CharField(max_length=10)
+    Stock_Splits = models.FloatField()
+    Date = models.CharField(max_length=30)
+
+    class Meta:
+        managed = False
+        db_table = '[Silver].[Historical_Prices]'
+
+    def str(self):
+        return f"{self.Stock_Symbol} ({self.Date})"
 
 class Article(models.Model):
     stock_name = models.CharField(max_length=10)

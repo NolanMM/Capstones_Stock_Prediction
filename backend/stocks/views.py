@@ -7,8 +7,7 @@ from django.db import connection
 import pandas as pd
 from rest_framework.response import Response
 from django.core.cache import cache
-
-from stocks.services.news_services import fetch_news_sentiment_by_days
+from django.conf import settings
 from .services import email_services
 from .models import StockPrice, PortfolioItem
 from rest_framework import viewsets , status
@@ -17,7 +16,7 @@ from datetime import datetime, timedelta
 from . import ml_handler
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import ContactMessageSerializer, CustomUserCreateSerializer, HistoricalStockNewsSerializer, UserSerializer, PortfolioItemSerializer
+from .serializers import ContactMessageSerializer, CustomUserCreateSerializer, HistoricalStockNewsSerializer, StockPriceSilverSerializer, UserSerializer, PortfolioItemSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from .authentication import CsrfExemptSessionAuthentication
@@ -51,13 +50,20 @@ def test_connection(request):
     
 @api_view(['GET'])
 def available_stocks(request):
+    """
+    Reads a list of available stock symbols from the tickers.json file.
+    """
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT Stock_Symbol FROM [Bronze].[Historical_Prices]")
-            symbols = [row[0] for row in cursor.fetchall()]  # Limit to 50
+        file_path = os.path.join(settings.BASE_DIR, 'tickers.json')
+        with open(file_path, 'r') as f:
+            symbols = json.load(f)
+            
         return Response({"symbols": symbols})
+
+    except FileNotFoundError:
+        return Response({"error": "tickers.json not found in the project root directory."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({"error": str(e)}, status=500)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def stock_history(request, symbol):
@@ -824,7 +830,7 @@ def verify_email_mobile(request):
 def get_recent_news_sentiment(request):
     """
     Fetches all recent news sentiment data over a given range of days.
-    Example URL: /api/stock-news/get_recent_news/?days=30
+    URL: /api/stock-news/get_recent_news/?days=30
     """
     days_param = request.GET.get('days', 7)
     
@@ -865,4 +871,120 @@ def get_recent_news_sentiment(request):
         print(f"An error occurred: {e}")
         return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
- 
+@api_view(['GET'])
+def get_historical_prices_mobile_by_stocks_and_days(requests):
+    """
+    Fetches historical stock prices for a given list of stock symbols over a specified number of days.
+    URL: /api/stock-history/get_historical_prices/?symbols=AAPL,MSFT&days=30
+    """
+    symbol_param = requests.GET.get('symbol', '')
+    days_param = requests.GET.get('days', '30')
+
+    if not symbol_param:
+        return Response({'error': 'No stock symbols provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        days = int(days_param)
+    except ValueError:
+        return Response({'error': 'Invalid "days" parameter. It must be an integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        with connection.cursor() as cursor:
+            query = f"""
+                SELECT
+                    [Open], [High], [Low], [Close], [Volume], [Dividends], [Date], [Stock_Symbol], [Stock_Splits]
+                FROM
+                    [Silver].[Historical_Prices]
+                WHERE
+                    Stock_Symbol = %s
+                    AND TRY_CAST([Date] AS DATETIME) >= DATEADD(DAY, -%s, GETDATE())
+                ORDER BY
+                    Stock_Symbol, TRY_CAST([Date] AS DATETIME) ASC
+            """
+            cursor.execute(query, [symbol_param, days])
+
+            columns = [column[0] for column in cursor.description]
+            history_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not history_data:
+                return Response({'message': f'No historical data found for the provided symbols in the last {days} days.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = StockPriceSilverSerializer(instance=history_data, many=True)
+
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def get_historical_prices_mobile_by_stocks_and_start_date_and_end_date(requests):
+    """
+    Fetches historical stock prices for a given list of stock symbols over a specified date range.
+    URL: /api/stock-history/get_historical_prices/?symbols=AAPL,MSFT&start_date=2023-01-01&end_date=2023-12-31
+    """
+    symbol_param = requests.GET.get('symbol', '')
+    start_date_param = requests.GET.get('start_date', '')
+    end_date_param = requests.GET.get('end_date', '')
+
+    if not symbol_param:
+        return Response({'error': 'No stock symbols provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not start_date_param or not end_date_param:
+        return Response({'error': 'Both start_date and end_date parameters are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT
+                    [Open], 
+                    [High], 
+                    [Low], 
+                    [Close], 
+                    [Volume], 
+                    [Dividends], 
+                    [Date], 
+                    [Stock_Symbol], 
+                    [Stock_Splits]
+                FROM
+                    [Silver].[Historical_Prices]
+                WHERE
+                    Stock_Symbol = %s
+                    AND TRY_CAST([Date] AS DATETIME) BETWEEN %s AND %s
+                ORDER BY
+                    Stock_Symbol, TRY_CAST([Date] AS DATETIME) ASC
+            """
+            cursor.execute(query, [symbol_param, start_date_param, end_date_param])
+
+            columns = [column[0] for column in cursor.description]
+            history_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not history_data:
+                return Response({'message': f'No historical data found for the provided symbols between {start_date_param} and {end_date_param}.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = StockPriceSilverSerializer(instance=history_data, many=True)
+
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def get_stocks_available_api(requests):
+    """
+    Reads a list of available stock symbols from the tickers.json file.
+    """
+    try:
+        file_path = os.path.join(settings.BASE_DIR, 'tickers.json')
+        with open(file_path, 'r') as f:
+            symbols = json.load(f)
+            
+        return Response(symbols)
+
+    except FileNotFoundError:
+        return Response({"error": "tickers.json not found in the project root directory."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
