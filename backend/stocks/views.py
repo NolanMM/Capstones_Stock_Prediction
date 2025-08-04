@@ -4,12 +4,11 @@ from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import JsonResponse
 from django.db import connection
-import pandas as pd
 from rest_framework.response import Response
 from django.core.cache import cache
 from django.conf import settings
 from .services import email_services
-from .models import StockPrice, PortfolioItem
+from .models import PortfolioItem
 from rest_framework import viewsets , status
 import pyodbc
 from datetime import datetime, timedelta
@@ -19,10 +18,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ContactMessageSerializer, CustomUserCreateSerializer, HistoricalStockNewsSerializer, StockPriceSilverSerializer, UserSerializer, PortfolioItemSerializer
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
-from .authentication import CsrfExemptSessionAuthentication
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 import json
+from openai import OpenAI
+import instructor
+from .services.orchestrator import FinancialAssistant
+
 
 # Legacy database connection test - TODO: Refactor in sprint 2
 def test_connection(request):
@@ -988,3 +990,35 @@ def get_stocks_available_api(requests):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+@api_view(['POST'])
+def analyze_query(request):
+    """
+    Handles the POST request from the frontend, runs the query through the assistant,
+    and returns the analysis as JSON.
+    """
+    fmp_api_key = os.getenv('FMP_API_KEY', None)
+    fh_api_key = os.getenv("FINNHUB_API_KEY", None)
+    if not fmp_api_key or not fh_api_key:
+        raise ValueError("FMP_API_KEY and FINNHUB_API_KEY environment variables are not set.")
+    try:
+        client = instructor.patch(OpenAI(api_key=os.getenv("OPEN_AI_KEY")))
+        assistant = FinancialAssistant(
+            client=client,
+            fmp_api_key=fmp_api_key,
+            fh_api_key=fh_api_key
+        )
+        data = json.loads(request.body)
+        query = data.get('query')
+
+        if not query:
+            return JsonResponse({'error': 'Query not provided'}, status=400)
+
+        result = assistant.run(query)
+        return JsonResponse(result, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
+

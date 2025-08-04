@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ApiSignUp, ApiLogin, verify_email_mobile, get_recent_news_sentiment, get_historical_prices_mobile_by_stocks_and_start_date_and_end_date, get_stocks_available_api
+from .views import ApiSignUp, ApiLogin, verify_email_mobile, get_recent_news_sentiment, get_historical_prices_mobile_by_stocks_and_start_date_and_end_date, get_stocks_available_api, analyze_query
 from . import views
 
 router = DefaultRouter()
@@ -27,5 +27,6 @@ urlpatterns = [
     path('contact-submit/', views.contact_submit, name='contact-submit'),
     path('get_historical_prices_mobile_by_stocks_and_start_date_and_end_date/', get_historical_prices_mobile_by_stocks_and_start_date_and_end_date, name='get_historical_prices_mobile_by_stocks_and_start_date_and_end_date'),
     path('get_stocks_available_api/', get_stocks_available_api, name='get_stocks_available_api'),
+    path('analyze/', analyze_query, name='analyze_query'),
     path('', include(router.urls)),
 ]
