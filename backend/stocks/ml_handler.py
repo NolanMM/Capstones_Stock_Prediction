@@ -46,7 +46,7 @@ def adjust_date_for_weekend(date_to_check: date) -> date:
 
 def fetch_all_history(ticker: str, api_key: str) -> pd.DataFrame:
     today_original = datetime.today().date()
-    target_original = today_original - timedelta(days=150)
+    target_original = today_original - timedelta(days=365)
 
     today_adjusted = adjust_date_for_weekend(today_original)
     target_adjusted = adjust_date_for_weekend(target_original)
@@ -69,13 +69,16 @@ def fetch_all_history(ticker: str, api_key: str) -> pd.DataFrame:
     df["date"] = pd.to_datetime(df["date"])
 
     df = df.drop_duplicates(subset="date").sort_values("date").reset_index(drop=True)
-    if len(df) > 72:
-        df = df.tail(72).reset_index(drop=True)
 
     df["Return_3D"]     = df["close"].pct_change(periods=3).shift(-3)
     df["Return_1D"]     = df["close"].pct_change()
     df["Volatility_3D"] = df["Return_1D"].rolling(window=3).std()
-    return df.dropna(subset=["Return_3D","Volatility_3D"]).reset_index(drop=True)
+    df = df.dropna(subset=["Return_3D","Volatility_3D"]).reset_index(drop=True)
+    
+    if len(df) > 72:
+        df = df.tail(72).reset_index(drop=True)
+
+    return df
 
 # --- LSTM Model Definition ---
 class LSTMModel(nn.Module):
@@ -163,7 +166,6 @@ def forecast_future_scaled(net, window_scaled, horizon): # Forecast future retur
 def predict_stock_returns(ticker, fmp_api_key=None):
     try:
         raw_df = fetch_all_history(ticker.upper(), fmp_api_key)
-
         df = (
             raw_df.rename(columns={
                 "open":"Open", "high":"High", "low":"Low",
@@ -178,7 +180,7 @@ def predict_stock_returns(ticker, fmp_api_key=None):
 
         X_all = build_all_windows(df_scaled, feature_cols, TARGET, WINDOW_SIZE) 
         last_window = X_all[-1]
-
+        print(f"Last window shape: {last_window.shape}")
         fc_scaled = forecast_future_scaled(model, last_window, HORIZON)
         q_last = str(df_scaled.index[-1].to_period("Q"))
         m = scalers_q[q_last]

@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import ApiSignUp, ApiLogin, verify_email_mobile, get_recent_news_sentiment
 from . import views
 
 router = DefaultRouter()
@@ -18,7 +19,11 @@ urlpatterns = [
     path('register/', views.create_user, name='create_user'),
     path('verify-email/', views.verify_email, name='verify-email'),
     path('verify-email-page/', views.verify_email_page, name='verify-email-page'),
+    path('v2/signup/', ApiSignUp, name='api_v2_signup'),
+    path('v2/login/', ApiLogin, name='api_v2_login'),
+    path('v2/verify-email-mobile/', verify_email_mobile, name='api_v2_verify_email_mobile'),
     path('stock-news/<str:symbol>/', views.stock_news, name='stock_news'),
+    path('get_recent_news/', get_recent_news_sentiment, name='get_recent_news'),
     path('contact-submit/', views.contact_submit, name='contact-submit'),
     path('', include(router.urls)),
 ]

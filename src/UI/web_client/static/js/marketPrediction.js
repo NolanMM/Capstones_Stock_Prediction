@@ -416,33 +416,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     const articleElement = document.createElement("div");
                     articleElement.classList.add("card", "mb-3");
                     articleElement.style.height = '180px';
-
-                    if (article.image) {
-                        articleElement.innerHTML = `
-                            <div class="row g-0 h-100">
-                                <div class="col-md-3 h-100">
-                                    <img src="${article.image}" class="img-fluid rounded-start" alt="News Image" style="height: 100%; width: 100%; object-fit: cover;">
-                                </div>
-                                <div class="col-md-9 d-flex flex-column h-100">
-                                    <div class="card-body" style="overflow-y: auto;">
-                                        <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
-                                        <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
-                                        <p class="card-text">${article.summary || 'No summary available.'}</p>
+                    
+                    if (article.summary && article.summary != "None") {
+                        if (article.image && article.image != "None") {
+                            articleElement.innerHTML = `
+                                <div class="row g-0 h-100">
+                                    <div class="col-md-3 h-100">
+                                        <img src="${article.image}" class="img-fluid rounded-start" alt="News Image" style="height: 100%; width: 100%; object-fit: cover;">
+                                    </div>
+                                    <div class="col-md-9 d-flex flex-column h-100">
+                                        <div class="card-body" style="overflow-y: auto;">
+                                            <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
+                                            <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
+                                            <p class="card-text">${article.summary || 'No summary available.'}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
-                    } else { 
-                        articleElement.style.display = 'flex';
-                        articleElement.innerHTML = `
-                            <div class="card-body" style="overflow-y: auto; width: 100%;">
-                                <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
-                                <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
-                                <p class="card-text">${article.summary || 'No summary available.'}</p>
-                            </div>
-                        `;
+                            `;
+                        } else { 
+                            articleElement.style.display = 'flex';
+                            articleElement.innerHTML = `
+                                <div class="card-body" style="overflow-y: auto; width: 100%;">
+                                    <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
+                                    <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
+                                    <p class="card-text">${article.summary || 'No summary available.'}</p>
+                                </div>
+                            `;
+                        }
+                        articleElements.push(articleElement);
                     }
-                    articleElements.push(articleElement);
                 });
 
                 articleElements.forEach(el => newsContent.appendChild(el));

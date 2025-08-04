@@ -1,11 +1,14 @@
 import os
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import JsonResponse
 from django.db import connection
 import pandas as pd
 from rest_framework.response import Response
 from django.core.cache import cache
+
+from stocks.services.news_services import fetch_news_sentiment_by_days
 from .services import email_services
 from .models import StockPrice, PortfolioItem
 from rest_framework import viewsets , status
@@ -698,3 +701,168 @@ def verify_email(request):
 @api_view(['GET'])
 def verify_email_page(request):
     return render(request, 'verifyemail.html')
+
+@api_view(['POST'])
+def ApiSignUp(request):
+    """
+    Handles new user registration with the specified JSON response.
+    """
+    serializer = CustomUserCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        
+        otp = email_services.generate_random_key()
+        cache.set(f"otp_{user.email}", otp, timeout=3600)
+
+        email_sent = email_services.send_verification_email(request, user, otp)
+
+        if email_sent:
+            # Ensure a session key exists to be returned
+            if not request.session.session_key:
+                request.session.save()
+            
+            response_data = {
+                "message": "User registration request received. Please check your email for the OTP code.",
+                "sessionId": str(request.session.session_key),
+                "username": str(user.username),
+                "email": str(user.email),
+                # WARNING: Returning the OTP code is insecure and not for production use.
+                "otpCode": int(otp), 
+                "timestamp": str(datetime.now().isoformat())
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        else:
+            user.delete()
+            return Response(
+                {"error": "Failed to send verification email. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def ApiLogin(request):
+    """
+    Handles user authentication with the specified JSON response.
+    """
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    password = request.GET.get('password')
+
+    if not password or (not username and not email):
+        return Response({'error': 'Please provide username/email and password.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = None
+    if username:
+        user = authenticate(request, username=username, password=password)
+    
+    if not user and email:
+        try:
+            user_obj = User.objects.get(email__iexact=email)
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            pass
+    
+    if user is not None:
+        if not user.is_active:
+            return Response({'error': 'Account not activated. Please verify your email.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        login(request, user)
+        response_data = {
+            "message": "Login successful",
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def verify_email_mobile(request):
+    """
+    Verifies the user's email with the OTP and returns the specified JSON response upon success.
+    """
+    email = request.data.get('email')
+    otp_provided = request.data.get('otp')
+
+    if not email or not otp_provided:
+        return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    stored_otp = cache.get(f"otp_{email}")
+
+    if not stored_otp:
+        return Response({'error': 'OTP has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if stored_otp == otp_provided:
+        try:
+            user = User.objects.get(email=email)
+            if user.is_active:
+                return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
+            
+            user.is_active = True
+            user.save()
+            cache.delete(f"otp_{email}")
+
+            response_data = {
+                "message": "User registered successfully",
+                "id": int(user.id),
+                "username": str(user.username),
+                "email": str(user.email)
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_recent_news_sentiment(request):
+    """
+    Fetches all recent news sentiment data over a given range of days.
+    Example URL: /api/stock-news/get_recent_news/?days=30
+    """
+    days_param = request.GET.get('days', 7)
+    
+    try:
+        days = int(days_param)
+    except ValueError:
+        return Response({'error': 'Invalid "days" parameter. It must be an integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    start_date = datetime.now() - timedelta(days=days)
+    
+    try:
+        with connection.cursor() as cursor:
+            query = f"""
+                SELECT
+                    [id], [category], [datetime], [headline], [image], [related],
+                    [source], [summary], [url], [symbol], [positive_value],
+                    [negative_value], [neutral_value]
+                FROM
+                    [Gold].[Historical_Stock_News_Sentiment_Score]
+                WHERE
+                    TRY_CAST([datetime] AS DATETIME) >= DATEADD(DAY, -{int(days)}, GETDATE())
+                ORDER BY
+                    TRY_CAST([datetime] AS DATETIME) DESC
+            """
+            cursor.execute(query)
+
+            columns = [column[0] for column in cursor.description]
+            news_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not news_data:
+                return Response({'message': f'No news found in the last {days} days.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = HistoricalStockNewsSerializer(instance=news_data, many=True)
+
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+ 

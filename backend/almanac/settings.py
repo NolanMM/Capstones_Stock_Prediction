@@ -30,7 +30,12 @@ SECRET_KEY = 'django-insecure-%%*b66g6(u&^z@!bz_x+a8xbod7s4$ctx!!_yr)u1#ottrt^jo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.ngrok-free.app',
+    '*'
+]
 
 
 # Application definition
@@ -76,7 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'almanac.wsgi.application'
-
+ASGI_APPLICATION = 'almanac.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
