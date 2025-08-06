@@ -46,7 +46,7 @@ def adjust_date_for_weekend(date_to_check: date) -> date:
 
 def fetch_all_history(ticker: str, api_key: str) -> pd.DataFrame:
     today_original = datetime.today().date()
-    target_original = today_original - timedelta(days=365)
+    target_original = today_original - timedelta(days=365*2)
 
     today_adjusted = adjust_date_for_weekend(today_original)
     target_adjusted = adjust_date_for_weekend(target_original)
@@ -75,8 +75,8 @@ def fetch_all_history(ticker: str, api_key: str) -> pd.DataFrame:
     df["Volatility_3D"] = df["Return_1D"].rolling(window=3).std()
     df = df.dropna(subset=["Return_3D","Volatility_3D"]).reset_index(drop=True)
     
-    if len(df) > 72:
-        df = df.tail(72).reset_index(drop=True)
+    if len(df) > 182:
+        df = df.tail(182).reset_index(drop=True)
 
     return df
 

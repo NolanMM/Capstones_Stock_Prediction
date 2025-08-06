@@ -195,9 +195,9 @@ form .btn .btn-layer {
     ;
 }
 
-form .btn:hover .btn-layer {
+/* form .btn:hover .btn-layer {
     left: 0;
-}
+} */
 
 form .btn input[type="submit"] {
     height: 100%;

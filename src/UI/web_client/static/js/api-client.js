@@ -38,7 +38,8 @@ class AlmanacAPI {
             const response = await fetch(`${this.baseUrl}/stock-history/${symbol}/?days=${days}`);
             if (!response.ok) throw new Error(`Failed to fetch history for ${symbol}`);
             const data = await response.json();
-            console.log(`API: Successfully fetched history for ${symbol}:`, data);
+            //console.log(`API: Successfully fetched history for ${symbol} AAAA:`, data.company_info);
+            //console.log(`API: Successfully fetched history for ${symbol}:`, data);
             return data;
         } catch (error) {
             console.error(`API: Error fetching ${symbol} history:`, error);

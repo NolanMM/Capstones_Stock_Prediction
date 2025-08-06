@@ -104,13 +104,32 @@ def stock_history(request, symbol):
             query = base_query + " GROUP BY [Date], Stock_Symbol ORDER BY [Date] ASC"
             
             cursor.execute(query, params)
-            
+
             columns = [column[0] for column in cursor.description]
             history = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+            # Fetch the company information
+            company_info_query = """
+                SELECT
+                    companyName,
+                    sector,
+                    industry
+                FROM
+                    [Silver].[Company_Information]
+                WHERE
+                    symbol = %s
+            """
+            cursor.execute(company_info_query, [symbol])
+            company_info = cursor.fetchone()
         
         return Response({
             "symbol": symbol,
-            "history": history
+            "history": history,
+                "company_info": {
+                    "name": company_info[0],
+                    "sector": company_info[1],
+                    "industry": company_info[2]
+                }
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)

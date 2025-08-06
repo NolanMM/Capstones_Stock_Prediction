@@ -195,11 +195,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const history = historyData.history.sort((a, b) => new Date(a.Date || a.date) - new Date(b.Date || b.date));
         if (!history.length) return;
 
+        const companyName = historyData.company_info?.name || symbol;
+        const companySector = historyData.company_info?.sector || 'Unknown Sector';
+        const companyIndustry = historyData.company_info?.industry || 'Unknown Industry';
+
         const labels = history.map(p => new Date(p.Date || p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
         const prices = history.map(p => parseFloat(p.Close || p.close));
 
         createChart("chLine", "line", {
-            title: `${symbol} - Historical Price`,
+            title: `${symbol} - Historical Price - ${companyName}`,
             labels: labels,
             datasets: [{
                 label: 'Historical Price ($)',
@@ -214,6 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updatePredictionAndOtherCharts(historyData, predictionData, symbol) {
         const history = historyData.history.sort((a, b) => new Date(a.Date || a.date) - new Date(b.Date || b.date));
         const predictions = predictionData.forecast.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const companyName = historyData.company_info?.name || symbol;
 
         const historyMap = new Map();
         history.forEach(p => {
@@ -255,7 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         createChart("chLine2", "line", {
-            title: `${symbol} - Price with 7-Day Predictions`,
+            title: `${symbol} - Price with 7-Day Predictions - ${companyName}`,
             labels: labels,
             datasets: [
                 {
@@ -319,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,       // <-- allow canvas to resize freely
                 plugins: {
                     title: { display: !!chartData.title, text: chartData.title || '' },
                     legend: { display: true }
@@ -415,13 +420,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     const articleDate = new Date(article.datetime);
                     const articleElement = document.createElement("div");
                     articleElement.classList.add("card", "mb-3");
-                    articleElement.style.height = '180px';
+                    //articleElement.style.height = '180px';
                     
                     if (article.summary && article.summary != "None") {
                         if (article.image && article.image != "None") {
                             articleElement.innerHTML = `
                                 <div class="row g-0 h-100">
-                                    <div class="col-md-3 h-100">
+                                    <div class="card mb-3" style="max-height: 300px; overflow-y: auto;">
                                         <img src="${article.image}" class="img-fluid rounded-start" alt="News Image" style="height: 100%; width: 100%; object-fit: cover;">
                                     </div>
                                     <div class="col-md-9 d-flex flex-column h-100">
