@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+# Load environment variables from .env file
+load_dotenv("./.env", override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +30,12 @@ SECRET_KEY = 'django-insecure-%%*b66g6(u&^z@!bz_x+a8xbod7s4$ctx!!_yr)u1#ottrt^jo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.ngrok-free.app',
+    '*'
+]
 
 
 # Application definition
@@ -40,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stocks',
     'rest_framework',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +81,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'almanac.wsgi.application'
-
+ASGI_APPLICATION = 'almanac.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -85,7 +95,7 @@ DATABASES = {
         'HOST': 'capstone-database-server.database.windows.net',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
+            'driver': 'ODBC Driver 18 for SQL Server',
             'encrypt': True,
             'trust_server_certificate': False,
             'connection_timeout': 30,
@@ -138,3 +148,34 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'stocks.authentication.CsrfExemptSessionAuthentication',
+    ),
+}
+
+DJOSER = {
+    'USER_ID_FIELD': 'username',
+    'LOGIN_FIELD': 'email',
+    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'verify-email/?uid={uid}&token={token}',
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user_create': 'stocks.serializers.CustomUserCreateSerializer',
+        'user': 'stocks.serializers.UserSerializer',
+        'current_user': 'stocks.serializers.UserSerializer',
+    }
+}
+
+# Add authentication backends to support email login
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default backend
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('SENDER_EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD')

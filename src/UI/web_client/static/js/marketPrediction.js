@@ -1,43 +1,93 @@
-    document.addEventListener("DOMContentLoaded", function () {
-    const addToPortfolioButtons = document.querySelectorAll('.portfoliobutton');
-    const portfolioLink = document.querySelector('.nav-link[href="portfolio.html"]');
-    const accountLink = document.querySelector('.nav-link[href="account.html"]');
-    
-    // Simulated check for login status, replace with your actual check
-    function isLoggedIn() {
-        // This is a placeholder. Replace it with your actual login check.
-        return true; // Assuming the user is not logged in for this example
-    }
-
-    // If the user is not logged in, hide the "Add to Portfolio" buttons
-    if (!isLoggedIn()) {
-        addToPortfolioButtons.forEach(button => {
-            button.style.display = 'none';
-        });
-        if (portfolioLink) {
-            portfolioLink.style.display = 'none'; // Hide "Your Portfolio" link
-        }
-        
-        if (accountLink) {
-            accountLink.setAttribute('href', 'register.html'); // Change "Account" button to redirect to register.html
-        }
-    }
-});
-
-
 document.addEventListener("DOMContentLoaded", function () {
-    const removeStockBtn = document.getElementById("removeStock");
-    const selectedStock = document.getElementById("selectedStock");
-    const stockInput = document.getElementById("DataList");
-    const datalist = document.getElementById("datalistOptions");
+    // Global variables for chart management
+    let chartInstances = {};
+    let currentSymbol = null;
+    let predictionDataStore = null;
+    let fixedHistoryForPredictionChart = null;
 
-    removeStockBtn.style.display = "none";    function updateStock(stockName) {
-        selectedStock.textContent = stockName;
-        selectedStock.appendChild(removeStockBtn);
+    // Initialize the page
+    loadStockNames();
+    setupEventListeners();
+
+    // Simulated check for login status
+    function isLoggedIn() {
+        return true; // Placeholder
+    }
+
+    if (!isLoggedIn()) {
+        document.querySelectorAll('.portfoliobutton').forEach(button => button.style.display = 'none');
+        const portfolioLink = document.querySelector('.nav-link[href="portfolio.html"]');
+        if (portfolioLink) portfolioLink.style.display = 'none';
+        const accountLink = document.querySelector('.nav-link[href="account.html"]');
+        if (accountLink) accountLink.setAttribute('href', 'register.html');
+    }
+
+    function setupEventListeners() {
+        const stockInput = document.getElementById("DataList");
+        stockInput.addEventListener("change", function () {
+            const inputValue = this.value.trim();
+            const options = Array.from(document.getElementById("datalistOptions").options).map(option => option.value);
+            if (options.includes(inputValue)) {
+                updateStock(inputValue);
+            } else {
+                this.value = "";
+            }
+        });
+
+        document.getElementById("removeStock").addEventListener("click", function () {
+            stockInput.value = "";
+            resetStockData();
+            resetCharts();
+        });
+
+        document.querySelectorAll('.chart-controls .chart-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const range = this.getAttribute('data-range');
+                let days;
+                switch (range) {
+                    case '1W': days = 7; break;
+                    case '1M': days = 30; break;
+                    case '1Y': days = 365; break;
+                    default: days = 30;
+                }
+                changeDateRange(days);
+            });
+        });
+
+        // Add tab navigation logic
+        document.querySelectorAll('.btn-group[role="group"] .btn').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                if (!targetId) return;
+
+                // Update button active states
+                document.querySelectorAll('.btn-group[role="group"] .btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update content section visibility
+                document.querySelectorAll('.content-section').forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            });
+        });
+    }
+
+    async function updateStock(stockName) {
+        currentSymbol = stockName;
+        const selectedStockElement = document.getElementById("selectedStock");
+        const removeStockBtn = document.getElementById("removeStock");
+
+        selectedStockElement.textContent = stockName;
+        selectedStockElement.appendChild(removeStockBtn);
         removeStockBtn.style.display = "inline-block";
-        stockInput.value = "";
-        
-        // Show loading indicators
+        document.getElementById("DataList").value = "";
+
+        // Show loading placeholders
         const fields = [
             { id: "CurrentPrice", label: "Current Price" },
             { id: "PriceAtClose", label: "Price at Close" },
@@ -45,507 +95,370 @@ document.addEventListener("DOMContentLoaded", function () {
             { id: "PriceToEarnings", label: "Price to Earnings" },
             { id: "PriceToBook", label: "Price to Book" }
         ];
-
         fields.forEach(field => {
             const element = document.getElementById(field.id);
-            element.innerHTML = `${field.label}:<br><span class="placeholder col-4">.</span><span class="placeholder col-4">.</span><span class="placeholder col-4">.</span>`;
-            element.classList.add("placeholder-glow");
+            if(element) {
+                element.innerHTML = `${field.label}:<br><span class="placeholder col-4">.</span>`;
+                element.classList.add("placeholder-glow");
+            }
         });
-        
-        // Fetch stock data from the file and update the labels
-        fetch("../json/stockdetails.json")
-            .then(response => response.json())
-            .then(data => {
-                const stockData = data.find(stock => stock.name === stockName);
-                if (stockData) {
-                    const setValue = (id, label, value) => {
-                        const element = document.getElementById(id);
-                        element.innerHTML = `${label}:<br>${parseFloat(value).toFixed(2)}`;
-                        element.classList.remove("placeholder-glow");
-                    };
-                    setValue("CurrentPrice", "Current Price", stockData.currentPrice || stockData.priceAtClose);
-                    setValue("PriceAtClose", "Price at Close", stockData.priceAtClose);
-                    setValue("AfterHoursPrice", "After Hour Price", stockData.afterHoursPrice);
-                    setValue("PriceToEarnings", "Price to Earnings", stockData.priceToEarnings);
-                    setValue("PriceToBook", "Price to Book", stockData.priceToBook);
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching stock data:", error);
-            });
 
-        // Get prediction data and update charts
-        fetchPredictionData(stockName);
-        
-        // Load news articles
-        fetchStockNews(stockName);
-        
-        // Show the content section
+        fetchStockDetails(stockName);
+        try {
+            await initializeAllCharts(stockName);
+            fetchStockNews(stockName);
+        } catch (error) {
+            console.error("Error during sequential data fetch:", error);
+        }
+
         document.getElementById("fourthSection").removeAttribute("hidden");
     }
-    
-    async function fetchPredictionData(symbol) {
+
+    async function fetchStockDetails(stockName) {
         try {
-            // Reset the charts first
-            resetCharts();
-            
-            // Fetch historical data
-            const historyResponse = await almanacAPI.getStockHistory(symbol, 30);
+            // This part can be replaced with an API call if details are available from the backend
+            const response = await fetch("./static/json/stockdetails.json");
+            const data = await response.json();
+            const stockData = data.find(stock => stock.name === stockName);
+            if (stockData) {
+                const setValue = (id, label, value) => {
+                    const element = document.getElementById(id);
+                    if(element) {
+                        element.innerHTML = `${label}:<br>${parseFloat(value).toFixed(2)}`;
+                        element.classList.remove("placeholder-glow");
+                    }
+                };
+                setValue("CurrentPrice", "Current Price", stockData.currentPrice || stockData.priceAtClose);
+                setValue("PriceAtClose", "Price at Close", stockData.priceAtClose);
+                setValue("AfterHoursPrice", "After Hour Price", stockData.afterHoursPrice);
+                setValue("PriceToEarnings", "Price to Earnings", stockData.priceToEarnings);
+                setValue("PriceToBook", "Price to Book", stockData.priceToBook);
+            }
+        } catch (error) {
+            console.error("Error fetching stock details:", error);
+        }
+    }
+
+    async function initializeAllCharts(symbol) {
+        try {
+            const [historyResponse, predictionResponse] = await Promise.all([
+                almanacAPI.getStockHistory(symbol, 30),
+                almanacAPI.getStockPredictions(symbol, 7)
+            ]);
+
             if (!historyResponse || !historyResponse.history || historyResponse.history.length === 0) {
                 console.error('No historical data available for', symbol);
+                resetCharts();
                 return;
             }
-            
-            // Fetch prediction data
-            const predictionResponse = await almanacAPI.getStockPredictions(symbol);
-            if (predictionResponse.error) {
-                console.error('Error fetching predictions:', predictionResponse.error);
-                loadChartDataWithoutPredictions(symbol);
+            if (!predictionResponse || predictionResponse.error) {
+                console.error('No prediction data available for', symbol, predictionResponse?.error);
+                updateHistoricalChart(historyResponse, symbol);
                 return;
             }
-            
-            // Update charts with combined historical and prediction data
-            updateChartsWithPredictions(historyResponse, predictionResponse);
+
+            fixedHistoryForPredictionChart = historyResponse;
+            predictionDataStore = predictionResponse;
+
+            updateHistoricalChart(historyResponse, symbol);
+            updatePredictionAndOtherCharts(fixedHistoryForPredictionChart, predictionDataStore, symbol);
+
         } catch (error) {
-            console.error('Error in fetchPredictionData:', error);
-            loadChartDataWithoutPredictions(symbol);
+            console.error('Error initializing charts:', error);
+            resetCharts();
         }
     }
-    
-    function loadChartDataWithoutPredictions(symbol) {
-        // Fallback to load the standard chart data without predictions
-        fetch("../json/chartdata.json")
-            .then(response => response.json())
-            .then(data => {
-                updateCharts(data);
-            })
-            .catch(error => {
-                console.error('Error loading chart data:', error);
-            });
-    }
 
-    removeStockBtn.addEventListener("click", function () {
-    
+    async function changeDateRange(days) {
+        if (!currentSymbol) return;
 
-    // Reset the input field
-    stockInput.value = "";
+        document.querySelectorAll('.chart-controls .chart-button').forEach(button => button.classList.remove('active'));
+        let activeButton;
+        if (days === 7) activeButton = document.querySelector('.chart-button[data-range="1W"]');
+        else if (days === 30) activeButton = document.querySelector('.chart-button[data-range="1M"]');
+        else if (days === 365) activeButton = document.querySelector('.chart-button[data-range="1Y"]');
+        if (activeButton) activeButton.classList.add('active');
 
-    resetStockData()
-    resetCharts();
-});
-
-function resetCharts() {
-    // Reset chart data to initial state or empty state
-    const chartElements = [document.getElementById("chLine"), document.getElementById("chLine2"), document.getElementById("chBar"), document.getElementById("chScatter")];
-    
-    chartElements.forEach(chartElement => {
-        if (chartElement && chartElement.chart) {
-            chartElement.chart.data.datasets.forEach(dataset => {
-                dataset.data = [];
-            });
-            chartElement.chart.update();
-        }
-    });
-}
-
-function resetStockData() {
-    // Reset the selected stock display
-    selectedStock.textContent = "";
-    removeStockBtn.style.display = "none";
-
-    // Reset the stock data fields
-    document.getElementById("PriceAtClose").textContent = "Price at Close";
-    document.getElementById("AfterHoursPrice").textContent = "After Hours Price";
-    document.getElementById("PriceToEarnings").textContent = "Price to Earnings";
-    document.getElementById("PriceToBook").textContent = "Price to Book";
-
-    // Clear the news content
-    document.getElementById("newsContent").innerHTML = "";
-
-    // Reset the charts (if needed)
-    resetCharts();
-
-    // Optionally, hide the fourth section until new data is loaded
-    document.getElementById("fourthSection").setAttribute("hidden", true);
-}
-
-function resetCharts() {
-    // Reset chart data to initial state or empty state
-    const chartElements = [document.getElementById("chLine"), document.getElementById("chLine2"), document.getElementById("chBar"), document.getElementById("chScatter")];
-    
-    chartElements.forEach(chartElement => {
-        if (chartElement && chartElement.chart) {
-            chartElement.chart.data.datasets.forEach(dataset => {
-                dataset.data = [];
-            });
-            chartElement.chart.update();
-        }
-    });
-}
-
-    stockInput.addEventListener("change", function () {
-    const inputValue = stockInput.value.trim();
-    const options = Array.from(datalist.options).map(option => option.value);
-    
-    // If the selected stock is in the options, reset and update
-    if (options.includes(inputValue)) {
-        // Reset the data before updating
-        resetStockData();
-        
-        // Update the stock data
-        updateStock(inputValue);
-    } else {
-        stockInput.value = "";
-    }
-});
-});
-
-function fetchStockNews(stockName) {
-    fetch("../json/newsarticles.json")
-        .then(response => response.json())
-        .then(data => {
-            const newsContent = document.getElementById("newsContent");
-            const newsRecentContent = document.getElementById("newsRecentContent");
-            newsContent.innerHTML = ""; // Clear the existing news content
-
-            const stockNews = data.find(stock => stock.stock === stockName);
-
-            if (!stockNews) {
-                newsContent.innerHTML = "<p>No news available for this stock.</p>";
-                return;
+        try {
+            const historyResponse = await almanacAPI.getStockHistory(currentSymbol, days);
+            if (historyResponse && historyResponse.history && historyResponse.history.length > 0) {
+                updateHistoricalChart(historyResponse, currentSymbol);
+            } else {
+                console.error('No historical data returned for the selected range.');
             }
+        } catch (error) {
+            console.error('Error fetching new date range:', error);
+        }
+    }
 
-            const currentDate = new Date();
-            const twoWeeksAgo = new Date();
-            twoWeeksAgo.setDate(currentDate.getDate() - 14); // Calculate the date 14 days ago
+    function updateHistoricalChart(historyData, symbol) {
+        const history = historyData.history.sort((a, b) => new Date(a.Date || a.date) - new Date(b.Date || b.date));
+        if (!history.length) return;
 
-            console.log('Current Date:', currentDate);
-            console.log('Two Weeks Ago:', twoWeeksAgo);
+        const companyName = historyData.company_info?.name || symbol;
+        const companySector = historyData.company_info?.sector || 'Unknown Sector';
+        const companyIndustry = historyData.company_info?.industry || 'Unknown Industry';
 
-            stockNews.articles.forEach(article => {
-                const articleDate = new Date(article.date);
-                console.log('Article Date:', articleDate);
+        const labels = history.map(p => new Date(p.Date || p.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        const prices = history.map(p => parseFloat(p.Close || p.close));
 
-                const articleElement = document.createElement("div");
-                articleElement.classList.add("news-article");
-                articleElement.innerHTML = `
-                    <h5><a href="${article.link}" target="_blank">${article.title}</a></h5>
-                    <h6>${article.date}</h6>
-                    <p>${article.description}</p>
-                `;
-
-                // Check if the article date is within the last two weeks (recent) or older (historical)
-                if (articleDate >= twoWeeksAgo) {
-                    newsRecentContent.appendChild(articleElement);
-                } else {
-                    newsContent.appendChild(articleElement);
-                }
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching stock news:", error);
-            document.getElementById("newsContent").innerHTML = "<p>Error loading news.</p>";
+        createChart("chLine", "line", {
+            title: `${symbol} - Historical Price - ${companyName}`,
+            labels: labels,
+            datasets: [{
+                label: 'Historical Price ($)',
+                data: prices,
+                borderColor: "#007bff",
+                borderWidth: 3,
+                pointBackgroundColor: "#007bff"
+            }]
         });
-}
+    }
 
+    function updatePredictionAndOtherCharts(historyData, predictionData, symbol) {
+        const history = historyData.history.sort((a, b) => new Date(a.Date || a.date) - new Date(b.Date || b.date));
+        const predictions = predictionData.forecast.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const companyName = historyData.company_info?.name || symbol;
 
-document.addEventListener("DOMContentLoaded", function () {
-    const stockInput = document.getElementById("DataList");
-    const datalist = document.getElementById("datalistOptions");
+        const historyMap = new Map();
+        history.forEach(p => {
+            const dateStr = new Date(p.Date || p.date).toISOString().split('T')[0];
+            historyMap.set(dateStr, {
+                price: parseFloat(p.Close || p.close),
+                volume: parseInt(p.Volume || p.volume || 0)
+            });
+        });
 
-    function fetchStockList() {
-        fetch("../json/stocknames.json") // Fetch data from stocknames.json
+        const predictionMap = new Map();
+        predictions.forEach(p => {
+            const dateStr = new Date(p.date).toISOString().split('T')[0];
+            predictionMap.set(dateStr, parseFloat(p.price));
+        });
+
+        const allDateStrings = new Set([...historyMap.keys(), ...predictionMap.keys()]);
+        const timeline = Array.from(allDateStrings).sort((a, b) => new Date(a) - new Date(b));
+        const labels = timeline.map(dateStr => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+        const historicalPrices = timeline.map(date => historyMap.get(date)?.price || null);
+        const volumes = timeline.map(date => historyMap.get(date)?.volume || null).filter(v => v !== null);
+        const historicalLabels = timeline.filter(date => historyMap.has(date))
+                                         .map(dateStr => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+        const lastHistoricalDate = [...historyMap.keys()].pop();
+        let lastHistoricalPrice = [...historyMap.values()].pop().price;
+
+        const predictedPrices = timeline.map(date => {
+            if (date > lastHistoricalDate && predictionMap.has(date)) {
+                return predictionMap.get(date);
+            }
+            return null;
+        });
+
+        const firstPredictionIndex = predictedPrices.findIndex(p => p !== null);
+        if (firstPredictionIndex > 0) {
+            predictedPrices[firstPredictionIndex - 1] = lastHistoricalPrice;
+        }
+
+        createChart("chLine2", "line", {
+            title: `${symbol} - Price with 7-Day Predictions - ${companyName}`,
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Historical Price ($)',
+                    data: historicalPrices,
+                    borderColor: "#007bff",
+                    borderWidth: 3,
+                    pointBackgroundColor: "#007bff",
+                    spanGaps: false
+                },
+                {
+                    label: 'Predicted Price ($)',
+                    data: predictedPrices,
+                    borderColor: "#dc3545",
+                    borderWidth: 3,
+                    pointBackgroundColor: "#dc3545",
+                    borderDash: [5, 5],
+                    spanGaps: false
+                }
+            ]
+        });
+
+        createChart("chBar", "bar", {
+            title: `${symbol} - Trading Volume (30 Days)`,
+            labels: historicalLabels,
+            datasets: [{
+                label: 'Volume',
+                data: volumes,
+                backgroundColor: "#28a745"
+            }]
+        });
+
+        const predictedReturns = predictions
+            .filter(p => new Date(p.date).toISOString().split('T')[0] > lastHistoricalDate)
+            .map(p => parseFloat(p.return_pct));
+            
+        createChart("chScatter", "scatter", {
+            title: `${symbol} - Predicted Daily Returns (%)`,
+            datasets: [{
+                label: 'Return %',
+                data: predictedReturns.map((ret, index) => ({ x: index + 1, y: ret })),
+                backgroundColor: predictedReturns.map(r => r >= 0 ? "#28a745" : "#dc3545")
+            }]
+        });
+    }
+
+    function createChart(canvasId, type, chartData) {
+        let ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        ctx = ctx.getContext("2d");
+
+        if (chartInstances[canvasId]) {
+            chartInstances[canvasId].destroy();
+        }
+
+        chartInstances[canvasId] = new Chart(ctx, {
+            type: type,
+            data: {
+                labels: chartData.labels || [],
+                datasets: chartData.datasets || []
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,       // <-- allow canvas to resize freely
+                plugins: {
+                    title: { display: !!chartData.title, text: chartData.title || '' },
+                    legend: { display: true }
+                },
+                scales: type === 'scatter' ? {
+                    x: { type: 'linear', position: 'bottom', title: { display: true, text: 'Day' } },
+                    y: { title: { display: true, text: 'Return %' } }
+                } : {
+                    y: { beginAtZero: type === 'bar' }
+                }
+            }
+        });
+    }
+
+    function resetCharts() {
+        Object.values(chartInstances).forEach(chart => {
+            if (chart) chart.destroy();
+        });
+        chartInstances = {};
+    }
+
+    function resetStockData() {
+        document.getElementById("selectedStock").textContent = "";
+        document.getElementById("removeStock").style.display = "none";
+        const fields = ["CurrentPrice", "PriceAtClose", "AfterHoursPrice", "PriceToEarnings", "PriceToBook"];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                const label = id.replace(/([A-Z])/g, ' $1').trim();
+                el.innerHTML = `${label}:<br>`;
+            }
+        });
+        document.getElementById("newsContent").innerHTML = "";
+        document.getElementById("newsRecentContent").innerHTML = "";
+        document.getElementById("fourthSection").setAttribute("hidden", true);
+    }
+
+    async function loadStockNames() {
+        const datalist = document.getElementById('datalistOptions');
+        try {
+            const response = await almanacAPI.getAvailableStocks();
+            if (response && response.symbols) {
+                datalist.innerHTML = '';
+                response.symbols.forEach(symbol => {
+                    let option = document.createElement('option');
+                    option.value = symbol;
+                    datalist.appendChild(option);
+                });
+            } else {
+                loadStockNamesFromFile();
+            }
+        } catch (error) {
+            console.error("Error loading stock names from API:", error);
+            loadStockNamesFromFile();
+        }
+    }
+
+    function loadStockNamesFromFile() {
+        fetch("./static/json/stocknames.json")
             .then(response => response.json())
             .then(data => {
-                datalist.innerHTML = ""; // Clear existing options
-                
+                const datalist = document.getElementById('datalistOptions');
+                datalist.innerHTML = '';
                 data.forEach(stock => {
-                    const option = document.createElement("option");
+                    let option = document.createElement('option');
                     option.value = stock.name;
                     datalist.appendChild(option);
                 });
             })
-            .catch(error => console.error("Error fetching stocks:", error));
+            .catch(error => console.error("Error loading stock names from file:", error));
     }
 
-    // Call fetchStockList to populate stocks dynamically
-    fetchStockList();
-});
+    function fetchStockNews(stockName) {
+        almanacAPI.getStockNews(stockName)
+            .then(articles => {
+                const newsContent = document.getElementById("newsContent");
+                const newsRecentContent = document.getElementById("newsRecentContent");
+                
+                newsContent.innerHTML = ""; 
+                newsRecentContent.innerHTML = ""; 
 
-document.addEventListener("DOMContentLoaded", () => {
-    const buttons = document.querySelectorAll(".btn-group .btn");
-    const contentSections = document.querySelectorAll(".content-section");
+                if (!articles || articles.length === 0) {
+                    const noNewsMessage = "<p>No news available for this stock.</p>";
+                    newsContent.innerHTML = noNewsMessage;
+                    newsRecentContent.innerHTML = noNewsMessage;
+                    return;
+                }
 
-    buttons.forEach(button => {
-        button.addEventListener("click", () => {
-            buttons.forEach(btn => btn.classList.remove("active"));
-            contentSections.forEach(section => section.classList.remove("active"));
-            button.classList.add("active");
-            const targetId = button.getAttribute("data-target");
-            document.getElementById(targetId).classList.add("active");
-        });
-    });
-});
+                // Create a temporary array to hold all article elements
+                const articleElements = []; 
 
-const colors = ['#007bff','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
-
-// createChart function is now loaded from createChart.js
-
-const commonChartOptions = {
-    scales: {
-        yAxes: [{ ticks: { beginAtZero: false } }]
-    },
-    legend: { display: false }
-};
-
-// Initial chart load is now handled in the updateStock function
-
-// Function to update charts with just the base data
-function updateCharts(data) {
-    // Create the first chart
-    const chartData1 = {
-        labels: data.chart1.labels,
-        datasets: data.chart1.datasets
-    };
-
-    const chartOptions1 = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: data.chart1.title,
-            fontSize: 16,
-            fontColor: '#333'
-        }
-    };
-    createChart(document.getElementById("chLine"), 'line', chartData1, chartOptions1);
-
-    // Create the second chart
-    const chartData2 = {
-        labels: data.chart2.labels,
-        datasets: data.chart2.datasets
-    };
-
-    const chartOptions2 = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: data.chart2.title,
-            fontSize: 16,
-            fontColor: '#333'
-        }
-    };
-    createChart(document.getElementById("chLine2"), 'line', chartData2, chartOptions2);
-
-    // Create the bar chart
-    const barData = {
-        labels: data.barChart.labels,
-        datasets: data.barChart.datasets
-    };
-
-    const barOptions = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: data.barChart.title,
-            fontSize: 16,
-            fontColor: '#333'
-        }
-    };
-    createChart(document.getElementById("chBar"), 'bar', barData, barOptions);
-
-    // Create the scatter chart
-    const scatterData = {
-        datasets: data.scatterChart.datasets
-    };
-
-    const scatterOptions = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: data.scatterChart.title,
-            fontSize: 16,
-            fontColor: '#333'
-        }
-    };
-    createChart(document.getElementById("chScatter"), 'scatter', scatterData, scatterOptions);
-}
-
-// Function to update charts with predictions and historical data
-function updateChartsWithPredictions(historyData, predictionData) {
-    if (!historyData.history || historyData.history.length === 0) {
-        console.error('No historical data available');
-        return;
-    }
-    
-    if (!predictionData.forecast || predictionData.forecast.length === 0) {
-        console.error('No prediction data available');
-        return;
-    }
-    
-    // Process historical data
-    const symbol = historyData.symbol;
-    const history = historyData.history.sort((a, b) => new Date(a.Date) - new Date(b.Date));
-    
-    // Extract dates and prices for historical data
-    const histDates = history.map(item => item.Date);
-    const histPrices = history.map(item => parseFloat(item.Close));
-    
-    // Process prediction data
-    const lastDate = predictionData.last_date;
-    const lastPrice = predictionData.last_price;
-    const forecast = predictionData.forecast;
-    
-    // Extract dates and prices for prediction data
-    const predDates = forecast.map(item => item.date);
-    const predPrices = forecast.map(item => item.price);
-    
-    // Combine dates and add a slight overlap for continuity
-    const allDates = [...histDates, ...predDates];
-    
-    // Create the price history + prediction chart
-    const priceHistoryData = {
-        labels: allDates,
-        datasets: [
-            {
-                label: symbol + " History",
-                data: histPrices,
-                borderColor: "#007bff",
-                backgroundColor: "transparent",
-                pointRadius: 2
-            },
-            {
-                label: symbol + " Predictions",
-                data: Array(histDates.length).fill(null).concat(predPrices),
-                borderColor: "#28a745",
-                backgroundColor: "rgba(40, 167, 69, 0.1)",
-                borderDash: [5, 5],
-                pointRadius: 3
-            }
-        ]
-    };
-    
-    const priceHistoryOptions = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: "Stock Price History with Predictions",
-            fontSize: 16,
-            fontColor: '#333'
-        },
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    // Custom tooltip to indicate predictions vs actual data
-                    title: function(context) {
-                        const datasetLabel = context[0].dataset.label || '';
-                        if (datasetLabel.includes("Predictions")) {
-                            return `Prediction for ${context[0].label}`;
+                articles.forEach(article => {
+                    const articleDate = new Date(article.datetime);
+                    const articleElement = document.createElement("div");
+                    articleElement.classList.add("card", "mb-3");
+                    //articleElement.style.height = '180px';
+                    
+                    if (article.summary && article.summary != "None") {
+                        if (article.image && article.image != "None") {
+                            articleElement.innerHTML = `
+                                <div class="row g-0 h-100">
+                                    <div class="card mb-3" style="max-height: 300px; overflow-y: auto;">
+                                        <img src="${article.image}" class="img-fluid rounded-start" alt="News Image" style="height: 100%; width: 100%; object-fit: cover;">
+                                    </div>
+                                    <div class="col-md-9 d-flex flex-column h-100">
+                                        <div class="card-body" style="overflow-y: auto;">
+                                            <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
+                                            <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
+                                            <p class="card-text">${article.summary || 'No summary available.'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } else { 
+                            articleElement.style.display = 'flex';
+                            articleElement.innerHTML = `
+                                <div class="card-body" style="overflow-y: auto; width: 100%;">
+                                    <h5 class="card-title"><a href="${article.url}" target="_blank" class="text-decoration-none">${article.headline}</a></h5>
+                                    <p class="card-text"><small class="text-muted">${articleDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</small></p>
+                                    <p class="card-text">${article.summary || 'No summary available.'}</p>
+                                </div>
+                            `;
                         }
-                        return context[0].label;
-                    },
-                    label: function(context) {
-                        let label = context.dataset.label || '';
-                        if (label.includes("Predictions")) {
-                            return `Predicted: ${context.formattedValue}`;
-                        }
-                        return `${label}: ${context.formattedValue}`;
+                        articleElements.push(articleElement);
                     }
-                }
-            }
-        }
-    };
-    
-    createChart(document.getElementById("chLine"), 'line', priceHistoryData, priceHistoryOptions);
-    
-    // Create the return percentage chart
-    const returnsData = {
-        labels: predDates,
-        datasets: [
-            {
-                label: "Predicted Return %",
-                data: forecast.map(item => item.return_pct),
-                borderColor: "#dc3545",
-                backgroundColor: "rgba(220, 53, 69, 0.1)",
-                pointRadius: 3
-            }
-        ]
-    };
-    
-    const returnsOptions = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: "Predicted Return Percentages",
-            fontSize: 16,
-            fontColor: '#333'
-        }
-    };
-    
-    createChart(document.getElementById("chLine2"), 'line', returnsData, returnsOptions);
-    
-    // Create a price comparison bar chart between last actual and last predicted
-    const comparisonData = {
-        labels: ["Current Price", "Predicted (End of Forecast)"],
-        datasets: [
-            {
-                label: "Price Comparison",
-                data: [lastPrice, predPrices[predPrices.length - 1]],
-                backgroundColor: ["#007bff", "#28a745"]
-            }
-        ]
-    };
-    
-    const comparisonOptions = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: "Current vs Predicted Price",
-            fontSize: 16,
-            fontColor: '#333'
-        }
-    };
-    
-    createChart(document.getElementById("chBar"), 'bar', comparisonData, comparisonOptions);
-    
-    // Create a scatter chart for prediction progression
-    const scatterData = {
-        datasets: [
-            {
-                label: "Price Progression",
-                data: predPrices.map((price, i) => ({
-                    x: i + 1,  // days into future
-                    y: price
-                })),
-                borderColor: "#6f42c1",
-                backgroundColor: "#6f42c1",
-                pointRadius: 5
-            }
-        ]
-    };
-    
-    const scatterOptions = {
-        ...commonChartOptions,
-        title: {
-            display: true,
-            text: "Prediction Progression",
-            fontSize: 16,
-            fontColor: '#333'
-        },
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: "Days into Future"
-                }
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: "Predicted Price"
-                }
-            }
-        }
-    };
-    
-    createChart(document.getElementById("chScatter"), 'scatter', scatterData, scatterOptions);
-}
+                });
+
+                articleElements.forEach(el => newsContent.appendChild(el));
+                articleElements.slice(0, 5).forEach(el => newsRecentContent.appendChild(el.cloneNode(true)));
+            })
+            .catch(error => {
+                console.error("Error fetching stock news:", error);
+                document.getElementById("newsContent").innerHTML = "<p>Error loading news.</p>";
+                document.getElementById("newsRecentContent").innerHTML = "<p>Error loading news.</p>";
+            });
+    }
+});

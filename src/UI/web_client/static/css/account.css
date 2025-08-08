@@ -79,6 +79,9 @@ body {
     color: #495057; 
     width: 100%; /* Full width */
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
 }
 
 .form-control:focus {

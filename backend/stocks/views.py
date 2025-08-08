@@ -1,20 +1,32 @@
+import os
 from django.shortcuts import render, redirect
-from rest_framework.decorators import api_view
+from django.views.decorators.http import require_http_methods
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import JsonResponse
 from django.db import connection
-import pandas as pd
 from rest_framework.response import Response
-from .models import StockPrice
-from rest_framework import viewsets
+from django.core.cache import cache
+from django.conf import settings
+from .services import email_services
+from .models import PortfolioItem
+from rest_framework import viewsets , status
 import pyodbc
 from datetime import datetime, timedelta
 from . import ml_handler
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .serializers import ContactMessageSerializer, CustomUserCreateSerializer, HistoricalStockNewsSerializer, StockPriceSilverSerializer, UserSerializer, PortfolioItemSerializer
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from django.utils.decorators import method_decorator
+import json
+from openai import OpenAI
+import instructor
+from .services.orchestrator import FinancialAssistant
 
-# Endpoints are not ready yet. 
-# I shall refactor the code during sprint 2. 
-# These endpoints contain a lot of shitty testing code. 
 
-# Create your views here.
+# Legacy database connection test - TODO: Refactor in sprint 2
 def test_connection(request):
     try:
         # Connect directly using pyodbc 
@@ -40,38 +52,84 @@ def test_connection(request):
     
 @api_view(['GET'])
 def available_stocks(request):
+    """
+    Reads a list of available stock symbols from the tickers.json file.
+    """
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT Stock_Symbol FROM [Bronze].[Historical_Prices]")
-            symbols = [row[0] for row in cursor.fetchall()]  # Limit to 50
+        file_path = os.path.join(settings.BASE_DIR, 'tickers.json')
+        with open(file_path, 'r') as f:
+            symbols = json.load(f)
+            
         return Response({"symbols": symbols})
+
+    except FileNotFoundError:
+        return Response({"error": "tickers.json not found in the project root directory."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({"error": str(e)}, status=500)
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def stock_history(request, symbol):
-    days = request.GET.get('days', 30)
+    days_str = request.GET.get('days', '30')
     try:
-        days = int(days)
+        days = int(days_str)
     except ValueError:
         days = 30
         
     try:
-        # Fix SQL parameter syntax for SQL Server
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT TOP {} [Date], [Close], [Open], [High], [Low], [Volume] "
-                "FROM [Bronze].[Historical_Prices] "
-                "WHERE Stock_Symbol = '{}' "
-                "ORDER BY [Date] DESC".format(days, symbol)
-            )
+            # This query now groups by Date to remove duplicates and correctly filters by a date range.
+            # It aggregates the values for each day to ensure a single, smooth data point.
             
-            columns = [col[0] for col in cursor.description]
+            base_query = """
+                SELECT
+                    [Date],
+                    Stock_Symbol,
+                    AVG(CAST([Open] AS float)) as [Open],
+                    AVG(CAST([High] AS float)) as [High],
+                    AVG(CAST([Low] AS float)) as [Low],
+                    AVG(CAST([Close] AS float)) as [Close],
+                    SUM(CAST([Volume] AS bigint)) as [Volume]
+                FROM 
+                    [Bronze].[Historical_Prices]
+                WHERE 
+                    Stock_Symbol = %s
+            """
+            
+            params = [symbol]
+            
+            if days <= 30000: # A large number to signify "All time" is not used
+                base_query += " AND [Date] >= DATEADD(day, -%s, GETDATE())"
+                params.append(days)
+
+            query = base_query + " GROUP BY [Date], Stock_Symbol ORDER BY [Date] ASC"
+            
+            cursor.execute(query, params)
+
+            columns = [column[0] for column in cursor.description]
             history = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+            # Fetch the company information
+            company_info_query = """
+                SELECT
+                    companyName,
+                    sector,
+                    industry
+                FROM
+                    [Silver].[Company_Information]
+                WHERE
+                    symbol = %s
+            """
+            cursor.execute(company_info_query, [symbol])
+            company_info = cursor.fetchone()
         
         return Response({
             "symbol": symbol,
-            "history": history
+            "history": history,
+                "company_info": {
+                    "name": company_info[0],
+                    "sector": company_info[1],
+                    "industry": company_info[2]
+                }
         })
     except Exception as e:
         return Response({"error": str(e)}, status=500)
@@ -83,7 +141,7 @@ def predict_stock(request):
     
     Parameters:
     - symbol: The stock symbol to predict (e.g., AAPL, MSFT)
-    - days: Number of days to predict (default 7)
+    - days: Number of days to predict (default 5)
     
     Returns:
     - Prediction data including forecasted price and returns
@@ -93,57 +151,60 @@ def predict_stock(request):
         
         # Get query parameters
         symbol = request.query_params.get('symbol', 'AAPL')
-        horizon = request.query_params.get('days', 7)
-        
+        horizon = request.query_params.get('days', 5)
+
         print(f"Attempting to predict {symbol} for {horizon} days")
         
         try:
             horizon = int(horizon)
             if horizon <= 0 or horizon > 30:
-                horizon = 7  # Default to 7 days if invalid
+                horizon = 5  # Default to 5 days if invalid
         except ValueError:
-            horizon = 7
-            
-        with connection.cursor() as cursor:
-            try:
-                query = f"""
-                    SELECT [Date], [Open], [High], [Low], [Close], [Volume]
-                    FROM [Bronze].[Historical_Prices]
-                    WHERE [Stock_Symbol] = '{symbol}'
-                    ORDER BY [Date] DESC
-                """
-                cursor.execute(query)
-            except Exception as e:
-                print(f"Error executing query: {str(e)}")
-                raise            
-            columns = [column[0] for column in cursor.description]
-            results = []
-            for row in cursor.fetchall():
-                results.append(dict(zip(columns, row)))
-        
-        if not results:
-            return Response({"error": f"No data found for symbol: {symbol}"}, status=404)
-        
-        # Convert to DataFrame for processing
-        df = pd.DataFrame(results)
-        
-        # Convert string columns to proper types
-        numeric_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
-        for col in numeric_cols:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col])
-            else:
-                print(f"Warning: Column {col} not found in DataFrame")
-        
-        # Sort by date in ascending order (oldest to newest)
-        df['Date'] = pd.to_datetime(df['Date'])
-        df = df.sort_values('Date')
+            horizon = 5
 
-        print(f"DataFrame shape after processing: {df.shape}")
+        # with connection.cursor() as cursor:
+        #     try:
+        #         query = f"""
+        #             SELECT [Date], [Open], [High], [Low], [Close], [Volume]
+        #             FROM [Bronze].[Historical_Prices]
+        #             WHERE [Stock_Symbol] = '{symbol}'
+        #             ORDER BY [Date] DESC
+        #         """
+        #         cursor.execute(query)
+        #     except Exception as e:
+        #         print(f"Error executing query: {str(e)}")
+        #         raise            
+        #     columns = [column[0] for column in cursor.description]
+        #     results = []
+        #     for row in cursor.fetchall():
+        #         results.append(dict(zip(columns, row)))
+        
+        # if not results:
+        #     return Response({"error": f"No data found for symbol: {symbol}"}, status=404)
+        
+        # # Convert to DataFrame for processing
+        # df = pd.DataFrame(results)
+        
+        # # Convert string columns to proper types
+        # numeric_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
+        # for col in numeric_cols:
+        #     if col in df.columns:
+        #         df[col] = pd.to_numeric(df[col])
+        #     else:
+        #         print(f"Warning: Column {col} not found in DataFrame")
+        
+        # # Sort by date in ascending order (oldest to newest)
+        # df['Date'] = pd.to_datetime(df['Date'])
+        # df = df.sort_values('Date')
+
+        # print(f"DataFrame shape after processing: {df.shape}")
         
         # Call prediction function
         try:
-            prediction_result = ml_handler.predict_stock_returns(df, horizon)
+            FMP_API_KEY = os.getenv('FMP_API_KEY', None)
+            if not FMP_API_KEY:
+                raise ValueError("FMP_API_KEY environment variable is not set.")
+            prediction_result = ml_handler.predict_stock_returns(symbol, FMP_API_KEY)
             
             if "error" in prediction_result:
                 print(f"Error from ml_handler: {prediction_result['error']}")
@@ -164,6 +225,74 @@ def predict_stock(request):
         print(f"Error in predict_stock: {e}")
         print(f"Stack trace: {stack_trace}")
         return Response({"error": str(e), "stack_trace": stack_trace}, status=500)
+
+@api_view(['GET'])
+def news_articles_json(request):
+    data = [
+        {
+            "stock": "AAPL",
+            "articles": [
+                {
+                    "title": "Apple Stocks Surge Amid Earnings Report",
+                    "date": "2025-03-15",
+                    "description": "Apple's stock price increased significantly following a strong quarterly earnings report.",
+                    "link": "#"
+                },
+                {
+                    "title": "New iPhone Launch Expected to Boost Apple Stock",
+                    "date": "2025-03-10",
+                    "description": "Analysts predict the upcoming iPhone launch will drive Apple's stock price higher.",
+                    "link": "#"
+                }
+            ]
+        },
+        {
+            "stock": "MSFT",
+            "articles": [
+                {
+                    "title": "Microsoft Expands Cloud Services",
+                    "date": "2025-03-18",
+                    "description": "Microsoft announced expansion of their Azure cloud services platform.",
+                    "link": "#"
+                }
+            ]
+        }
+    ]
+    return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+def stock_news(request, symbol):
+    """
+    Retrieves the latest 10 news articles for a given stock symbol from the Gold layer.
+    """
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT TOP (10)
+                    [id], [category], [datetime], [headline], [image], [related],
+                    [source], [summary], [url], [symbol], [positive_value],
+                    [negative_value], [neutral_value]
+                FROM
+                    [Gold].[Historical_Stock_News_Sentiment_Score]
+                WHERE
+                    symbol = %s
+                ORDER BY
+                    [datetime] DESC
+            """
+            cursor.execute(query, [symbol])
+
+            # Create a list of dictionaries from the query result
+            columns = [column[0] for column in cursor.description]
+            news_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+            # Serialize the data to ensure consistent output and validation
+            serializer = HistoricalStockNewsSerializer(data=news_data, many=True)
+            serializer.is_valid(raise_exception=True)
+            print(f"Serialized news data {len(serializer.data)} articles for symbol: {symbol}")
+            return Response(serializer.data)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class StockPriceViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -233,8 +362,7 @@ def stock_names(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# stock names in the format according to marketPrediction.js
+# Get stock symbols in format for marketPrediction.js
 @api_view(['GET'])
 def stock_names_json(request):
     try:
@@ -246,8 +374,7 @@ def stock_names_json(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# chart data in the format according to marketPrediction.js
+# Get chart data in format for marketPrediction.js
 @api_view(['GET'])
 def chart_data_json(request):
     try:
@@ -327,8 +454,7 @@ def chart_data_json(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# stock details in the format according to marketPrediction.js
+# Get stock details in format for marketPrediction.js
 @api_view(['GET'])
 def stock_details_json(request):
     try:
@@ -352,8 +478,7 @@ def stock_details_json(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-# THIS IS FOR TESTING PURPOSES ONLY
-# news articles in the format according to marketPrediction.js
+# Get news articles in format for marketPrediction.js
 @api_view(['GET'])
 def news_articles_json(request):
     data = [
@@ -388,11 +513,132 @@ def news_articles_json(request):
     ]
     return JsonResponse(data, safe=False)
 
+@api_view(['POST'])
+@permission_classes([AllowAny]) # Allow anyone to use this endpoint
+def contact_submit(request):
+    """
+    Handles the submission of the contact form.
+    """
+    serializer = ContactMessageSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Your message has been received successfully!"}, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AccountDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def put(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request):
+        request.user.delete()
+        return Response(status=204)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PortfolioListCreate(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        items = PortfolioItem.objects.filter(user=request.user)
+        serializer = PortfolioItemSerializer(items, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PortfolioItemSerializer(data=request.data)
+        if serializer.is_valid():
+            # Check if the item already exists
+            if PortfolioItem.objects.filter(user=request.user, stock_symbol=serializer.validated_data['stock_symbol']).exists():
+                return Response({'error': 'This stock is already in your portfolio.'}, status=400)
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PortfolioDestroy(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, stock_symbol):
+        try:
+            item = PortfolioItem.objects.get(user=request.user, stock_symbol=stock_symbol)
+            item.delete()
+            return Response(status=204)
+        except PortfolioItem.DoesNotExist:
+            return Response({'error': 'Stock not found in portfolio.'}, status=404)
+
 def account(request):
     return render(request, 'account.html')
 
 def index(request):
     return render(request, 'index.html')
+
+@csrf_exempt
+@api_view(['POST'])
+def custom_login(request):
+    """Custom login endpoint that uses Django sessions instead of tokens"""
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        
+        # Try to authenticate with username first, then email
+        user = None
+        if username:
+            user = authenticate(request, username=username, password=password)
+        
+        if not user and email:
+            # Try to find user by email and authenticate with their username
+            try:
+                user_obj = User.objects.get(email=email)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
+        
+        if user is not None:
+            login(request, user)
+            return JsonResponse({
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                }
+            })
+        else:
+            return JsonResponse({'error': 'Invalid credentials'}, status=400)
+            
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def custom_logout(request):
+    """Custom logout endpoint"""
+    try:
+        logout(request)
+        return JsonResponse({'message': 'Logged out successfully'})
+    except Exception as e:
+        return JsonResponse({'message': 'Logged out'})  # Always return success for logout
 
 def marketprediction(request):
     return render(request, 'marketprediction.html')
@@ -410,3 +656,388 @@ def page_handler(request, page_name):
     except Exception as e:
         print(f"Error loading {page_name}.html: {str(e)}")
         return redirect('index')
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_user(request):
+    """
+    Creates a new user account.
+    Upon successful creation, the user is marked as inactive and a verification
+    email with an OTP is sent.
+    """
+    serializer = CustomUserCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        # The serializer's create method now handles setting is_active=False
+        user = serializer.save()
+        
+        # Generate and cache OTP
+        otp = email_services.generate_random_key()
+        # 1-hour expiry for OTP
+        cache.set(f"otp_{user.email}", otp, timeout=3600)  
+
+        # Send verification email
+        email_sent = email_services.send_verification_email(request, user, otp)
+
+        if email_sent:
+            return Response(
+                {"detail": "User created successfully. Please check your email to verify your account."},
+                status=status.HTTP_201_CREATED
+            )
+        else:
+            user.delete()
+            return Response(
+                {"error": "Failed to send verification email. Please try registering again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+            
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def verify_email(request):
+    """
+    Verifies the user's email with the provided OTP.
+    """
+    email = request.data.get('email')
+    otp_provided = request.data.get('otp')
+
+    if not email or not otp_provided:
+        return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    stored_otp = cache.get(f"otp_{email}")
+
+    if not stored_otp:
+        return Response({'error': 'OTP has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if stored_otp == otp_provided:
+        try:
+            user = User.objects.get(email=email)
+            if user.is_active:
+                return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
+            
+            user.is_active = True
+            user.save()
+            cache.delete(f"otp_{email}") # OTP has been used, so delete it
+            return Response({'message': 'Email verified successfully! You can now log in.'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def verify_email_page(request):
+    return render(request, 'verifyemail.html')
+
+@api_view(['POST'])
+def ApiSignUp(request):
+    """
+    Handles new user registration with the specified JSON response.
+    """
+    serializer = CustomUserCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        
+        otp = email_services.generate_random_key()
+        cache.set(f"otp_{user.email}", otp, timeout=3600)
+
+        email_sent = email_services.send_verification_email(request, user, otp)
+
+        if email_sent:
+            # Ensure a session key exists to be returned
+            if not request.session.session_key:
+                request.session.save()
+            
+            response_data = {
+                "message": "User registration request received. Please check your email for the OTP code.",
+                "sessionId": str(request.session.session_key),
+                "username": str(user.username),
+                "email": str(user.email),
+                # WARNING: Returning the OTP code is insecure and not for production use.
+                "otpCode": int(otp), 
+                "timestamp": str(datetime.now().isoformat())
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        else:
+            user.delete()
+            return Response(
+                {"error": "Failed to send verification email. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def ApiLogin(request):
+    """
+    Handles user authentication with the specified JSON response.
+    """
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    password = request.GET.get('password')
+
+    if not password or (not username and not email):
+        return Response({'error': 'Please provide username/email and password.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = None
+    if username:
+        user = authenticate(request, username=username, password=password)
+    
+    if not user and email:
+        try:
+            user_obj = User.objects.get(email__iexact=email)
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            pass
+    
+    if user is not None:
+        if not user.is_active:
+            return Response({'error': 'Account not activated. Please verify your email.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        login(request, user)
+        response_data = {
+            "message": "Login successful",
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+    else:
+        return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def verify_email_mobile(request):
+    """
+    Verifies the user's email with the OTP and returns the specified JSON response upon success.
+    """
+    email = request.data.get('email')
+    otp_provided = request.data.get('otp')
+
+    if not email or not otp_provided:
+        return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    stored_otp = cache.get(f"otp_{email}")
+
+    if not stored_otp:
+        return Response({'error': 'OTP has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if stored_otp == otp_provided:
+        try:
+            user = User.objects.get(email=email)
+            if user.is_active:
+                return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
+            
+            user.is_active = True
+            user.save()
+            cache.delete(f"otp_{email}")
+
+            response_data = {
+                "message": "User registered successfully",
+                "id": int(user.id),
+                "username": str(user.username),
+                "email": str(user.email)
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_recent_news_sentiment(request):
+    """
+    Fetches all recent news sentiment data over a given range of days.
+    URL: /api/stock-news/get_recent_news/?days=30
+    """
+    days_param = request.GET.get('days', 7)
+    
+    try:
+        days = int(days_param)
+    except ValueError:
+        return Response({'error': 'Invalid "days" parameter. It must be an integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    start_date = datetime.now() - timedelta(days=days)
+    
+    try:
+        with connection.cursor() as cursor:
+            query = f"""
+                SELECT
+                    [id], [category], [datetime], [headline], [image], [related],
+                    [source], [summary], [url], [symbol], [positive_value],
+                    [negative_value], [neutral_value]
+                FROM
+                    [Gold].[Historical_Stock_News_Sentiment_Score]
+                WHERE
+                    TRY_CAST([datetime] AS DATETIME) >= DATEADD(DAY, -{int(days)}, GETDATE())
+                ORDER BY
+                    TRY_CAST([datetime] AS DATETIME) DESC
+            """
+            cursor.execute(query)
+
+            columns = [column[0] for column in cursor.description]
+            news_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not news_data:
+                return Response({'message': f'No news found in the last {days} days.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = HistoricalStockNewsSerializer(instance=news_data, many=True)
+
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def get_historical_prices_mobile_by_stocks_and_days(requests):
+    """
+    Fetches historical stock prices for a given list of stock symbols over a specified number of days.
+    URL: /api/stock-history/get_historical_prices/?symbols=AAPL,MSFT&days=30
+    """
+    symbol_param = requests.GET.get('symbol', '')
+    days_param = requests.GET.get('days', '30')
+
+    if not symbol_param:
+        return Response({'error': 'No stock symbols provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        days = int(days_param)
+    except ValueError:
+        return Response({'error': 'Invalid "days" parameter. It must be an integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        with connection.cursor() as cursor:
+            query = f"""
+                SELECT
+                    [Open], [High], [Low], [Close], [Volume], [Dividends], [Date], [Stock_Symbol], [Stock_Splits]
+                FROM
+                    [Silver].[Historical_Prices]
+                WHERE
+                    Stock_Symbol = %s
+                    AND TRY_CAST([Date] AS DATETIME) >= DATEADD(DAY, -%s, GETDATE())
+                ORDER BY
+                    Stock_Symbol, TRY_CAST([Date] AS DATETIME) ASC
+            """
+            cursor.execute(query, [symbol_param, days])
+
+            columns = [column[0] for column in cursor.description]
+            history_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not history_data:
+                return Response({'message': f'No historical data found for the provided symbols in the last {days} days.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = StockPriceSilverSerializer(instance=history_data, many=True)
+
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+def get_historical_prices_mobile_by_stocks_and_start_date_and_end_date(requests):
+    """
+    Fetches historical stock prices for a given list of stock symbols over a specified date range.
+    URL: /api/stock-history/get_historical_prices/?symbols=AAPL,MSFT&start_date=2023-01-01&end_date=2023-12-31
+    """
+    symbol_param = requests.GET.get('symbol', '')
+    start_date_param = requests.GET.get('start_date', '')
+    end_date_param = requests.GET.get('end_date', '')
+
+    if not symbol_param:
+        return Response({'error': 'No stock symbols provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not start_date_param or not end_date_param:
+        return Response({'error': 'Both start_date and end_date parameters are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT
+                    [Open], 
+                    [High], 
+                    [Low], 
+                    [Close], 
+                    [Volume], 
+                    [Dividends], 
+                    [Date], 
+                    [Stock_Symbol], 
+                    [Stock_Splits]
+                FROM
+                    [Silver].[Historical_Prices]
+                WHERE
+                    Stock_Symbol = %s
+                    AND TRY_CAST([Date] AS DATETIME) BETWEEN %s AND %s
+                ORDER BY
+                    Stock_Symbol, TRY_CAST([Date] AS DATETIME) ASC
+            """
+            cursor.execute(query, [symbol_param, start_date_param, end_date_param])
+
+            columns = [column[0] for column in cursor.description]
+            history_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            
+            if not history_data:
+                return Response({'message': f'No historical data found for the provided symbols between {start_date_param} and {end_date_param}.'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = StockPriceSilverSerializer(instance=history_data, many=True)
+
+            return Response(serializer.data)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return Response({'error': 'An internal error occurred while fetching data.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def get_stocks_available_api(requests):
+    """
+    Reads a list of available stock symbols from the tickers.json file.
+    """
+    try:
+        file_path = os.path.join(settings.BASE_DIR, 'tickers.json')
+        with open(file_path, 'r') as f:
+            symbols = json.load(f)
+            
+        return Response(symbols)
+
+    except FileNotFoundError:
+        return Response({"error": "tickers.json not found in the project root directory."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['POST'])
+def analyze_query(request):
+    """
+    Handles the POST request from the frontend, runs the query through the assistant,
+    and returns the analysis as JSON.
+    """
+    fmp_api_key = os.getenv('FMP_API_KEY', None)
+    fh_api_key = os.getenv("FINNHUB_API_KEY", None)
+    if not fmp_api_key or not fh_api_key:
+        raise ValueError("FMP_API_KEY and FINNHUB_API_KEY environment variables are not set.")
+    try:
+        client = instructor.patch(OpenAI(api_key=os.getenv("OPEN_AI_KEY")))
+        assistant = FinancialAssistant(
+            client=client,
+            fmp_api_key=fmp_api_key,
+            fh_api_key=fh_api_key
+        )
+        data = json.loads(request.body)
+        query = data.get('query')
+
+        if not query:
+            return JsonResponse({'error': 'Query not provided'}, status=400)
+
+        result = assistant.run(query)
+        return JsonResponse(result, status=200)
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
+

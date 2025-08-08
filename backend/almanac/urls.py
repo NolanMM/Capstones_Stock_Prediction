@@ -21,12 +21,16 @@ from stocks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('stocks.urls')),
+    path('api/', include('djoser.urls')),
+    path('api/', include('djoser.urls.authtoken')),
     
     path('', views.index, name='index'),
     path('portfolio.html', views.portfolio, name='portfolio'),
     path('account.html', views.account, name='account'),
     path('marketprediction.html', views.marketprediction, name='marketprediction'),
     path('register.html', views.register, name='register'),
+    path('verify-email-page/', views.verify_email_page, name='verify-email-page'),
+
     
     # Generic handler 
     path('<str:page_name>/', views.page_handler, name='page_handler'),

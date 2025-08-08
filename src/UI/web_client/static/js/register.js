@@ -32,8 +32,8 @@ loginForm.addEventListener("submit", async (e) => {
     const password = loginForm.querySelector("input[placeholder='Password']").value;
 
     try {
-        // Send login credentials to backend
-        const response = await fetch("/api/token/login/", {
+        // Send login credentials to backend using our custom session-based login
+        const response = await fetch("/api/login/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -42,13 +42,13 @@ loginForm.addEventListener("submit", async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            // Login successful: store auth token and redirect to homepage
+            // Login successful: use auth manager to store user info
             alert("Login successful!");
-            localStorage.setItem("authToken", data.auth_token);
+            authManager.setUserInfo(data.user);
             window.location.href = "/";  // Redirect to index/home page
         } else {
             // Login failed: show error message from backend
-            alert("Login failed: " + (data.non_field_errors || "Unknown error"));
+            alert("Login failed: " + (data.error || "Unknown error"));
         }
     } catch (err) {
         alert("Error during login: " + err.message);
@@ -60,33 +60,51 @@ signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();  
 
     // Extract user input from signup form
+    const first_name = signupForm.querySelector("input[placeholder='First Name']").value;
+    const last_name = signupForm.querySelector("input[placeholder='Last Name']").value;
     const email = signupForm.querySelector("input[placeholder='Email Address']").value;
     const password = signupForm.querySelector("input[placeholder='Password']").value;
     const re_password = signupForm.querySelector("input[placeholder='Confirm password']").value;
+    const username = email.split('@')[0];
 
-    // Check if passwords match
+    console.log("Signup data:", { first_name, last_name, email, password, re_password });
+
+    // Check if any required fields are empty
+    if (!username || !email || !password || !re_password || !first_name || !last_name) {
+        alert("All fields are required. Email must contain '@' and password must be at least 8 characters long.");
+        return;
+    }
+
     if (password !== re_password) {
         alert("Passwords do not match.");
         return;
     }
 
     try {
-        // Send signup data to backend
-        const response = await fetch("/api/users/", {
+        const response = await fetch("/api/register/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, re_password })
+            body: JSON.stringify({ username, email, first_name, last_name, password, re_password })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            // Signup successful: inform user and switch to login form
-            alert("Signup successful! Please login.");
-            document.querySelector("label.login").click(); // Auto-switch to login tab
+            alert("Registration successful! Please check your email for a verification code.");
+            window.location.href = `/verify-email-page/?email=${encodeURIComponent(email)}`;
         } else {
-            // Signup failed: display backend errors
-            alert("Signup failed: " + JSON.stringify(data));
+            let errorMessage = "Signup failed: ";
+            if (data.username) {
+                errorMessage += "This username (email) is already taken.";
+            } else if (data.email) {
+                errorMessage += "This email is already registered.";
+            } else if (data.re_password) {
+                errorMessage += "Password confirmation failed: " + data.re_password[0];
+            }
+             else {
+                errorMessage += JSON.stringify(data);
+            }
+            alert(errorMessage);
         }
     } catch (err) {
         alert("Error during signup: " + err.message);

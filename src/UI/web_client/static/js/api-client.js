@@ -9,11 +9,14 @@ class AlmanacAPI {
 
     async getAvailableStocks() {
         try {
+            console.log('API: Fetching available stocks...');
             const response = await fetch(`${this.baseUrl}/available-stocks/`);
             if (!response.ok) throw new Error('Failed to fetch available stocks');
-            return await response.json();
+            const data = await response.json();
+            console.log('API: Successfully fetched available stocks:', data);
+            return data;
         } catch (error) {
-            console.error('Error fetching stock symbols:', error);
+            console.error('API: Error fetching stock symbols:', error);
             return { symbols: [] };
         }
     }
@@ -31,11 +34,15 @@ class AlmanacAPI {
 
     async getStockHistory(symbol, days = 30) {
         try {
+            console.log(`API: Fetching history for ${symbol} with ${days} days`);
             const response = await fetch(`${this.baseUrl}/stock-history/${symbol}/?days=${days}`);
             if (!response.ok) throw new Error(`Failed to fetch history for ${symbol}`);
-            return await response.json();
+            const data = await response.json();
+            //console.log(`API: Successfully fetched history for ${symbol} AAAA:`, data.company_info);
+            //console.log(`API: Successfully fetched history for ${symbol}:`, data);
+            return data;
         } catch (error) {
-            console.error(`Error fetching ${symbol} history:`, error);
+            console.error(`API: Error fetching ${symbol} history:`, error);
             return { symbol, history: [] };
         }
     }
@@ -88,6 +95,22 @@ class AlmanacAPI {
         } catch (error) {
             console.error(`Error fetching ${symbol} predictions:`, error);
             return { symbol, error: error.message };
+        }
+    }
+
+    async getStockNews(symbol) {
+        try {
+            console.log(`API: Fetching news for ${symbol}`);
+            const response = await fetch(`${this.baseUrl}/stock-news/${symbol}/`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch news for ${symbol}`);
+            }
+            const data = await response.json();
+            console.log(`API: Successfully fetched news for ${symbol}:`, data);
+            return data;
+        } catch (error) {
+            console.error(`API: Error fetching ${symbol} news:`, error);
+            return []; // Return an empty array on error to prevent breaking the calling function.
         }
     }
 }
