@@ -11,7 +11,7 @@ from sklearn.preprocessing import MinMaxScaler
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Device:", device)
 
-TICKER  = "LULU"     
+TICKER  = "AAPL"   
 
 DROPOUT = 0.5        
 
@@ -24,7 +24,7 @@ chkpt    = torch.load(CHK_PATH, map_location=device)
 feature_cols = chkpt["feature_order"]       
 hidden_dim   = chkpt["hidden_dim"]
 num_layers   = chkpt["num_layers"]
-WINDOW_SIZE  = chkpt["window"]              # sliding window length
+WINDOW_SIZE  = chkpt["window"]           
 TARGET       = "Return_1D"                
 
 print("Loaded checkpoint with:")
@@ -34,7 +34,7 @@ print(f" • num_layers = {num_layers}")
 print(f" • window_size = {WINDOW_SIZE}")
 
 
-df = pd.read_csv("data/LULU_full_history.csv", parse_dates=["date"]) # Load historical data
+df = pd.read_csv("data/AAPL_full_history.csv", parse_dates=["date"]) # Load historical data
 df = (
     df.rename(columns={
         "open":"Open", "high":"High", "low":"Low",
@@ -68,22 +68,28 @@ def compute_indicators(df):
 
 df = compute_indicators(df)
 
-def prepare_quarterly(df, feats, tgt, window): # Scale quarterly data 
+def prepare_monthly(df, feats, tgt, window):
     df2 = df.copy()
-    df2["Quarter"] = df2.index.to_period("Q") 
-    scalers, chunks = {}, []
-    for q, g in df2.groupby("Quarter"): # group by quarter
-        if len(g) < window: 
-            continue
-        m = MinMaxScaler()
-        arr = m.fit_transform(g[feats + [tgt]].values) 
-        chunks.append(pd.DataFrame(arr, index=g.index, columns=feats+[tgt])) 
-        scalers[str(q)] = m
-    df_s = pd.concat(chunks).sort_index().dropna() # concatenate all quarters
-    return scalers, df_s
+    df2["Month"] = df2.index.to_period("M")
 
-scalers_q, df_scaled = prepare_quarterly(df, feature_cols, TARGET, WINDOW_SIZE) 
-print("Available quarters (last 3):", list(scalers_q.keys())[-3:])
+    scalers, chunks = {}, []
+    for m, g in df2.groupby("Month"):
+        if len(g) < window:
+            print(f"Skipping month {m}: only {len(g)} rows") 
+            continue
+        scaler = MinMaxScaler()
+        arr = scaler.fit_transform(g[feats + [tgt]].values)
+        chunks.append(pd.DataFrame(arr, index=g.index, columns=feats + [tgt]))
+        scalers[str(m)] = scaler
+
+    if not chunks:
+        raise ValueError("No month had enough rows for window size. Try using quarterly scaling or check WINDOW_SIZE.")
+
+    df_scaled = pd.concat(chunks).sort_index().dropna()
+    return scalers, df_scaled
+
+scalers_m, df_scaled = prepare_monthly(df, feature_cols, TARGET, WINDOW_SIZE) 
+print("Available quarters (last 3):", list(scalers_m.keys())[-3:])
 
 
 def build_all_windows(df_s, feats, tgt, window): # Build sliding windows
@@ -125,7 +131,7 @@ model.eval()
 print(model)
 
 
-def forecast_future_scaled(net, window_scaled, horizon): # Forecast future returns using the trained model
+def forecast_future_scaled(net, window_scaled, horizon): 
     arr, preds = window_scaled.copy(), []
     for _ in range(horizon):
         inp = torch.tensor(arr).float().unsqueeze(0).to(device)
@@ -143,7 +149,9 @@ print(f"Scaled returns forecast (next {HORIZON} days):\n", np.round(fc_scaled,4)
 
 
 q_last = str(df_scaled.index[-1].to_period("Q"))
-m = scalers_q[q_last]
+m_last = str(df_scaled.index[-1].to_period("M"))
+m = scalers_m[m_last]
+
 
 minv, maxv = m.data_min_[-1], m.data_max_[-1] # get min/max for the last quarter
 raw_rets = fc_scaled * (maxv - minv) + minv
