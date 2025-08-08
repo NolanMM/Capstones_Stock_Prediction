@@ -1,3 +1,4 @@
+from datetime import timedelta, timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -85,3 +86,14 @@ class ContactMessages(models.Model):
 
     def __str__(self):
         return f"Message from {self.user_name}"
+    
+class UserOTP(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='otp')
+    otp_code = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(hours=1)
+
+    def __str__(self):
+        return f"{self.user.email} - OTP: {self.otp_code}"

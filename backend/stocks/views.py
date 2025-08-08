@@ -1,6 +1,7 @@
 import os
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from pytz import timezone
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import JsonResponse
 from django.db import connection
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 from django.core.cache import cache
 from django.conf import settings
 from .services import email_services
-from .models import PortfolioItem
+from .models import PortfolioItem, UserOTP
 from rest_framework import viewsets , status
 import pyodbc
 from datetime import datetime, timedelta
@@ -729,32 +730,72 @@ def verify_email(request):
 def verify_email_page(request):
     return render(request, 'verifyemail.html')
 
+# @api_view(['POST'])
+# def ApiSignUp(request):
+#     """
+#     Handles new user registration with the specified JSON response.
+#     """
+#     serializer = CustomUserCreateSerializer(data=request.data)
+#     if serializer.is_valid():
+#         user = serializer.save()
+        
+#         otp = email_services.generate_random_key()
+#         cache.set(f"otp_{user.email}", otp, timeout=3600)
+
+#         email_sent = email_services.send_verification_email(request, user, otp)
+
+#         if email_sent:
+#             # Ensure a session key exists to be returned
+#             if not request.session.session_key:
+#                 request.session.save()
+            
+#             response_data = {
+#                 "message": "User registration request received. Please check your email for the OTP code.",
+#                 "sessionId": str(request.session.session_key),
+#                 "username": str(user.username),
+#                 "email": str(user.email),
+#                 # WARNING: Returning the OTP code is insecure and not for production use.
+#                 "otpCode": int(otp), 
+#                 "timestamp": str(datetime.now().isoformat())
+#             }
+#             return Response(response_data, status=status.HTTP_201_CREATED)
+#         else:
+#             user.delete()
+#             return Response(
+#                 {"error": "Failed to send verification email. Please try again."},
+#                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#             )
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['POST'])
 def ApiSignUp(request):
-    """
-    Handles new user registration with the specified JSON response.
-    """
     serializer = CustomUserCreateSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        
+
         otp = email_services.generate_random_key()
-        cache.set(f"otp_{user.email}", otp, timeout=3600)
+
+        # Save OTP to DB
+        UserOTP.objects.update_or_create(
+            user=user,
+            defaults={
+                'otp_code': otp,
+                'created_at': timezone.now()
+            }
+        )
 
         email_sent = email_services.send_verification_email(request, user, otp)
 
         if email_sent:
-            # Ensure a session key exists to be returned
             if not request.session.session_key:
                 request.session.save()
-            
+
             response_data = {
                 "message": "User registration request received. Please check your email for the OTP code.",
                 "sessionId": str(request.session.session_key),
                 "username": str(user.username),
                 "email": str(user.email),
-                # WARNING: Returning the OTP code is insecure and not for production use.
-                "otpCode": int(otp), 
+                "otpCode": int(otp),
                 "timestamp": str(datetime.now().isoformat())
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
@@ -808,43 +849,81 @@ def ApiLogin(request):
         return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+# @api_view(['POST'])
+# def verify_email_mobile(request):
+#     """
+#     Verifies the user's email with the OTP and returns the specified JSON response upon success.
+#     """
+#     email = request.data.get('email')
+#     otp_provided = request.data.get('otp')
+
+#     if not email or not otp_provided:
+#         return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#     stored_otp = cache.get(f"otp_{email}")
+
+#     if not stored_otp:
+#         return Response({'error': 'OTP has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#     if stored_otp == otp_provided:
+#         try:
+#             user = User.objects.get(email=email)
+#             if user.is_active:
+#                 return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
+            
+#             user.is_active = True
+#             user.save()
+#             cache.delete(f"otp_{email}")
+
+#             response_data = {
+#                 "message": "User registered successfully",
+#                 "id": int(user.id),
+#                 "username": str(user.username),
+#                 "email": str(user.email)
+#             }
+#             return Response(response_data, status=status.HTTP_200_OK)
+#         except User.DoesNotExist:
+#             return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+#     else:
+#         return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
 @api_view(['POST'])
 def verify_email_mobile(request):
-    """
-    Verifies the user's email with the OTP and returns the specified JSON response upon success.
-    """
     email = request.data.get('email')
     otp_provided = request.data.get('otp')
 
     if not email or not otp_provided:
         return Response({'error': 'Email and OTP are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    stored_otp = cache.get(f"otp_{email}")
+    try:
+        user = User.objects.get(email=email)
+        user_otp = UserOTP.objects.get(user=user)
 
-    if not stored_otp:
-        return Response({'error': 'OTP has expired or is invalid.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user_otp.is_expired():
+            user_otp.delete()
+            return Response({'error': 'OTP has expired.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if stored_otp == otp_provided:
-        try:
-            user = User.objects.get(email=email)
-            if user.is_active:
-                return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
-            
-            user.is_active = True
-            user.save()
-            cache.delete(f"otp_{email}")
+        if user_otp.otp_code != otp_provided:
+            return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            response_data = {
-                "message": "User registered successfully",
-                "id": int(user.id),
-                "username": str(user.username),
-                "email": str(user.email)
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-    else:
-        return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user.is_active:
+            return Response({'message': 'Account is already active.'}, status=status.HTTP_200_OK)
+
+        # Activate user
+        user.is_active = True
+        user.save()
+        user_otp.delete()
+
+        return Response({
+            "message": "User registered successfully",
+            "id": int(user.id),
+            "username": str(user.username),
+            "email": str(user.email)
+        }, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except UserOTP.DoesNotExist:
+        return Response({'error': 'OTP not found for this user.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
